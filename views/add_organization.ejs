@@ -10,12 +10,12 @@
     </div>
 
     <div class="container mt-5 bg-light ">
-        <form class="w-75 m-auto p-5" action="">
+        <form class="w-75 m-auto p-5" action="http://localhost:5000/add_organization" method="post">
 
             <div class="form-group">
                 <label class="col-md-4 control-label">Title</label>
                 <div class="col-md-8">
-                    <input type="text" class="form-control" placeholder="" name="title">
+                    <input type="text" class="form-control" placeholder="" name="org">
                 </div>
             </div>
             <button class="btn bg-green mt-3" type="text">Save</button>
@@ -73,17 +73,19 @@
 
                                 <tbody>
 
+                                     <% resultsTo.forEach((element)=>{ %>                                    
                                     <tr role="row" class="odd">
-                                        <td class="sorting_1"> 1</td>
-                                        <td class="">Administrator</td>
-                                        <td><a href="https://tms.pedo.pk/test_tms/designation_add.php#">
-                                            </a><a href="https://tms.pedo.pk/test_tms/designation_edit.php?id=1"
+                                        <td class="sorting_1"><%=  element.orgId %> </td>
+                                        <td class=""><%=  element.orgTitle %></td>
+                                        <td><a href="">
+                                            </a><a href=""
                                                 data-toggle="tooltip" data-placement="bottom" title=""
                                                 data-original-title="Edit Designation">
                                                 <i class="ti-write"
                                                     style="font-size:30px; color:blue; margin-top:5px; margin-left:0px;"></i>
                                             </a></td>
                                     </tr>
+                                    <%  })  %>
 
                                 </tbody>
                             </table>
