@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <title>Add Sub Department</title>
+
+    <style>
+        body {
+            background-color: #ebeff2;
+        }
+
+        .bg-green {
+            background-color: #81c868 !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <header id="topnav" class="navClass">
+        <div class="navbar navbar-expand-lg topbar-main p-3 mb-2 bg-green text-white"
+            style="margin-bottom: 0 !important;">
+            <div class="container">
+
+                <!-- Logo container-->
+                <div class="me-auto">
+                    <!-- <span><img src="assets/images/pedologo.GIF" width="50"  style="padding-bottom: 8px;"/>  Financial Manangemtent System PEDO</span> -->
+                    <a class="navbar-brand" href="">
+                        <img src="/images/kp_logo.png" width="60" style="float: left; margin-top: 10px;">
+                    </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <span> </span>
+                    <span style="color: white; float: left; margin-top: 25px; font-size: 22px; font-weight:bold;"> TASK
+                        MANAGEMENT SYSTEM</span>
+
+                </div>
+                <!-- End Logo container-->
+                <div class="">
+                    <ul class="nav navbar-nav navbar-right pull-right">
+                        <li class="navbar-c-items">
+                            <div style="margin-top:40px;color:white;">Welcome : naveed</div>
+                        </li>
+
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link " href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="/images/naveed.jpg"
+                                    style="height: 50px; border-radius: 50%; border: 2px solid white;" alt="">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Logout</a></li>
+                                <li><a class="dropdown-item" href="#">Change password</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+        </div>
+
+        <nav class="navbar navbar-expand-lg bg-body-tertiary pt-3">
+            <div class="container">
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item m-2">
+                            <a class="nav-link" aria-current="page" href="#">
+                                <span><img class="mx-auto d-block" src="/icons/dashboard.png"
+                                        style="width: 25px; height: 25px;" alt=""></span>
+                                Dashboard</a>
+                        </li>
+                        <li class="nav-item dropdown m-2">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <span><img class="mx-auto d-block" src="/icons/settings.png"
+                                        style="width: 25px; height: 25px;" alt=""></span>
+                                Definitions
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Add Designation</a></li>
+                                <li><a class="dropdown-item" href="#">Add rule</a></li>
+                                <li><a class="dropdown-item" href="#">Add User</a></li>
+                                <li><a class="dropdown-item" href="#">Add Organization</a></li>
+                                <li><a class="dropdown-item" href="#">Add sub Departments</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown m-2">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <span><img class="mx-auto d-block" src="/icons/to-do-list.png"
+                                        style="width: 25px; height: 25px;" alt=""></span>
+                                Create Task
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Create Task</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown m-2">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <span><img class="mx-auto d-block" src="/icons/printing.png"
+                                        style="width: 25px; height: 25px;" alt=""></span>
+                                Report
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Create Report </a></li>
+                                <li><a class="dropdown-item" href="#">Create User List</a></li>
+
+                            </ul>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+
+    </header>
+
+    <main>
+        <div class="container">
+            <h2>Add Sub Department</h2>
+        </div>
+
+        <div class="container mt-5 bg-light ">
+            <form class="w-75 m-auto p-5" action="">
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Select Organization </label>
+                    <div class="col-md-8">
+                        <select name="organization_id" class="form-control" tabindex="">
+                            <option value="">Select Organization</option>
+                            <option value="1">KPOGCL</option>
+                            <option value="2">PEDO</option>
+                            <option value="3">Energy &amp; Power Department, GoKP -</option>
+                            <option value="4">Electric Inpectorate</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Title</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" placeholder="" name="title">
+                    </div>
+                </div>
+                <button class="btn bg-green mt-3" id="save" type="text">Save</button>
+
+            </form>
+        </div>
+
+        <div class="container row bg-light mt-4" style="margin: auto;">
+            <div class="container">
+                <div class="">
+                    <h4 class="m-t-0 header-title"><b> Role list </b></h4>
+
+
+                    <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="dataTables_length" id="datatable_length"><label>Show <select
+                                            name="datatable_length" aria-controls="datatable"
+                                            class="form-control input-sm">
+                                            <option value="10">10</option>
+                                            <option value="25">25</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select> entries</label></div>
+                            </div>
+                            <div class="col-sm-6 d-flex flex-column justify-content-end">
+                                <div id="datatable_filter" class="float-end"><label class="float-end">Search:<input
+                                            type="search" class="form-control input-sm" placeholder=""
+                                            aria-controls="datatable"></label></div>
+                                <div id="datatable_filter" class="float-end"><label class="float-end">Search:<input
+                                            type="search" class="form-control input-sm" placeholder=""
+                                            aria-controls="datatable"></label></div>
+
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="datatable" class="table table-striped table-bordered dataTable no-footer"
+                                    role="grid" aria-describedby="datatable_info">
+                                    <thead>
+                                        <tr role="row">
+                                            <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1" aria-sort="ascending"
+                                                aria-label="Serial #: activate to sort column descending"
+                                                style="width: 99.3333px;">Serial #</th>
+                                            <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1"
+                                                aria-label="Organization Name: activate to sort column ascending"
+                                                style="width: 350.333px;">Organization Name</th>
+                                            <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1"
+                                                aria-label="Department Name: activate to sort column ascending"
+                                                style="width: 362.333px;">Department Name</th>
+                                            <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1" aria-label="Actions: activate to sort column ascending"
+                                                style="width: 99px;">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="tableBody">
+
+                                        <tr>
+                                            <td class="sorting_1"> 1</td>
+                                            <td class="">KPOGCL</td>
+                                            <td class="">Finance</td>
+                                            <td><a href="https://tms.pedo.pk/test_tms/dept_sub_add.php#">
+                                                </a><a
+                                                    href="https://tms.pedo.pk/test_tms/dept_sub_edit.php?id=31&amp;o_id=1"
+                                                    data-toggle="tooltip" data-placement="bottom" title=""
+                                                    data-original-title="Edit Sub Department">
+                                                    <i class="ti-write"
+                                                        style="font-size:30px; color:blue; margin-top:5px; margin-left:0px;"></i>
+                                                </a></td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
+                                    Showing 1 to 4 of 4 entries</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <nav class="float-end" aria-label="Page navigation example">
+                                    <ul class="pagination">
+                                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
+                            Showing 1 to 4 of 4 entries</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <nav class="float-end" aria-label="Page navigation example">
+                            <ul class="pagination">
+                                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer class="footer text-right m-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <center><b> ENERGY AND POWER DEPARTMENT</b></center>
+                </div>
+
+                <div style=" font-size: 10px; color:#094769;" align="center">DESIGN &amp; DEVELOPED BY | ILMAN
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+
+        const save = document.getElementById("save");
+
+        save.addEventListener("click", () => {
+            
+            const row = document.createElement("tr");
+        const tableBody = document.getElementById("tableBody");
+
+        row.innerHTML= `
+        <tr>
+            <td class="sorting_1"> 1</td>
+            <td class="">KPOGCL</td>
+            <td class="">Finance</td>
+            <td><a href="https://tms.pedo.pk/test_tms/dept_sub_add.php#">
+                </a><a
+                    href="https://tms.pedo.pk/test_tms/dept_sub_edit.php?id=31&amp;o_id=1"
+                    data-toggle="tooltip" data-placement="bottom" title=""
+                    data-original-title="Edit Sub Department">
+                    <i class="ti-write"
+                        style="font-size:30px; color:blue; margin-top:5px; margin-left:0px;"></i>
+                </a></td>
+        </tr>
+        `
+        tableBody.appendChild(row);
+        })
+
+
+        
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>

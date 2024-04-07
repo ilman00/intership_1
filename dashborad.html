@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+        
+    <title>Dashboard</title>
+    <style>
+        .bg-green {
+            background-color: #81c868 !important;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body style="background-color: #ebeff2">
+
+    <header id="topnav" class="navClass">
+        <div class="navbar navbar-expand-lg topbar-main p-3 mb-2 bg-green text-white"
+            style="margin-bottom: 0 !important;">
+            <div class="container">
+
+                <!-- Logo container-->
+                <div class="me-auto">
+                    <!-- <span><img src="assets/images/pedologo.GIF" width="50"  style="padding-bottom: 8px;"/>  Financial Manangemtent System PEDO</span> -->
+                    <a class="navbar-brand" href="">
+                        <img src="/images/kp_logo.png" width="60" style="float: left; margin-top: 10px;">
+                    </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <span> </span>
+                    <span style="color: white; float: left; margin-top: 25px; font-size: 22px; font-weight:bold;"> TASK
+                        MANAGEMENT SYSTEM</span>
+
+                </div>
+                <!-- End Logo container-->
+                <div class="">
+                    <ul class="nav navbar-nav navbar-right pull-right">
+                        <li class="navbar-c-items">
+                            <div style="margin-top:40px;color:white;">Welcome : naveed</div>
+                        </li>
+
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link " href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="/images/naveed.jpg"
+                                    style="height: 50px; border-radius: 50%; border: 2px solid white;" alt="">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Logout</a></li>
+                                <li><a class="dropdown-item" href="#">Change password</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+        </div>
+
+        <nav class="navbar navbar-expand-lg bg-body-tertiary pt-3">
+            <div class="container">
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item m-2">
+                            <a class="nav-link" aria-current="page" href="#">
+                                <span ><img class="mx-auto d-block" src="/icons/dashboard.png" style="width: 25px; height: 25px;" alt=""></span>
+                                Dashboard</a>
+                        </li>
+                        <li class="nav-item dropdown m-2">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <span ><img class="mx-auto d-block" src="/icons/settings.png" style="width: 25px; height: 25px;" alt=""></span>
+                                Definitions
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Add Designation</a></li>
+                                <li><a class="dropdown-item" href="#">Add rule</a></li>
+                                <li><a class="dropdown-item" href="#">Add User</a></li>
+                                <li><a class="dropdown-item" href="#">Add Organization</a></li>
+                                <li><a class="dropdown-item" href="#">Add sub Departments</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown m-2">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <span ><img class="mx-auto d-block" src="/icons/to-do-list.png" style="width: 25px; height: 25px;" alt=""></span>
+                                Create Task
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Create Task</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown m-2">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <span ><img class="mx-auto d-block" src="/icons/printing.png" style="width: 25px; height: 25px;" alt=""></span>
+                                Report
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Create Report </a></li>
+                                <li><a class="dropdown-item" href="#">Create User List</a></li>
+
+                            </ul>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+
+    </header>
+
+
+    <main class="">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+
+                    <h4 class="page-title">Wecome to Admin Dashboard </h4>
+                    <p class="text-muted page-title-alt">Admin Panel!</p>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="container d-flex flex-wrap">
+            <div class="bg-light col-lg-3 m-2" style="box-sizing: border-box;">
+
+
+                <a href="" style="text-decoration: none; color: black;">
+                    <div class="p-3 h-100">
+                        <div class="row">
+                            <div class="w-25 m-2">
+                                <span class=""><img src="/images/kp_logo.png" width="60"
+                                        style="float: left; margin-top: 1px;"></span>
+                            </div>
+                            <div class="w-50 ms-auto">
+                                <span class="d-block text-end" style="font-size: 30px;"> <b>0</b> </span>
+                                <span class="d-block text-end">
+                                    Total Task E&amp;P
+                                </span>
+                            </div>
+                        </div>
+                        <div class="tiles-progress">
+                            <div class="m-t-20">
+                                <h5 class="text-uppercase">Energy And Power Department<span class="pull-right"></span>
+                                </h5>
+                                <div class="progress progress-sm m-0">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="100"
+                                        aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+
+            <div class="bg-light col-lg-3 m-2" style="box-sizing: border-box;">
+
+
+                <a href="" style="text-decoration: none; color: black;">
+                    <div class="p-3 h-100">
+                        <div class="row">
+                            <div class="w-25 m-2">
+                                <span class=""><img src="/images/pedo3.png" width="60"
+                                        style="float: left; margin-top: 1px;"></span>
+                            </div>
+                            <div class="w-50 ms-auto">
+                                <span class="d-block text-end" style="font-size: 30px;"> <b>0</b> </span>
+                                <span class="d-block text-end">
+                                    Total task PEDO
+                                </span>
+                            </div>
+                        </div>
+                        <div class="tiles-progress">
+                            <div class="m-t-20">
+                                <h5 class="text-uppercase">Pukhtunkhwa Energy And Developement Organization<span
+                                        class="pull-right"></span>
+                                </h5>
+                                <div class="progress progress-sm mt-auto">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="100"
+                                        aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+            <div class="bg-light col-lg-3 m-2" style="box-sizing: border-box;">
+
+
+                <a href="" style="text-decoration: none; color: black;">
+                    <div class="p-3 h-100">
+                        <div class="row">
+                            <div class="w-25 m-2">
+                                <span class=""><img src="/images/kpogcl1.png" width="60"
+                                        style="float: left; margin-top: 1px;"></span>
+                            </div>
+                            <div class="w-50 ms-auto">
+                                <span class="d-block text-end" style="font-size: 30px;"> <b>0</b> </span>
+                                <span class="d-block text-end">
+                                    Total Task KPOGCL
+                                </span>
+                            </div>
+                        </div>
+                        <div class="tiles-progress">
+                            <div class="m-t-20">
+                                <h5 class="text-uppercase">Khyber Pakhtunkhwa Oil and Gas Company Limited<span
+                                        class="pull-right"></span>
+                                </h5>
+                                <div class="progress progress-sm m-0">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="100"
+                                        aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+            <div class="bg-light col-lg-3 m-2" style="box-sizing: border-box;">
+
+
+                <a href="" style="text-decoration: none; color: black;">
+                    <div class="p-3 h-100">
+                        <div class="row">
+                            <div class="w-25 m-2">
+                                <span class=""><img src="/images/kp_logo.png" width="60"
+                                        style="float: left; margin-top: 1px;"></span>
+                            </div>
+                            <div class="w-50 ms-auto">
+                                <span class="d-block text-end" style="font-size: 30px;"> <b>0</b> </span>
+                                <span class="d-block text-end">
+                                    Total Task EI
+                                </span>
+                            </div>
+                        </div>
+                        <div class="tiles-progress">
+                            <div class="m-t-20">
+                                <h5 class="text-uppercase">Electric Inspectorate Department<span
+                                        class="pull-right"></span>
+                                </h5>
+                                <div class="progress progress-sm m-0">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="100"
+                                        aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+
+
+
+
+
+        </div>
+
+
+
+    </main>
+<hr>
+
+    <footer class="footer text-right m-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <center><b> ENERGY AND POWER DEPARTMENT</b></center>
+                </div>
+
+                <div style=" font-size: 10px; color:#094769;" align="center">DESIGN &amp; DEVELOPED BY | PEDO IT TEAM
+                </div>
+                
+            </div>
+        </div>
+    </footer>
+
+
+
+</body>
+
+</html>
