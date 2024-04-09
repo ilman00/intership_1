@@ -79,13 +79,9 @@
                                     <tr role="row" class="odd">
                                         <td class="sorting_1"> <%= element.id %> </td>
                                         <td class=""> <%= element.title %>  </td>
-                                        <td><a href="">
-                                            </a><a href=""
-                                                data-toggle="tooltip" data-placement="bottom" title=""
-                                                data-original-title="Edit Designation">
-                                                <i class="ti-write"
-                                                    style="font-size:30px; color:blue; margin-top:5px; margin-left:0px;"></i>
-                                            </a></td>
+                                        <td>
+                                            <a href="/edit/designation-<%=element.id%>" data-toggle="tooltip" data-placement="bottom" title="Edit Title" data-original-title="Edit Designation"><i class="bi bi-pencil-square"></i></a>
+                                        </td>
                                     </tr>
                                    <% }) %>
                                 </tbody>

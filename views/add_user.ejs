@@ -9,57 +9,61 @@
     </div>
 
     <div class="container bg-light mt-5">
-        <form class="g-3 m-auto p-5" style="margin-bottom: 30px;">
+        <form class="g-3 m-auto p-5" style="margin-bottom: 30px;" action="/add_user" method="post" enctype="multipart/form-data" >
             <div class="col-md-4 m-auto">
                 <label for="inputState" class="form-label">Select Role</label>
-                <select id="inputState" class="form-select">
+                <select  name="role" class="form-select">
                     <option selected>Choose...</option>
                     <option>...</option>
+                    <option value="administrator">administrator</option>
                 </select>
             </div>
             <div class="col-md-4 m-auto">
                 <label for="inputState" class="form-label">Select Designation</label>
-                <select id="inputState" class="form-select">
+                <select  name="designation" class="form-select">
                     <option selected>Choose...</option>
                     <option>...</option>
+                    <option value="Designation">Designation</option>
                 </select>
             </div>
             <div class="col-md-4 m-auto">
                 <label for="inputCity" class="form-label">Name</label>
-                <input type="text" class="form-control" id="inputCity">
+                <input type="text" class="form-control"  name="name">
             </div>
             <div class="col-md-4 m-auto">
                 <label for="inputEmail4" class="form-label">Email</label>
-                <input type="email" class="form-control" id="inputEmail4">
+                <input type="email" class="form-control" id="inputEmail4" name="email">
             </div>
             <div class="col-md-4 m-auto">
                 <label for="inputCity" class="form-label">Mobile</label>
-                <input type="text" class="form-control" id="inputCity">
+                <input type="text" class="form-control"  name="mobile">
             </div>
             <div class="col-md-4 m-auto">
                 <label for="inputPassword4" class="form-label">Password</label>
-                <input type="password" class="form-control" id="inputPassword4">
+                <input type="password" class="form-control"  name="password">
             </div>
 
             
             <div class="col-md-4 m-auto">
                 <label for="inputState" class="form-label">Select Organization</label>
-                <select id="inputState" class="form-select">
+                <select  class="form-select" name="organization">
                     <option selected>Choose...</option>
                     <option>...</option>
+                    <option value="science">science</option>
                 </select>
             </div>
             <div class="col-md-4 m-auto">
                 <label for="inputState" class="form-label">Select Department</label>
-                <select id="inputState" class="form-select">
+                <select  class="form-select" name="department">
                     <option selected>Choose...</option>
                     <option>...</option>
+                    <option value="Energy">Energy</option>
                 </select>
             </div>
 
             <div class="col-md-4 m-auto">
                 <label for="" class="form-label"></label>
-                <input type="file" class="form-control" id="inputPassword4">
+                <input type="file" class="form-control" name="image">
             </div>
             
             <div class="col-md-4 m-auto mt-2">
@@ -114,7 +118,9 @@
                                     </thead>
 
                                     <tbody id="tableBody">
-
+                                      <%  userData.forEach((element)=>{ %>
+                                        <% console.log("image path"+ element.imagePath) %>
+                                        
                                         <tr>
                                             <td class="sorting_1">
                                                 <div class="search-item">
@@ -122,35 +128,35 @@
                                                         <div class="" style="width: fit-content;">
                                                             <a href="" > <img
                                                                     class="media-object img-circle" alt="64x64"
-                                                                    src="/images/kp_logo.png"
+                                                                    src="<%= element.imagePath %>"
                                                                     style="width: 64px; height: 64px;"> </a>
                                                         </div>
                                                         <div class="w-75">
-                                                            <h4 class=""><a class="textDecoration" href="" style="color: rgb(103, 166, 254);" >Aasma Arif</a></h4>
+                                                            <h4 class=""><a class="textDecoration" href="" style="color: rgb(103, 166, 254);" ><%=element.name %></a></h4>
 
                                                             <b>Designation:</b>
 
                                                             <span><a href=""
-                                                                    class="textDecoration" style="color: rgb(179, 179, 179);">DS (Power)</a></span>
+                                                                    class="textDecoration" style="color: rgb(179, 179, 179);"><%= element.designation %></a></span>
                                                             <p>
 
                                                                 <b>Role:</b>
 
                                                                 <span><a href=""
-                                                                        class="textDecoration" style="color: rgb(179, 179, 179);">User</a></span>
+                                                                        class="textDecoration" style="color: rgb(179, 179, 179);"><%= element.role %></a></span>
                                                             </p>
                                                             <p>
                                                                 <b>Bio:</b>
                                                                 <br>
-                                                                <span class="text-muted" style="color: rgb(179, 179, 179);">03449177708</span> ,
-                                                                <span class="text-muted" style="color: rgb(179, 179, 179);">aasmaarif@gmail.com</span>
+                                                                <span class="text-muted" style="color: rgb(179, 179, 179);"><%= element.mobile %></span> ,
+                                                                <span class="text-muted" style="color: rgb(179, 179, 179);"><%= element.email %></span>
                                                             </p>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
                                         </tr>
-
+                                    <% }) %>
                                     </tbody>
                                 </table>
                             </div>

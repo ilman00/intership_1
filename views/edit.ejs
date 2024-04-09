@@ -1,0 +1,29 @@
+<%- include('header.ejs') %>
+
+<main>
+
+    <div class="container mt-5 bg-light ">
+        <form id="editForm" class="w-75 m-auto p-5" action="" method="POST">
+
+            <div class="form-group">
+                <label class="col-md-4 control-label">Title</label>
+                <div class="col-md-8">
+                    <input type="text" class="form-control" placeholder="" name="title">
+                </div>
+            </div>
+            <button class="btn bg-green mt-3" type="text">Save</button>
+
+        </form>
+    </div>
+
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('editForm');
+        form.setAttribute('action', window.location.href);
+    });
+</script>
+
+
+<%- include('footer.ejs') %>
