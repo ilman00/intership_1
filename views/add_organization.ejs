@@ -4,134 +4,136 @@
 
 
 
-<main>
-    <div class="container">
-        <h2>Add Organization</h2>
-    </div>
-
-    <div class="container mt-5 bg-light ">
-        <form class="w-75 m-auto p-5" action="http://localhost:5000/add_organization" method="post">
-
-            <div class="form-group">
-                <label class="col-md-4 control-label">Title</label>
-                <div class="col-md-8">
-                    <input type="text" class="form-control" placeholder="" name="org">
-                </div>
-            </div>
-            <button class="btn bg-green mt-3" type="text">Save</button>
-
-        </form>
-    </div>
-
-    <div class="container row bg-light mt-4" style="margin: auto;">
+    <main>
         <div class="container">
-            <div class="">
-                <h4 class="m-t-0 header-title"><b> Organization list </b></h4>
+            <h2>Add Organization</h2>
+        </div>
 
+        <div class="container mt-5 bg-light ">
+            <form class="w-75 m-auto p-5" action="http://localhost:5000/add_organization" method="post">
 
-                <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="dataTables_length" id="datatable_length"><label>Show <select
-                                        name="datatable_length" aria-controls="datatable"
-                                        class="form-control input-sm">
-                                        <option value="10">10</option>
-                                        <option value="25">25</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select> entries</label></div>
-                        </div>
-                        <div class="col-sm-6 d-flex flex-column justify-content-end">
-                            <div id="datatable_filter"  class="float-end"><label class="float-end">Search:<input type="search"
-                                        class="form-control input-sm" placeholder=""
-                                        aria-controls="datatable"></label></div>
-                            <div id="datatable_filter" class="float-end"><label class="float-end">Search:<input type="search"
-                                        class="form-control input-sm" placeholder=""
-                                        aria-controls="datatable"></label></div>
-
-                        </div>
-
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Title</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" placeholder="" name="org">
                     </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <table id="datatable" class="table table-striped table-bordered dataTable no-footer"
-                                role="grid" aria-describedby="datatable_info">
-                                <thead>
-                                    <tr role="row">
-                                        <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1"
-                                            colspan="1" aria-sort="ascending"
-                                            aria-label="Serial #: activate to sort column descending"
-                                            style="width: 130.333px;">Serial #</th>
-                                        <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
-                                            colspan="1" aria-label="Title: activate to sort column ascending"
-                                            style="width: 689.333px;">Title</th>
-                                        <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
-                                            colspan="1" aria-label="Actions: activate to sort column ascending"
-                                            style="width: 129px;">Actions</th>
-                                    </tr>
-                                </thead>
+                </div>
+                <button class="btn bg-green mt-3" type="text">Save</button>
 
-                                <tbody>
+            </form>
+        </div>
 
-                                     <% resultsTo.forEach((element)=>{ %>                                    
-                                    <tr role="row" class="odd">
-                                        <td class="sorting_1"><%=  element.orgId %> </td>
-                                        <td class=""><%=  element.orgTitle %></td>
-                                        <td><a href="">
-                                            </a><a href=""
-                                                data-toggle="tooltip" data-placement="bottom" title=""
-                                                data-original-title="Edit Designation">
-                                                <i class="ti-write"
-                                                    style="font-size:30px; color:blue; margin-top:5px; margin-left:0px;"></i>
-                                            </a></td>
-                                    </tr>
-                                    <%  })  %>
+        <div class="container row bg-light mt-4" style="margin: auto;">
+            <div class="container">
+                <div class="">
+                    <h4 class="m-t-0 header-title"><b> Organization list </b></h4>
 
-                                </tbody>
-                            </table>
+
+                    <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="dataTables_length" id="datatable_length"><label>Show <select
+                                            name="datatable_length" aria-controls="datatable"
+                                            class="form-control input-sm">
+                                            <option value="10">10</option>
+                                            <option value="25">25</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select> entries</label></div>
+                            </div>
+                            <div class="col-sm-6 d-flex flex-column justify-content-end">
+                                <div id="datatable_filter" class="float-end"><label class="float-end">Search:<input
+                                            type="search" class="form-control input-sm" placeholder=""
+                                            aria-controls="datatable"></label></div>
+                                <div id="datatable_filter" class="float-end"><label class="float-end">Search:<input
+                                            type="search" class="form-control input-sm" placeholder=""
+                                            aria-controls="datatable"></label></div>
+
+                            </div>
+
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
-                                Showing 1 to 4 of 4 entries</div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="datatable" class="table table-striped table-bordered dataTable no-footer"
+                                    role="grid" aria-describedby="datatable_info">
+                                    <thead>
+                                        <tr role="row">
+                                            <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1" aria-sort="ascending"
+                                                aria-label="Serial #: activate to sort column descending"
+                                                style="width: 130.333px;">Serial #</th>
+                                            <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1" aria-label="Title: activate to sort column ascending"
+                                                style="width: 689.333px;">Title</th>
+                                            <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1" aria-label="Actions: activate to sort column ascending"
+                                                style="width: 129px;">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        <% resultsTo.forEach((element)=>{ %>
+                                            <tr role="row" class="odd">
+                                                <td class="sorting_1">
+                                                    <%= element.orgId %>
+                                                </td>
+                                                <td class="">
+                                                    <%= element.orgTitle %>
+                                                </td>
+                                                <td><a href="/edit/organization-<%=element.orgId%>" data-toggle="tooltip"
+                                                        data-placement="bottom" title="Edit Title"
+                                                        data-original-title="Edit Designation"><i
+                                                            class="bi bi-pencil-square"></i></a>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div class="col-sm-6">
-                            <nav class="float-end" aria-label="Page navigation example">
-                                <ul class="pagination">
-                                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                                </ul>
-                            </nav>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
+                                    Showing 1 to 4 of 4 entries</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <nav class="float-end" aria-label="Page navigation example">
+                                    <ul class="pagination">
+                                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
-                        Showing 1 to 4 of 4 entries</div>
-                </div>
-                <div class="col-sm-6">
-                    <nav class="float-end" aria-label="Page navigation example">
-                        <ul class="pagination">
-                            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                            <li class="page-item"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                        </ul>
-                    </nav>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
+                            Showing 1 to 4 of 4 entries</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <nav class="float-end" aria-label="Page navigation example">
+                            <ul class="pagination">
+                                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-</main>
-
+    </main>
 
 
 
 
 
 
-<%- include('footer.ejs') %>
+
+    <%- include('footer.ejs') %>

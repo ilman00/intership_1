@@ -4,9 +4,14 @@ const ejs = require("ejs");
 const multer = require("multer");
 const dbConnection = require("./db");
 const path = require("path");
+const socketIO = require("socket.io");
+const http = require("http");
 
 
 const app = express();
+
+const server = http.createServer(app)
+const io = socketIO(server);
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -20,7 +25,7 @@ var storage = multer.diskStorage({
     filename: (req, file, callBack) => {
       callBack(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
     }
-  })
+  });
   
   var upload = multer({
     storage: storage
@@ -28,6 +33,22 @@ var storage = multer.diskStorage({
 
 
 
+
+// socket.io
+
+io.on("connection", (socket)=>{
+    console.log("user connected");
+    socket.on("selectData", (data)=>{
+        console.log("socket data :", data);
+
+        myquery = `SELECT * FROM department WHERE depOrg = '${data}'`;
+        dbConnection.query(myquery, (err, results, fields)=>{
+            if(err) throw err;
+            socket.emit("selectData from server", results);
+            console.log(results);
+        })
+    });
+});
 
 // designation rout
 app.get("/add_designation", (req, res) => {
@@ -125,9 +146,6 @@ app.post("/add_user", upload.single('image'), (req, res) => {
 
 
 
-
-
-
 // organization rout
 app.get("/add_organization", (req, res) => {
     const requestOrg = `SELECT * FROM organization`;
@@ -215,13 +233,41 @@ app.post("/edit/:file", (req, res) => {
 
     dbConnection.query(sql, (err, results)=>{
         if(err) throw err;
-        res.redirect("/add_designation");
+        console.log("tableName in query : "+tableName);
+        res.redirect(`/add_${tableName}`);
     });
+});
+
+app.get("/create_task", (req, res)=>{
+    const myQuery = `SELECT * FROM organization`;
+    dbConnection.query(myQuery, (err, results, fields)=>{
+
+        res.render("create_task", {results: results});
+    })
+});
+
+app.post("/create_task", upload.single('imagePath') , (req, res)=>{
+    const createTask = {
+     title : req.body.title,
+     description : req.body.description,
+     date : req.body.date,
+     organization : req.body.organization,
+     department : req.body.department,
+     assignTo  : req.body.assignTo,
+     email : req.body.email,
+     taskType : req.body.taskType,
+     imagePath : req.file.filename
+    }
+    const taskQuery = `INSERT INTO createTask(title, description, date, organization, department, assignTo, email, taskType, imagePath) VALUES (?,?,?,?,?,?,?,?,?)`
+    const taskArry = [createTask.title, createTask.description, createTask.date, createTask.organization, createTask.department, createTask.assignTo, createTask.email, createTask.taskType, createTask.imagePath];
+    dbConnection.query(taskQuery, taskArry, (err, results, fields)=>{
+        res.redirect("/create_task");
+    } );
 
 
-})
+});
 
 
-app.listen(5000, () => {
+server.listen(5000, () => {
     console.log("server runing");
 })

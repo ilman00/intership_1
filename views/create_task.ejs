@@ -1,0 +1,100 @@
+<%- include('header.ejs') %>
+
+    <main>
+        <div class="container">
+            <h2>Add User</h2>
+        </div>
+
+        <div class="container bg-light mt-5">
+            <form class="g-3 m-auto p-5" style="margin-bottom: 30px;" action="/create_task" method="post"
+                enctype="multipart/form-data">
+                <div class="col-md-4 m-auto">
+                    <label for="" class="form-label">Title</label>
+                    <input type="text" class="form-control" name="title">
+                </div>
+                <div class="col-md-4 m-auto">
+                    <label for="" class="form-label">Description</label>
+                    <textarea name="description" placeholder="Description" class="form-control" cols="30"
+                        rows="3"></textarea>
+                </div>
+                <div class="col-md-4 m-auto">
+                    <label for="" class="form-label">Date</label>
+                    <input type="date" class="form-control" name="date">
+                </div>
+                <div class="col-md-4 m-auto">
+                    <label for="" class="form-label">Select Organization</label>
+                    <select class="form-select" name="organization" id="organizationID">
+                        <option>...</option>
+                        <% results.forEach((element)=>{ %>
+
+                            <option value="<%=element.orgTitle%>">
+                                <%= element.orgTitle %>
+                            </option>
+                            <%})%>
+                    </select>
+                </div>
+                <div class="col-md-4 m-auto">
+                    <label for="" class="form-label">Select Department</label>
+                    <select class="form-select" name="department" id="departmentID">
+                        <option>...</option>
+                    </select>
+                </div>
+                <div class="col-md-4 m-auto">
+                    <label for="" class="form-label">Task Assign To</label>
+                    <select class="form-select" name="assignTo">
+                        <option selected>Assign To</option>
+                        <option>...</option>
+                    </select>
+                </div>
+                <div class="col-md-4 m-auto">
+                    <label for="" class="form-label">Email</label>
+                    <select class="form-select" name="email">
+                        <option selected>Email</option>
+                        <option>...</option>
+                    </select>
+                </div>
+                <div class="col-md-4 m-auto">
+                    <label for="" class="form-label">Task Type</label>
+                    <select class="form-select" name="taskType">
+                        <option selected>Normal</option>
+                        <option>Urgent</option>
+                    </select>
+                </div>
+                <div class="col-md-4 m-auto">
+                    <label for="" class="form-label"></label>
+                    <input type="file" class="form-control" name="imagePath">
+                </div>
+
+                <div class="col-md-4 m-auto mt-2">
+                    <button type="submit" class="btn btn-primary">ADD</button>
+                </div>
+            </form>
+        </div>
+
+    </main>
+
+    <script>
+        const socket = io('http://localhost:5000');
+        const organizationID = document.getElementById("organizationID");
+        const departmentID = document.getElementById("departmentID");
+
+        organizationID.addEventListener("change", () => {
+
+            socket.emit("selectData", organizationID.value);
+
+        });
+        socket.on("selectData from server", (data) => {
+            data.forEach((element) => {
+                console.log(element.depTitle);
+                var option = document.createElement("option"); // Create a new option element
+                option.value = element.depTitle;
+                option.innerHTML = element.depTitle;
+                departmentID.appendChild(option);
+            });
+        });
+
+
+
+    </script>
+
+    <%- include('footer.ejs') %>
