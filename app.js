@@ -6,6 +6,7 @@ const dbConnection = require("./db");
 const path = require("path");
 const socketIO = require("socket.io");
 const http = require("http");
+const { log } = require("console");
 
 
 const app = express();
@@ -20,34 +21,55 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // multer
 var storage = multer.diskStorage({
     destination: (req, file, callBack) => {
-      callBack(null, './uploads/')     // './uploads/' directory name where save the file
+        callBack(null, './uploads/')     // './uploads/' directory name where save the file
     },
     filename: (req, file, callBack) => {
-      callBack(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+        callBack(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
     }
-  });
-  
-  var upload = multer({
+});
+
+var upload = multer({
     storage: storage
-  });
+});
 
 
 
 
 // socket.io
 
-io.on("connection", (socket)=>{
+io.on("connection", (socket) => {
     console.log("user connected");
-    socket.on("selectData", (data)=>{
+    socket.on("selectData", (data) => {
         console.log("socket data :", data);
 
         myquery = `SELECT * FROM department WHERE depOrg = '${data}'`;
-        dbConnection.query(myquery, (err, results, fields)=>{
-            if(err) throw err;
+        dbConnection.query(myquery, (err, results, fields) => {
+            if (err) throw err;
             socket.emit("selectData from server", results);
             console.log(results);
         })
     });
+
+    socket.on("department Data", (data) => {
+        console.log("department data :", data);
+
+        const myQuery = `SELECT * FROM user WHERE department = '${data}'`
+        dbConnection.query(myQuery, (err, result, fields) => {
+            if (err) throw err;
+            socket.emit("user data", data);
+            console.log(data);
+        });
+    });
+
+    socket.on("organization Data from user", (data)=>{
+        const depQuery = `SELECT * FROM department WHERE depOrg = '${data}'`
+        dbConnection.query(depQuery, (err, results, fields)=>{
+            console.log(results);
+            socket.emit("department data to user", results);
+        })
+    })
+
+
 });
 
 // designation rout
@@ -108,15 +130,26 @@ app.post("/add_role", (req, res) => {
 
 // user rout
 app.get("/add_user", (req, res) => {
-    const myquery = `SELECT * FROM user`;
-    dbConnection.query(myquery, (err, results, fields)=>{
-        console.log(results);
-        res.render("add_user", {userData: results});
-    })
+    const userQuery = `SELECT * FROM user`;
+    const roleQuery = `SELECT * FROM role`;
+    const desigQuery = `SELECT * FROM designation`;
+    const orgQeury = `SELECT * FROM  organization`;
+
+    dbConnection.query(userQuery, (err1, results, fields) => {
+        dbConnection.query(roleQuery, (err2, roleData, rolefields) => {
+            dbConnection.query(desigQuery, (err3, desigData, desigFields) => {
+                dbConnection.query(orgQeury, (err4, orgData, orgFields) => {
+
+                    res.render("add_user", { userData: results, role: roleData, designation: desigData, organization: orgData });
+                });
+            });
+        });
+
+    });
 
 });
 
-app.post("/add_user", upload.single('image'), (req, res) => { 
+app.post("/add_user", upload.single('image'), (req, res) => {
     const role = req.body.role;
     const designation = req.body.designation;
     const name = req.body.name;
@@ -126,21 +159,20 @@ app.post("/add_user", upload.single('image'), (req, res) => {
     const organization = req.body.organization;
     const department = req.body.department;
 
-    console.log("req.file above the if condition :", req.file.filename );
-    if (!req.file) {
-        console.log("No file upload");
-      } else {
-        console.log(req.file.filename)
-        var imgsrc = "/uploads/" + req.file.filename
+    var imgsrc = "No File Chosen";
+
+    if(req.file && req.file.filename){
+        imgsrc = "/uploads/" + req.file.filename
+    }
+    
         var queryArr = [role, designation, name, email, mobile, password, organization, department, imgsrc]
         var insertData = "INSERT INTO user(role, designation, name, email, mobile, password, organization, department, imagePath)VALUES(?,?,?,?,?,?,?,?,?)";
         dbConnection.query(insertData, queryArr, (err, result) => {
-          if (err) throw err
-          console.log("file uploaded");
-    
-          res.redirect("/add_user");
+            if (err) throw err
+            console.log("file uploaded");
+
+            res.redirect("/add_user");
         });
-      }
 
 })
 
@@ -208,65 +240,115 @@ app.post("/add_subdepartment", (req, res) => {
 app.get("/edit/:file", (req, res) => {
     console.log(req.params.file);
     const param = req.params.file;
-    
+
     res.render("edit");
 })
 
 
 app.post("/edit/:file", (req, res) => {
     const param = req.params.file;
-    console.log( "post : ", param);
+    console.log("post : ", param);
 
     const tableName = param.split(/[^a-zA-Z]/)[0];
     const id = param.split(/[^0-9]/).pop();
-    console.log("table Name: "+ tableName, "table Id:" + id);
+    console.log("table Name: " + tableName, "table Id:" + id);
     const newTitle = req.body.title;
-    if(tableName === "designation"){
+    if (tableName === "designation") {
         var sql = `UPDATE ${tableName} SET title = '${newTitle}' WHERE id = ${id}`;
-    }else if(tableName === "department"){
+    } else if (tableName === "department") {
         var sql = `UPDATE ${tableName} SET depTitle = '${newTitle}' WHERE depId = ${id}`;
-    }else if(tableName === "organization"){
+    } else if (tableName === "organization") {
         var sql = `UPDATE ${tableName} SET orgTitle = '${newTitle}' WHERE orgId = ${id}`;
-    }else if(tableName === "role"){
+    } else if (tableName === "role") {
         var sql = `UPDATE ${tableName} SET roleTitle = '${newTitle}' WHERE roleId = ${id}`;
     }
 
-    dbConnection.query(sql, (err, results)=>{
-        if(err) throw err;
-        console.log("tableName in query : "+tableName);
+    dbConnection.query(sql, (err, results) => {
+        if (err) throw err;
+        console.log("tableName in query : " + tableName);
         res.redirect(`/add_${tableName}`);
     });
 });
 
-app.get("/create_task", (req, res)=>{
+app.get("/create_task", (req, res) => {
     const myQuery = `SELECT * FROM organization`;
-    dbConnection.query(myQuery, (err, results, fields)=>{
+    dbConnection.query(myQuery, (err, results, fields) => {
 
-        res.render("create_task", {results: results});
+        res.render("create_task", { results: results });
     })
 });
 
-app.post("/create_task", upload.single('imagePath') , (req, res)=>{
+app.post("/create_task", upload.single('imagePath'), (req, res) => {
+    let image = 'no file chosen';
+    if (req.file && req.file.filename) {
+        image = req.file.filename;
+    }
     const createTask = {
-     title : req.body.title,
-     description : req.body.description,
-     date : req.body.date,
-     organization : req.body.organization,
-     department : req.body.department,
-     assignTo  : req.body.assignTo,
-     email : req.body.email,
-     taskType : req.body.taskType,
-     imagePath : req.file.filename
+        title: req.body.title,
+        description: req.body.description,
+        date: req.body.date,
+        organization: req.body.organization,
+        department: req.body.department,
+        assignTo: req.body.assignTo,
+        email: req.body.email,
+        taskType: req.body.taskType,
+        imagePath: image
     }
     const taskQuery = `INSERT INTO createTask(title, description, date, organization, department, assignTo, email, taskType, imagePath) VALUES (?,?,?,?,?,?,?,?,?)`
     const taskArry = [createTask.title, createTask.description, createTask.date, createTask.organization, createTask.department, createTask.assignTo, createTask.email, createTask.taskType, createTask.imagePath];
-    dbConnection.query(taskQuery, taskArry, (err, results, fields)=>{
+    dbConnection.query(taskQuery, taskArry, (err, results, fields) => {
         res.redirect("/create_task");
-    } );
+    });
+});
+
+// created Tasks
+app.get("/createdTask", (req, res) => {
+    const myQuery = `SELECT * FROM createtask`;
+    dbConnection.query(myQuery, (err, results, fields) => {
+
+        res.render("createdTask", { results: results });
+    })
+});
+
+
+
+
+// assign_task
+
+app.get("/assign_task/:user", (req, res) => {
+    console.log(req.params.user);
+    let param = req.params.user;
+    let parts = param.split("-");
+    let id = parts[1].trim();
+    console.log("id: ", id);
+    const myQuery = `SELECT * FROM createtask WHERE taskId = ${id}`;
+    dbConnection.query(myQuery, (err, result, fields) => {
+        console.log(result[0].date);
+        res.render("assign_task", { result: result[0] });
+    });
+});
+
+app.post("/assign_task/:user", upload.single('assignTaskImage'), (req, res) => {
+    console.log(req.params);
+    let param = req.params.user;
+    let parts = param.split("-");
+    let id = parts[1].trim();
+
+    let filePath = "no file chosen"
+    if (req.file && req.file.filename) {
+        filePath = req.file.filename
+    }
+    const assignTask = {
+        department: req.body.department,
+        user: req.body.user,
+        remarks: req.body.remarks,
+        imagePath: filePath
+    }
+
+    const myQuery = `INSER INTO `;
 
 
 });
-
 
 server.listen(5000, () => {
     console.log("server runing");

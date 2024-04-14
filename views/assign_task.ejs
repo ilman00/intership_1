@@ -1,0 +1,74 @@
+<%- include('header.ejs') %>
+
+
+
+
+<main>
+
+    <div class="container">
+        <h2>Assign Task</h2>
+    </div>
+
+    <div class="container bg-light mt-5">
+        <div class="container pt-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>DeadLine</th>
+                    </tr>
+                </thead>
+                <tbody style="background-color: rgb(215, 215, 215);">
+                    <tr>
+                        <td><%= result.title %></td>
+                        <td><%=result.description %></td>
+                        <td><%=result.date %></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <form class="g-3 m-auto p-5" style="margin-bottom: 30px;" action="" method="post"  enctype="multipart/form-data">
+            <div class="col-md-4 m-auto">
+                <label for="inputState" class="form-label">Select Department</label>
+                <select id="inputState" class="form-select">
+                    <option selected><%= result.department %></option>
+                </select>
+            </div>
+            
+            <div class="col-md-4 m-auto">
+                <label for="inputState" class="form-label">User</label>
+                <select id="inputState" class="form-select">
+                    <option value="...">...</option>
+                    <option value="User Name">User Name</option>
+                </select>
+            </div>
+            <div class="col-md-4 m-auto">
+                <label for="inputState" class="form-label">Remarks</label>
+                <textarea name="remarks" placeholder="Some Special Character Are Not Allowed" class="form-control" cols="30" rows="3"></textarea>
+            </div>
+            
+            <div class="col-md-4 m-auto">
+                <label for="" class="form-label"></label>
+                <input type="file" class="form-control" name="assignTaskImage">
+            </div>
+            
+            <div class="col-md-4 m-auto mt-2">
+                <button type="submit" class="btn btn-primary" >Assign</button>
+            </div>
+        </form>
+    </div>
+
+</main>
+
+
+
+
+
+
+
+
+
+
+
+<%- include('footer.ejs') %>

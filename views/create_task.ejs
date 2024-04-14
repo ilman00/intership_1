@@ -2,7 +2,7 @@
 
     <main>
         <div class="container">
-            <h2>Add User</h2>
+            <h2>Create Task</h2>
         </div>
 
         <div class="container bg-light mt-5">
@@ -18,7 +18,7 @@
                         rows="3"></textarea>
                 </div>
                 <div class="col-md-4 m-auto">
-                    <label for="" class="form-label">Date</label>
+                    <label for="" class="form-label">DeadLine</label>
                     <input type="date" class="form-control" name="date">
                 </div>
                 <div class="col-md-4 m-auto">
@@ -41,7 +41,7 @@
                 </div>
                 <div class="col-md-4 m-auto">
                     <label for="" class="form-label">Task Assign To</label>
-                    <select class="form-select" name="assignTo">
+                    <select class="form-select" name="assignTo" id="assignTo">
                         <option selected>Assign To</option>
                         <option>...</option>
                     </select>
@@ -50,7 +50,6 @@
                     <label for="" class="form-label">Email</label>
                     <select class="form-select" name="email">
                         <option selected>Email</option>
-                        <option>...</option>
                     </select>
                 </div>
                 <div class="col-md-4 m-auto">
@@ -77,10 +76,12 @@
         const socket = io('http://localhost:5000');
         const organizationID = document.getElementById("organizationID");
         const departmentID = document.getElementById("departmentID");
+        const user = document.getElementById("assignTo");
 
         organizationID.addEventListener("change", () => {
 
             socket.emit("selectData", organizationID.value);
+            departmentID.innerHTML = "";
 
         });
         socket.on("selectData from server", (data) => {
@@ -93,6 +94,19 @@
             });
         });
 
+        departmentID.addEventListener("change", ()=>{
+            socket.emit("department Data", departmentID.value);
+            user.innerHTML = "";
+        });
+
+        socket.on("user data", (data)=>{
+            data.forEach((element)=>{
+                var option = document.createElement("option");
+                option.value = element.name;
+                option.innerHTML = element.name;
+                user.appendChild(option)
+            });
+        });
 
 
     </script>
