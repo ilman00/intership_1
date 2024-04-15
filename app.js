@@ -356,18 +356,8 @@ app.post("/assign_task/:user", upload.single('assignTaskImage'), (req, res) => {
 
 
     const myQuery = `INSERT INTO assign_task(id, title, description, deadline, department, user, remarks, assignTaskImg) VALUES (?,?,?,?,?,?,?,?)`;
-    const myQuery2 = `SELECT title, description, date FROM  createtask WHERE taskId = ${id}`;
 
-    dbConnection.query(myQuery2, (err, result) => {
-
-        let queryArr = [id, result[0].title, result[0].description, result[0].date, assignTask.department, assignTask.user, assignTask.remarks, assignTask.imagePath]
-        console.log(result);
-        dbConnection.query(myQuery, queryArr, (err, queryresult) => {
-            if (err) throw err;
-            console.log();
-            res.redirect("/createdTask");
-        });
-    });
+    
 });
 
 server.listen(5000, () => {
