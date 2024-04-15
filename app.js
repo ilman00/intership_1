@@ -47,7 +47,7 @@ io.on("connection", (socket) => {
             if (err) throw err;
             socket.emit("selectData from server", results);
             console.log(results);
-        })
+        });
     });
 
     socket.on("department Data", (data) => {
@@ -61,16 +61,23 @@ io.on("connection", (socket) => {
         });
     });
 
-    socket.on("organization Data from user", (data)=>{
+    socket.on("organization Data from user", (data) => {
         const depQuery = `SELECT * FROM department WHERE depOrg = '${data}'`
-        dbConnection.query(depQuery, (err, results, fields)=>{
+        dbConnection.query(depQuery, (err, results, fields) => {
             console.log(results);
             socket.emit("department data to user", results);
-        })
-    })
+        });
+    });
 
+    socket.on("data from assign task", (data) => {
+        const userQuery = `SELECT * FROM user WHERE department = '${data}'`
+        dbConnection.query(userQuery, (err, result) => {
+            socket.emit("data to assign task", result);
+        });
+    });
 
 });
+
 
 // designation rout
 app.get("/add_designation", (req, res) => {
@@ -161,20 +168,19 @@ app.post("/add_user", upload.single('image'), (req, res) => {
 
     var imgsrc = "No File Chosen";
 
-    if(req.file && req.file.filename){
+    if (req.file && req.file.filename) {
         imgsrc = "/uploads/" + req.file.filename
     }
-    
-        var queryArr = [role, designation, name, email, mobile, password, organization, department, imgsrc]
-        var insertData = "INSERT INTO user(role, designation, name, email, mobile, password, organization, department, imagePath)VALUES(?,?,?,?,?,?,?,?,?)";
-        dbConnection.query(insertData, queryArr, (err, result) => {
-            if (err) throw err
-            console.log("file uploaded");
 
-            res.redirect("/add_user");
-        });
+    var queryArr = [role, designation, name, email, mobile, password, organization, department, imgsrc]
+    var insertData = "INSERT INTO user(role, designation, name, email, mobile, password, organization, department, imagePath)VALUES(?,?,?,?,?,?,?,?,?)";
+    dbConnection.query(insertData, queryArr, (err, result) => {
+        if (err) throw err
+        console.log("file uploaded");
 
-})
+        res.redirect("/add_user");
+    });
+});
 
 
 
@@ -303,11 +309,12 @@ app.post("/create_task", upload.single('imagePath'), (req, res) => {
 
 // created Tasks
 app.get("/createdTask", (req, res) => {
-    const myQuery = `SELECT * FROM createtask`;
-    dbConnection.query(myQuery, (err, results, fields) => {
-
-        res.render("createdTask", { results: results });
-    })
+    const myQuery = `SELECT * FROM assign_task`;
+        
+        dbConnection.query(myQuery, (err, results, fields) => {
+            
+            res.render("createdTask", { results: results });
+    });
 });
 
 
@@ -322,14 +329,15 @@ app.get("/assign_task/:user", (req, res) => {
     let id = parts[1].trim();
     console.log("id: ", id);
     const myQuery = `SELECT * FROM createtask WHERE taskId = ${id}`;
-    dbConnection.query(myQuery, (err, result, fields) => {
-        console.log(result[0].date);
-        res.render("assign_task", { result: result[0] });
+    const depQuery = `SELECT * FROM department`;
+    dbConnection.query(myQuery, (err, result) => {
+        dbConnection.query(depQuery, (err, depResult) => {
+            res.render("assign_task", { result: result[0], depResult: depResult });
+        });
     });
 });
 
 app.post("/assign_task/:user", upload.single('assignTaskImage'), (req, res) => {
-    console.log(req.params);
     let param = req.params.user;
     let parts = param.split("-");
     let id = parts[1].trim();
@@ -338,6 +346,7 @@ app.post("/assign_task/:user", upload.single('assignTaskImage'), (req, res) => {
     if (req.file && req.file.filename) {
         filePath = req.file.filename
     }
+
     const assignTask = {
         department: req.body.department,
         user: req.body.user,
@@ -345,9 +354,20 @@ app.post("/assign_task/:user", upload.single('assignTaskImage'), (req, res) => {
         imagePath: filePath
     }
 
-    const myQuery = `INSER INTO `;
 
+    const myQuery = `INSERT INTO assign_task(id, title, description, deadline, department, user, remarks, assignTaskImg) VALUES (?,?,?,?,?,?,?,?)`;
+    const myQuery2 = `SELECT title, description, date FROM  createtask WHERE taskId = ${id}`;
 
+    dbConnection.query(myQuery2, (err, result) => {
+
+        let queryArr = [id, result[0].title, result[0].description, result[0].date, assignTask.department, assignTask.user, assignTask.remarks, assignTask.imagePath]
+        console.log(result);
+        dbConnection.query(myQuery, queryArr, (err, queryresult) => {
+            if (err) throw err;
+            console.log();
+            res.redirect("/createdTask");
+        });
+    });
 });
 
 server.listen(5000, () => {
