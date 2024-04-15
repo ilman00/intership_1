@@ -360,7 +360,7 @@ app.post("/assign_task/:user", upload.single('assignTaskImage'), (req, res) => {
     
 });
 
-server.listen(5000, () => {
+server.listen(3000, () => {
     console.log("server runing");
-    
+
 })
