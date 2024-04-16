@@ -86,7 +86,7 @@ app.get("/add_designation", (req, res) => {
     dbConnection.query(requestDesignation, (err, results, fields) => {
         if (err) throw err;
         console.log(results);
-        res.render("add_designation", { resultsTo: results })
+        res.render("add_designation", {title: "Add Designation", resultsTo: results })
     })
 
 });
@@ -114,7 +114,7 @@ app.get("/add_role", (req, res) => {
     dbConnection.query(requestRole, (err, results, fields) => {
         if (err) throw err;
         console.log(results);
-        res.render("add_role", { resultsTo: results })
+        res.render("add_role", {title: "Add Role", resultsTo: results })
     });
 
 });
@@ -191,7 +191,7 @@ app.get("/add_organization", (req, res) => {
     dbConnection.query(requestOrg, (err, results, fields) => {
         if (err) throw err;
         console.log(results);
-        res.render("add_organization", { resultsTo: results })
+        res.render("add_organization", {title: "Add Organization", resultsTo: results })
     });
 });
 
@@ -218,7 +218,7 @@ app.get("/add_subdepartment", (req, res) => {
     dbConnection.query(requestOrg, (err1, resultOrg, fields1) => {
         dbConnection.query(requestDepartment, (err2, resultDep, fields2) => {
 
-            res.render("add_subdepartment", { resultOrg: resultOrg, resultDep: resultDep });
+            res.render("add_subdepartment", {title: "Add Sub Department", resultOrg: resultOrg, resultDep: resultDep });
 
         });
     });
@@ -247,7 +247,7 @@ app.get("/edit/:file", (req, res) => {
     console.log(req.params.file);
     const param = req.params.file;
 
-    res.render("edit");
+    res.render("edit", {title: "Edit",});
 })
 
 
@@ -280,7 +280,7 @@ app.get("/create_task", (req, res) => {
     const myQuery = `SELECT * FROM organization`;
     dbConnection.query(myQuery, (err, results, fields) => {
 
-        res.render("create_task", { results: results });
+        res.render("create_task", {title: "Create Task", results: results });
     })
 });
 
@@ -309,11 +309,11 @@ app.post("/create_task", upload.single('imagePath'), (req, res) => {
 
 // created Tasks
 app.get("/createdTask", (req, res) => {
-    const myQuery = `SELECT * FROM assign_task`;
+    const myQuery = `SELECT * FROM createtask`;
         
         dbConnection.query(myQuery, (err, results, fields) => {
             
-            res.render("createdTask", { results: results });
+            res.render("createdTask", {title:"Created Tasks", results: results });
     });
 });
 
@@ -332,7 +332,7 @@ app.get("/assign_task/:user", (req, res) => {
     const depQuery = `SELECT * FROM department`;
     dbConnection.query(myQuery, (err, result) => {
         dbConnection.query(depQuery, (err, depResult) => {
-            res.render("assign_task", { result: result[0], depResult: depResult });
+            res.render("assign_task", {title: "Assign_task" , result: result[0], depResult: depResult });
         });
     });
 });
@@ -342,9 +342,9 @@ app.post("/assign_task/:user", upload.single('assignTaskImage'), (req, res) => {
     let parts = param.split("-");
     let id = parts[1].trim();
 
-    let filePath = "no file chosen"
+    let filePath = "no file chosen";
     if (req.file && req.file.filename) {
-        filePath = req.file.filename
+        filePath = req.file.filename;
     }
 
     const assignTask = {
@@ -352,13 +352,68 @@ app.post("/assign_task/:user", upload.single('assignTaskImage'), (req, res) => {
         user: req.body.user,
         remarks: req.body.remarks,
         imagePath: filePath
-    }
+    };
 
-
-    const myQuery = `INSERT INTO assign_task(id, title, description, deadline, department, user, remarks, assignTaskImg) VALUES (?,?,?,?,?,?,?,?)`;
-
-    
+    const myQuery = `UPDATE createtask SET assignTo = ?, imagePath = ?, remarks = ? WHERE taskId = ?`;
+    dbConnection.query(myQuery, [assignTask.user, assignTask.imagePath, assignTask.remarks, id], (err, result) => {
+        if (err) {
+            // Handle error
+            console.error("Error updating task:", err);
+            res.status(500).send("Error updating task.");
+            return;
+        }
+        res.redirect("/createdTask");
+    });
 });
+
+app.get("/action/:status", (req, res)=>{
+    console.log(req.params.status);
+    let param = req.params.status;
+    let parts = param.split("-");
+    let id = parts[1].trim();
+
+    let file = "";
+    if(req.file && req.file.fieldname){
+        file = req.file.filename;
+    }
+    const query = `SELECT * FROM createtask WHERE taskId = ${id}`;
+
+    dbConnection.query(query, (err, result)=>{
+        if (err) throw err        
+        console.log(result[0]);
+        res.render("action", {title:"Action", result: param});
+    })
+});
+
+app.post("/action/:status", upload.single('actionTaskFile'), (req, res)=>{
+    let param = req.params.status;
+    let parts = param.split("-");
+    let id = parts[1].trim();
+    console.log("parameter from post request :"+param);
+
+    let filePath = "";
+    if(req.file && req.file.filename){
+        filePath = req.file.filename;
+    }
+    const actionTask = {
+        status: req.body.status,
+        remarks: req.body.remarks,
+        file: filePath
+    }
+    
+    const myQuery = `UPDATE createtask SET  currentStatus = ?, remarks = ?, imagePath = ? WHERE taskId = ?`;
+
+    dbConnection.query(myQuery, [actionTask.status, actionTask.remarks, actionTask.file, id], (err, result)=>{
+        if(err) throw err
+        res.redirect("/createdTask");
+    });
+});
+
+
+app.get("/history", (req,res)=>{
+    res.render("history", {title: "History"});
+})
+
 
 server.listen(3000, () => {
     console.log("server runing");

@@ -90,12 +90,12 @@
                                                 <td>
                                                     <%= element.assignTo %>
                                                 </td>
-                                                <td></td>
-                                                <td></td>
+                                                <td><%= element.currentStatus %> </td>
+                                                <td><%= element.remarks %></td>
                                                 <td><img src="/uploads/<%= element.imagePath %>"
                                                         style="width: 90% ; border-radius: 50%;" alt=""></td>
                                                 <td>
-                                                    <a href="/action/" style="display: block; padding: 5px;"
+                                                    <a href="/action/<%=element.title%>-<%=element.taskId%>" style="display: block; padding: 5px;"
                                                         title="action">
                                                         <img src="/icons/action.png" style="width: 30%; " alt="...">
                                                     </a>

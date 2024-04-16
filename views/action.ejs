@@ -1,0 +1,46 @@
+<%- include('header.ejs') %>
+
+
+<main>
+
+    <div class="container">
+        <h2>Assign Task</h2>
+    </div>
+
+    <div class="container bg-light mt-5">
+       <% console.log(result) %>
+        <form class="g-3 m-auto p-5" style="margin-bottom: 30px;" action="/action/<%=result%>" method="post"  enctype="multipart/form-data" id="editForm">
+            <div class="col-md-4 m-auto">
+                <label for="inputState" class="form-label">Status</label>
+                <select id="inputState" class="form-select" name="status">
+                    <option value="">Change Status</option>
+                    <option value="In Process">In Process</option>
+                    <option value="Complete">Complete</option>
+                </select>
+            </div>
+
+            <div class="col-md-4 m-auto">
+                <label for="inputState" class="form-label" >Remarks</label>
+                <textarea name="remarks" placeholder="Remarks" class="form-control" cols="30" rows="3"></textarea>
+            </div>
+            
+           
+            
+            <div class="col-md-4 m-auto">
+                <label for="" class="form-label"></label>
+                <input type="file" class="form-control" name="actionTaskFile">
+            </div>
+            
+            <div class="col-md-4 m-auto mt-2">
+                <button type="submit" class="btn btn-primary" >Assign</button>
+            </div>
+        </form>
+    </div>
+
+</main>
+
+<script>
+     console.log("<%= result %>");
+</script>
+
+<%- include('footer.ejs') %>
