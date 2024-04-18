@@ -48,7 +48,7 @@
                 </div>
                 <div class="col-md-4 m-auto">
                     <label for="" class="form-label">Email</label>
-                    <select class="form-select" name="email">
+                    <select class="form-select" name="email" id="email">
                         <option selected>Email</option>
                     </select>
                 </div>
@@ -77,6 +77,7 @@
         const organizationID = document.getElementById("organizationID");
         const departmentID = document.getElementById("departmentID");
         const user = document.getElementById("assignTo");
+        const email = document.getElementById("email");
 
         organizationID.addEventListener("change", () => {
 
@@ -102,9 +103,13 @@
         socket.on("user data", (data)=>{
             data.forEach((element)=>{
                 var option = document.createElement("option");
+                var optionForEmail=document.createElement("option");
                 option.value = element.name;
                 option.innerHTML = element.name;
-                user.appendChild(option)
+                optionForEmail.value =element.email;
+                optionForEmail.innerHTML = element.email;
+                user.appendChild(option);
+                email.appendChild(optionForEmail);
             });
         });
 

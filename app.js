@@ -1,4 +1,8 @@
 const express = require("express");
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+const flash = require('connect-flash');
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const multer = require("multer");
@@ -13,6 +17,50 @@ const app = express();
 
 const server = http.createServer(app)
 const io = socketIO(server);
+
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
+
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        dbConnection.query('SELECT * FROM user WHERE email = ?', [username], function(err, results) {
+            if (err) { return done(err); }
+            if (!results.length) {
+                return done(null, false, { message: 'Incorrect username.' });
+            }
+            const user = results[0];
+            if (user.password !== password) {
+                return done(null, false, { message: 'Incorrect password.' });
+            }
+            return done(null, user);
+        });
+    }
+));
+
+passport.serializeUser(function(user, done) {
+    done(null, user.email);
+});
+
+passport.deserializeUser(function(username, done) {
+    dbConnection.query('SELECT * FROM user WHERE email = ?', [username], function(err, results) {
+        if (err) { return done(err); }
+        if (!results.length) {
+            return done(new Error('User not found'));
+        }
+        const user = results[0];
+        done(null, user);
+    });
+});
+
+
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -56,8 +104,8 @@ io.on("connection", (socket) => {
         const myQuery = `SELECT * FROM user WHERE department = '${data}'`
         dbConnection.query(myQuery, (err, result, fields) => {
             if (err) throw err;
-            socket.emit("user data", data);
-            console.log(data);
+            socket.emit("user data", result);
+            console.log(result);
         });
     });
 
@@ -79,8 +127,55 @@ io.on("connection", (socket) => {
 });
 
 
+app.get("/login", (req, res)=>{
+    res.render("login", {title: "Login"});
+})
+
+
+app.post('/login', (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+        if (err) { return next(err); }
+        if (!user) {
+            req.flash('error', info.message);
+            return res.redirect('/login');
+        }
+        console.log(req.session);
+        if (req.session && req.session.returnTo) {
+            var returnTo = req.session.returnTo;
+            delete req.session.returnTo;
+            return res.redirect(returnTo);
+        }
+        req.logIn(user, (err) => {
+            if (err) { return next(err); }
+            return res.redirect('/add_designation');
+        });
+    })(req, res, next);
+});
+
+
+
+app.get('/logout', function(req, res){
+    req.logout(function(err) {
+        if (err) {
+            console.error('Error during logout:', err);
+            return next(err);
+        }
+        res.redirect('/login');
+    });
+});
+
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        req.session.returnTo = req.originalUrl;
+        return next();
+    }
+    res.redirect('/login');
+}
+
+
 // designation rout
-app.get("/add_designation", (req, res) => {
+app.get("/add_designation", isLoggedIn, (req, res) => {
     const requestDesignation = `SELECT * FROM designation`;
 
     dbConnection.query(requestDesignation, (err, results, fields) => {
@@ -108,7 +203,7 @@ app.post("/add_designation", (req, res) => {
 
 // role rout
 
-app.get("/add_role", (req, res) => {
+app.get("/add_role", isLoggedIn, (req, res) => {
     const requestRole = `SELECT * FROM role`;
 
     dbConnection.query(requestRole, (err, results, fields) => {
@@ -147,7 +242,7 @@ app.get("/add_user", (req, res) => {
             dbConnection.query(desigQuery, (err3, desigData, desigFields) => {
                 dbConnection.query(orgQeury, (err4, orgData, orgFields) => {
 
-                    res.render("add_user", { userData: results, role: roleData, designation: desigData, organization: orgData });
+                    res.render("add_user", { title: "Add User", userData: results, role: roleData, designation: desigData, organization: orgData });
                 });
             });
         });
@@ -303,7 +398,7 @@ app.post("/create_task", upload.single('imagePath'), (req, res) => {
     const taskQuery = `INSERT INTO createTask(title, description, date, organization, department, assignTo, email, taskType, imagePath) VALUES (?,?,?,?,?,?,?,?,?)`
     const taskArry = [createTask.title, createTask.description, createTask.date, createTask.organization, createTask.department, createTask.assignTo, createTask.email, createTask.taskType, createTask.imagePath];
     dbConnection.query(taskQuery, taskArry, (err, results, fields) => {
-        res.redirect("/create_task");
+        res.redirect("/createdTask");
     });
 });
 
@@ -414,6 +509,9 @@ app.get("/history", (req,res)=>{
     res.render("history", {title: "History"});
 })
 
+app.get("/login", (req,res)=>{
+    res.render("login", {title: "Login"});
+})
 
 server.listen(3000, () => {
     console.log("server runing");
