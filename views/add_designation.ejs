@@ -16,10 +16,15 @@
             <div class="form-group">
                 <label class="col-md-4 control-label">Title</label>
                 <div class="col-md-8">
-                    <input type="text" class="form-control" placeholder="" name="designation">
+                    <select name="designation" class="form-control" id="designation">
+                        <option value="Choose...">Choose...</option>
+                        <option value="CEO">CEO</option>
+                        <option value="Director">Director</option>
+                        <option value="Staff">Staff</option>
+                    </select>
                 </div>
             </div>
-            <button class="btn bg-green mt-3" type="text">Save</button>
+            <button class="btn bg-green mt-3" type="text" id="btn">Save</button>
 
         </form>
     </div>
@@ -127,7 +132,20 @@
 </main>
 
 
+<script>
+    const designation = document.getElementById("designation");
+    desgValue =  designation.value
+    const btn = document.getElementById("btn");
+    
+    designation.addEventListener("change", ()=>{
 
+        if(desgValue === "Choose..."){
+            btn.setAttribute("disabled");
+        }else{
+            btn.removeAttribute("disabled");
+        }
+    })
+</script>
 
 
 
