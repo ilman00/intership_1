@@ -11,6 +11,7 @@ const path = require("path");
 const socketIO = require("socket.io");
 const http = require("http");
 const { log } = require("console");
+const bcrypt = require('bcryptjs');
 
 
 const app = express();
@@ -32,16 +33,22 @@ app.use(flash());
 
 passport.use(new LocalStrategy(
     function (username, password, done) {
-        dbConnection.query('SELECT * FROM user WHERE email = ?', [username], function (err, results) {
+        dbConnection.query('SELECT * FROM user WHERE email = ?', [username], async (err, results)=> {
             if (err) { return done(err); }
             if (!results.length) {
                 return done(null, false, { message: 'Incorrect username.' });
             }
             const user = results[0];
-            if (user.password !== password) {
-                return done(null, false, { message: 'Incorrect password.' });
+            try {
+                // Use bcrypt to compare the password
+                if (await bcrypt.compare(password, user.password)) {
+                    return done(null, user);
+                } else {
+                    return done(null, false, { message: 'Password incorrect.' });
+                }
+            } catch (error) {
+                return done(error);
             }
-            return done(null, user);
         });
     }
 ));
@@ -236,7 +243,7 @@ app.post("/add_role", (req, res) => {
 
 
 // user rout
-app.get("/add_user", isLoggedIn, (req, res) => {
+app.get("/add_user", isLoggedIn,  (req, res) => {
 
     const checkDesig = req.user.designation;
     if (checkDesig === "Director" || checkDesig === "CEO") {
@@ -263,16 +270,16 @@ app.get("/add_user", isLoggedIn, (req, res) => {
 
 });
 
-app.post("/add_user", upload.single('image'), (req, res) => {
+
+app.post("/add_user", upload.single('image'), async (req, res) => {
     const role = req.body.role;
     const designation = req.body.designation;
     const name = req.body.name;
     const email = req.body.email;
     const mobile = req.body.mobile;
-    const password = req.body.password;
+    const password = req.body.password; // Store the password without hashing
     const organization = req.body.organization;
     const department = req.body.department;
-    const userDesig = req.user.designation;
 
     var imgsrc = "No File Chosen";
 
@@ -280,20 +287,30 @@ app.post("/add_user", upload.single('image'), (req, res) => {
         imgsrc = "/uploads/" + req.file.filename
     }
 
-    var queryArr = [role, designation, name, email, mobile, password, organization, department, imgsrc]
-    var insertData = "INSERT INTO user(role, designation, name, email, mobile, password, organization, department, imagePath)VALUES(?,?,?,?,?,?,?,?,?)";
-    dbConnection.query(insertData, queryArr, (err, result) => {
-        if (err) throw err
-        console.log("file uploaded");
+    try {
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 
-        res.redirect("/add_user");
-    });
+        var queryArr = [role, designation, name, email, mobile, hashedPassword, organization, department, imgsrc]
+        var insertData = "INSERT INTO user(role, designation, name, email, mobile, password, organization, department, imagePath)VALUES(?,?,?,?,?,?,?,?,?)";
+        dbConnection.query(insertData, queryArr, (err, result) => {
+            if (err) throw err;
+            console.log("file uploaded");
+
+            res.redirect("/add_user");
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error adding user');
+    }
 });
 
 
 
+
 // organization rout
-app.get("/add_organization", (req, res) => {
+app.get("/add_organization", isLoggedIn, (req, res) => {
+    console.log(req.user);
     const checkDesig = req.user.designation;
     if (checkDesig === "Director" || checkDesig === "CEO") {
         const requestOrg = `SELECT * FROM organization`;
@@ -426,9 +443,18 @@ app.post("/create_task", upload.single('imagePath'), (req, res) => {
 });
 
 // created Tasks
-app.get("/createdTask", (req, res) => {
+app.get("/createdTask", isLoggedIn, (req, res) => {
 
-    const myQuery = `SELECT * FROM createtask`;
+    const logedInUser = req.user;
+
+    let myQuery = ``;
+    if(logedInUser.designation === "CEO"){
+        myQuery = `SELECT * FROM createtask`;
+    }else if(logedInUser.designation === "Director"){
+        myQuery = `SELECT * FROM createtask WHERE organization = '${logedInUser.organization}'`
+    }else if(logedInUser.designation === "Staff") {
+        myQuery = `SELECT * FROM createtask WHERE email = '${logedInUser.email}'`;
+    }
     dbConnection.query(myQuery, (err, results, fields) => {
         res.render("createdTask", { title: "Created Tasks", results: results });
     });
@@ -529,7 +555,11 @@ app.post("/action/:status", upload.single('actionTaskFile'), (req, res) => {
 
 
 app.get("/history", (req, res) => {
-    res.render("history", { title: "History" });
+    const myQuery = `SELECT * FROM createtask`;
+    dbConnection.query(myQuery, (err, result)=>{
+
+        res.render("history", { title: "History", result: result });
+    });
 })
 
 app.get("/login", (req, res) => {
@@ -539,4 +569,4 @@ app.get("/login", (req, res) => {
 server.listen(3000, () => {
     console.log("server runing");
 
-})
+});

@@ -4,37 +4,42 @@
 
 <main>
     <div class="parant w-50 m-auto">
+        <% result.forEach((element, index)=>{ %>
 
+        
         <div class="cd-timeline-block">
             <div class="cd-timeline-img cd-warning">
-                <i class=""> 1</i>
+                <i class=""> <%= index + 1 %> </i>
             </div>
             <div class="cd-timeline-content">
-                <span> <b style="color: #5d9cec;">Description : </b></span>P&amp;DD SDU has requested subject data
-                for senate standing committee by 13/10/2021. Letters and reminder already sent.
+                <span> <b style="color: #5d9cec;">Description : </b>
+                    <%= element.description %>
+                </span>
                 <hr>
-                <span> <b style="color: #5d9cec;">Initiated By : </b></span>Muhammad Zubair
+                <span> <b style="color: #5d9cec;">Initiated By : </b> <%= element.initiated_by %> </span>
                 <br>
-                <b style="font-size:15px; color: #5d9cec;">On Date Time: </b>12th October 2021 on Tuesday 10:33am
+                <b style="font-size:15px; color: #5d9cec;">On Date Time: </b><%= element.timeStamp  %>
                 <br>
-                <span> <b style="color: #5d9cec;"> Assign To : </b></span>Engr Muhammad Naeem Khan
+                <span> <b style="color: #5d9cec;"> Assign To : </b> <%= element.assignTo  %> </span>
                 <br>
-                <span> <b style="color: #dc3545;"> Dead Line : </b></span>2021-10-13
+                <span> <b style="color: #dc3545;"> Dead Line : </b><%= element.date  %></span>
                 <br>
-                <span> <b style="color: #5d9cec;"> Remarks : </b></span>
+                <span> <b style="color: #5d9cec;"> Remarks : </b><%= element.remarks  %></span>
                 <br>
                 <br>
                 <br>
                 <span> <b style="color: #5d9cec;"> Note : </b></span>
                 <br>
                 <span> <b style="color: #5d9cec;"> Current Status : </b></span>
-                <span class="label label-primary" style="width:40%;">Just Created</span>
+                <span class="label label-primary" style="width:40%;"><%= element.currentStatus  %></span>
                 <span class="cd-date">
                 </span>
             </div>
         </div>
 
-        <div class="cd-timeline-block">
+    <% }) %>
+
+        <!-- <div class="cd-timeline-block">
 
             <div class="cd-timeline-content">
                 <span> <b style="color: #5d9cec;">Description : </b></span>P&amp;DD SDU has requested subject data
@@ -62,12 +67,14 @@
             <div class="cd-timeline-img cd-warning">
                 <i class=""> 2</i>
             </div>
-        </div>
+        </div> -->
 
     </div>
 </main>
 
 
+<script>
 
+</script>
 
 <%- include('footer.ejs') %>

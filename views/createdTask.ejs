@@ -92,8 +92,7 @@
                                                 </td>
                                                 <td><%= element.currentStatus %> </td>
                                                 <td><%= element.remarks %></td>
-                                                <td><img src="/uploads/<%= element.imagePath %>"
-                                                        style="width: 90% ; border-radius: 50%;" alt=""></td>
+                                                <td><a href="/uploads/<%= element.imagePath %>" download><i class="bi bi-file-earmark-arrow-down-fill"></i></a></td>
                                                 <td>
                                                     <a href="/action/<%=element.title%>-<%=element.taskId%>" style="display: block; padding: 5px;"
                                                         title="action">

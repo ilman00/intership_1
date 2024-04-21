@@ -175,7 +175,7 @@
         const deffinitions = document.getElementById("deffinitions");
         const CreateTaskLi = document.getElementById("CreateTaskLi");
 
-        if (userAccessibility !== "Director") {
+        if (userAccessibility !== "Director" && userAccessibility !== "CEO") {
             deffinitions.style.display = "none"
             CreateTaskLi.style.display = "none"
         }
