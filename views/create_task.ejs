@@ -86,6 +86,9 @@
 
         });
         socket.on("selectData from server", (data) => {
+            var firstOption = document.createElement("option");
+            firstOption.innerHTML = "Choose...";
+            departmentID.appendChild(firstOption);
             data.forEach((element) => {
                 console.log(element.depTitle);
                 var option = document.createElement("option"); // Create a new option element

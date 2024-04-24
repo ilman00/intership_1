@@ -153,7 +153,7 @@ app.post('/login',
   function(req, res) {
     console.log("User authenticated successfully");
     console.log("In Login : ",req.session.redirectTo);
-    res.redirect(req.session.redirectTo);
+    res.redirect(req.session.redirectTo || "/" );
     
   });
 
@@ -171,20 +171,22 @@ app.get('/logout', function (req, res) {
 
 
 app.get("/", isLoggedIn, (req, res)=>{
+    const user = req.user;
     const userDesig = req.user.designation;
-    console.log(userDesig);
-    res.render("dashboard", {title: "Dashboard", userAccessibilty: userDesig});
+    console.log(user);
+    res.render("dashboard", {title: "Dashboard", userAccessibilty: userDesig, name: user.name, image: user.imagePath});
 });
 
 
 
 // designation rout
 app.get("/add_designation", isLoggedIn, (req, res) => {
+    const user = req.user;
     const requestDesignation = `SELECT * FROM designation`;
     // console.log(req.user);
     dbConnection.query(requestDesignation, (err, results, fields) => {
         if (err) throw err;
-        res.render("add_designation", { title: "Add Designation", resultsTo: results})
+        res.render("add_designation", { title: "Add Designation", resultsTo: results, name: user.name, image: user.imagePath})
     })
 
 });
@@ -207,8 +209,7 @@ app.post("/add_designation", (req, res) => {
 // role rout
 
 app.get("/add_role", isLoggedIn, (req, res) => {
-
-    console.log(req.user);
+    const user = req.user;
     const checkDesig = req.user.designation;
     if (checkDesig === "Director" || checkDesig === "CEO") {
         const requestRole = `SELECT * FROM role`;
@@ -216,7 +217,7 @@ app.get("/add_role", isLoggedIn, (req, res) => {
         dbConnection.query(requestRole, (err, results, fields) => {
             if (err) throw err;
             // console.log(results);
-            res.render("add_role", { title: "Add Role", resultsTo: results,})
+            res.render("add_role", { title: "Add Role", resultsTo: results, name: user.name, image: user.imagePath})
         });
     } else {
         res.send("<h1> You dont have permision to this Page </h1>")
@@ -243,10 +244,12 @@ app.post("/add_role", (req, res) => {
 
 
 // user rout
-app.get("/add_user", isLoggedIn,  (req, res) => {
 
-    const checkDesig = req.user.designation;
-    if (checkDesig === "Director" || checkDesig === "CEO") {
+// This is just a testing code for user route
+app.get("/add_user", (req, res) => {
+    const user = req.user || "";
+    // const checkDesig = req.user.designation;
+    // if (checkDesig === "Director" || checkDesig === "CEO") {
 
         const userQuery = `SELECT * FROM user`;
         const roleQuery = `SELECT * FROM role`;
@@ -258,15 +261,15 @@ app.get("/add_user", isLoggedIn,  (req, res) => {
                 dbConnection.query(desigQuery, (err3, desigData) => {
                     dbConnection.query(orgQeury, (err4, orgData) => {
 
-                        res.render("add_user", { title: "Add User", userData: results, role: roleData, designation: desigData, organization: orgData });
+                        res.render("add_user", { title: "Add User", userData: results, role: roleData, designation: desigData, organization: orgData, name: user.name || "", image: user.imagePath || "" });
                     });
                 });
             });
 
         });
-    } else {
-        res.send("<h1> You dont have permision to this Page </h1>")
-    }
+    // } else {
+    //     res.send("<h1> You dont have permision to this Page </h1>")
+    // }
 
 });
 
@@ -310,7 +313,7 @@ app.post("/add_user", upload.single('image'), async (req, res) => {
 
 // organization rout
 app.get("/add_organization", isLoggedIn, (req, res) => {
-    console.log(req.user);
+    const user = req.user
     const checkDesig = req.user.designation;
     if (checkDesig === "Director" || checkDesig === "CEO") {
         const requestOrg = `SELECT * FROM organization`;
@@ -318,7 +321,7 @@ app.get("/add_organization", isLoggedIn, (req, res) => {
         dbConnection.query(requestOrg, (err, results, fields) => {
             if (err) throw err;
             console.log(results);
-            res.render("add_organization", { title: "Add Organization", resultsTo: results })
+            res.render("add_organization", { title: "Add Organization", resultsTo: results, name: user.name, image: user.imagePath })
         });
     } else {
         res.send("<h1> You dont have permision to this Page </h1>")
@@ -341,7 +344,8 @@ app.post("/add_organization", (req, res) => {
 
 
 // sub Department rout
-app.get("/add_subdepartment", (req, res) => {
+app.get("/add_subdepartment", isLoggedIn, (req, res) => {
+    const user = req.user;
     const checkDesig = req.user.designation;
     if (checkDesig === "Director" || checkDesig === "CEO") {
     const requestOrg = `SELECT orgTitle FROM organization`;
@@ -350,7 +354,7 @@ app.get("/add_subdepartment", (req, res) => {
     dbConnection.query(requestOrg, (err1, resultOrg, fields1) => {
         dbConnection.query(requestDepartment, (err2, resultDep, fields2) => {
 
-            res.render("add_subdepartment", { title: "Add Sub Department", resultOrg: resultOrg, resultDep: resultDep });
+            res.render("add_subdepartment", { title: "Add Sub Department", resultOrg: resultOrg, resultDep: resultDep, name: user.name, image: user.imagePath });
 
         });
     });
@@ -378,11 +382,11 @@ app.post("/add_subdepartment", (req, res) => {
 
 });
 
-app.get("/edit/:file", (req, res) => {
+app.get("/edit/:file", isLoggedIn, (req, res) => {
     console.log(req.params.file);
     const param = req.params.file;
-
-    res.render("edit", { title: "Edit", });
+    const user = req.user;
+    res.render("edit", { title: "Edit", name: user.name, image: user.imagePath});
 })
 
 
@@ -411,11 +415,12 @@ app.post("/edit/:file", (req, res) => {
     });
 });
 
-app.get("/create_task", (req, res) => {
+app.get("/create_task", isLoggedIn, (req, res) => {
     const myQuery = `SELECT * FROM organization`;
+    const user = req.user;
     dbConnection.query(myQuery, (err, results, fields) => {
 
-        res.render("create_task", { title: "Create Task", results: results });
+        res.render("create_task", { title: "Create Task", results: results, name: user.name, image: user.imagePath });
     })
 });
 
@@ -447,6 +452,7 @@ app.get("/createdTask", isLoggedIn, (req, res) => {
 
     const logedInUser = req.user;
 
+
     let myQuery = ``;
     if(logedInUser.designation === "CEO"){
         myQuery = `SELECT * FROM createtask`;
@@ -456,7 +462,7 @@ app.get("/createdTask", isLoggedIn, (req, res) => {
         myQuery = `SELECT * FROM createtask WHERE email = '${logedInUser.email}'`;
     }
     dbConnection.query(myQuery, (err, results, fields) => {
-        res.render("createdTask", { title: "Created Tasks", results: results });
+        res.render("createdTask", { title: "Created Tasks", results: results, name: logedInUser.name, image: logedInUser.imagePath });
     });
 
 });
@@ -466,8 +472,8 @@ app.get("/createdTask", isLoggedIn, (req, res) => {
 
 // assign_task
 
-app.get("/assign_task/:user", (req, res) => {
-    console.log(req.params.user);
+app.get("/assign_task/:user", isLoggedIn,  (req, res) => {
+    const user = req.user;
     let param = req.params.user;
     let parts = param.split("-");
     let id = parts[1].trim();
@@ -476,7 +482,7 @@ app.get("/assign_task/:user", (req, res) => {
     const depQuery = `SELECT * FROM department`;
     dbConnection.query(myQuery, (err, result) => {
         dbConnection.query(depQuery, (err, depResult) => {
-            res.render("assign_task", { title: "Assign_task", result: result[0], depResult: depResult });
+            res.render("assign_task", { title: "Assign_task", result: result[0], depResult: depResult, name: user.name, image: user.imagePath });
         });
     });
 });
@@ -510,8 +516,8 @@ app.post("/assign_task/:user", upload.single('assignTaskImage'), (req, res) => {
     });
 });
 
-app.get("/action/:status", (req, res) => {
-    console.log(req.params.status);
+app.get("/action/:status", isLoggedIn, (req, res) => {
+    const user = req.user;
     let param = req.params.status;
     let parts = param.split("-");
     let id = parts[1].trim();
@@ -525,7 +531,7 @@ app.get("/action/:status", (req, res) => {
     dbConnection.query(query, (err, result) => {
         if (err) throw err
         console.log(result[0]);
-        res.render("action", { title: "Action", result: param });
+        res.render("action", { title: "Action", result: param, name: user.name, image: user.imagePath });
     })
 });
 
@@ -554,11 +560,12 @@ app.post("/action/:status", upload.single('actionTaskFile'), (req, res) => {
 });
 
 
-app.get("/history", (req, res) => {
+app.get("/history", isLoggedIn, (req, res) => {
     const myQuery = `SELECT * FROM createtask`;
+    const user = req.user;
     dbConnection.query(myQuery, (err, result)=>{
 
-        res.render("history", { title: "History", result: result });
+        res.render("history", { title: "History", result: result, name: user.name, image: user.imagePath });
     });
 })
 

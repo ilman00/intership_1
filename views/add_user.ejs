@@ -231,7 +231,11 @@
         });
 
         socket.on("department data to user", (data) => {
+            var firstOption = document.createElement("option");
+            firstOption.innerHTML = "Choose...";
+            userDepartment.appendChild(firstOption);
             data.forEach((element) => {
+                
                 var option = document.createElement("option");
                 option.value = element.depTitle;
                 option.innerHTML = element.depTitle;
