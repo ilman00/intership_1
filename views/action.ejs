@@ -9,7 +9,7 @@
 
     <div class="container bg-light mt-5">
        <% console.log(result) %>
-        <form class="g-3 m-auto p-5" style="margin-bottom: 30px;" action="/action/<%=result%>" method="post"  enctype="multipart/form-data" id="editForm">
+        <form class="g-3 m-auto p-5" style="margin-bottom: 30px;" action="/organization/<%=paramOrg%>/tasks/<%=paramTask%>/action/<%=result%>" method="post"  enctype="multipart/form-data" id="editForm">
             <div class="col-md-4 m-auto">
                 <label for="inputState" class="form-label">Status</label>
                 <select id="inputState" class="form-select" name="status">

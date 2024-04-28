@@ -33,7 +33,7 @@ app.use(flash());
 
 passport.use(new LocalStrategy(
     function (username, password, done) {
-        dbConnection.query('SELECT * FROM user WHERE email = ?', [username], async (err, results)=> {
+        dbConnection.query('SELECT * FROM user WHERE email = ?', [username], async (err, results) => {
             if (err) { return done(err); }
             if (!results.length) {
                 return done(null, false, { message: 'Incorrect username.' });
@@ -148,14 +148,14 @@ function isLoggedIn(req, res, next) {
 }
 
 
-app.post('/login', 
-  passport.authenticate('local', { failureRedirect: '/login', failureFlash: true, keepSessionInfo: true }),
-  function(req, res) {
-    console.log("User authenticated successfully");
-    console.log("In Login : ",req.session.redirectTo);
-    res.redirect(req.session.redirectTo || "/" );
-    
-  });
+app.post('/login',
+    passport.authenticate('local', { failureRedirect: '/login', failureFlash: true, keepSessionInfo: true }),
+    function (req, res) {
+        console.log("User authenticated successfully");
+        console.log("In Login : ", req.session.redirectTo);
+        res.redirect(req.session.redirectTo || "/");
+
+    });
 
 
 
@@ -170,23 +170,55 @@ app.get('/logout', function (req, res) {
 });
 
 
-app.get("/", isLoggedIn, (req, res)=>{
+app.get("/", isLoggedIn, (req, res) => {
     const user = req.user;
     const userDesig = req.user.designation;
+    const query = `SELECT * FROM organization`;
+    dbConnection.query(query, (err, result) => {
+
+        res.render("dashboard", { title: "Dashboard", organizations: result, userAccessibilty: userDesig, name: user.name, image: user.imagePath });
+    })
     console.log(user);
-    res.render("dashboard", {title: "Dashboard", userAccessibilty: userDesig, name: user.name, image: user.imagePath});
+});
+
+app.get("/specificOrg/:organiztion", isLoggedIn, (req, res) => {
+    const user = req.user;
+    const param = req.params.organiztion;
+    res.render("specific_org", { title: param, name: user.name, image: user.imagePath, user: user });
+});
+
+app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
+    const paramStatus = req.params.status;
+    const paramOrg = req.params.organization
+    const user = req.user;
+    var query = ``;  
+        
+        if (paramStatus === "task-created-by-secretory") {
+            query = `SELECT * FROM createtask WHERE email = '${user.email}' AND organization = '${paramOrg}'`;
+        } else if (paramStatus === "completed-tasks") {
+            query = `SELECT * FROM createtask WHERE currentStatus = 'Complete' AND organization = '${paramOrg}'`;
+        }else if(paramStatus === "delayed-tasks"){
+            query = `SELECT * FROM createtask WHERE date > CURDATE() AND organization = '${paramOrg} `
+        }else {
+            query = `SELECT * FROM createtask WHERE organization = '${paramOrg}'`;
+        }
+
+        dbConnection.query(query, (err, results) => {
+
+            res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath });
+        });
 });
 
 
-
 // designation rout
+
 app.get("/add_designation", isLoggedIn, (req, res) => {
     const user = req.user;
     const requestDesignation = `SELECT * FROM designation`;
     // console.log(req.user);
     dbConnection.query(requestDesignation, (err, results, fields) => {
         if (err) throw err;
-        res.render("add_designation", { title: "Add Designation", resultsTo: results, name: user.name, image: user.imagePath})
+        res.render("add_designation", { title: "Add Designation", resultsTo: results, name: user.name, image: user.imagePath })
     })
 
 });
@@ -217,7 +249,7 @@ app.get("/add_role", isLoggedIn, (req, res) => {
         dbConnection.query(requestRole, (err, results, fields) => {
             if (err) throw err;
             // console.log(results);
-            res.render("add_role", { title: "Add Role", resultsTo: results, name: user.name, image: user.imagePath})
+            res.render("add_role", { title: "Add Role", resultsTo: results, name: user.name, image: user.imagePath })
         });
     } else {
         res.send("<h1> You dont have permision to this Page </h1>")
@@ -251,22 +283,22 @@ app.get("/add_user", (req, res) => {
     // const checkDesig = req.user.designation;
     // if (checkDesig === "Director" || checkDesig === "CEO") {
 
-        const userQuery = `SELECT * FROM user`;
-        const roleQuery = `SELECT * FROM role`;
-        const desigQuery = `SELECT * FROM designation`;
-        const orgQeury = `SELECT * FROM  organization`;
+    const userQuery = `SELECT * FROM user`;
+    const roleQuery = `SELECT * FROM role`;
+    const desigQuery = `SELECT * FROM designation`;
+    const orgQeury = `SELECT * FROM  organization`;
 
-        dbConnection.query(userQuery, (err1, results) => {
-            dbConnection.query(roleQuery, (err2, roleData) => {
-                dbConnection.query(desigQuery, (err3, desigData) => {
-                    dbConnection.query(orgQeury, (err4, orgData) => {
+    dbConnection.query(userQuery, (err1, results) => {
+        dbConnection.query(roleQuery, (err2, roleData) => {
+            dbConnection.query(desigQuery, (err3, desigData) => {
+                dbConnection.query(orgQeury, (err4, orgData) => {
 
-                        res.render("add_user", { title: "Add User", userData: results, role: roleData, designation: desigData, organization: orgData, name: user.name || "", image: user.imagePath || "" });
-                    });
+                    res.render("add_user", { title: "Add User", userData: results, role: roleData, designation: desigData, organization: orgData, name: user.name || "", image: user.imagePath || "" });
                 });
             });
-
         });
+
+    });
     // } else {
     //     res.send("<h1> You dont have permision to this Page </h1>")
     // }
@@ -348,19 +380,19 @@ app.get("/add_subdepartment", isLoggedIn, (req, res) => {
     const user = req.user;
     const checkDesig = req.user.designation;
     if (checkDesig === "Director" || checkDesig === "CEO") {
-    const requestOrg = `SELECT orgTitle FROM organization`;
-    const requestDepartment = `SELECT * FROM department`;
+        const requestOrg = `SELECT orgTitle FROM organization`;
+        const requestDepartment = `SELECT * FROM department`;
 
-    dbConnection.query(requestOrg, (err1, resultOrg, fields1) => {
-        dbConnection.query(requestDepartment, (err2, resultDep, fields2) => {
+        dbConnection.query(requestOrg, (err1, resultOrg, fields1) => {
+            dbConnection.query(requestDepartment, (err2, resultDep, fields2) => {
 
-            res.render("add_subdepartment", { title: "Add Sub Department", resultOrg: resultOrg, resultDep: resultDep, name: user.name, image: user.imagePath });
+                res.render("add_subdepartment", { title: "Add Sub Department", resultOrg: resultOrg, resultDep: resultDep, name: user.name, image: user.imagePath });
 
+            });
         });
-    });
-}else{
-    res.send("<h1> You dont have permision to this Page </h1>")
-}
+    } else {
+        res.send("<h1> You dont have permision to this Page </h1>")
+    }
 
 });
 
@@ -386,7 +418,7 @@ app.get("/edit/:file", isLoggedIn, (req, res) => {
     console.log(req.params.file);
     const param = req.params.file;
     const user = req.user;
-    res.render("edit", { title: "Edit", name: user.name, image: user.imagePath});
+    res.render("edit", { title: "Edit", name: user.name, image: user.imagePath });
 })
 
 
@@ -432,7 +464,7 @@ app.post("/create_task", upload.single('imagePath'), (req, res) => {
     const createTask = {
         title: req.body.title,
         description: req.body.description,
-        date: req.body.date,
+        date: res.body.date,
         organization: req.body.organization,
         department: req.body.department,
         assignTo: req.body.assignTo,
@@ -454,11 +486,11 @@ app.get("/createdTask", isLoggedIn, (req, res) => {
 
 
     let myQuery = ``;
-    if(logedInUser.designation === "CEO"){
+    if (logedInUser.designation === "CEO") {
         myQuery = `SELECT * FROM createtask`;
-    }else if(logedInUser.designation === "Director"){
+    } else if (logedInUser.designation === "Director") {
         myQuery = `SELECT * FROM createtask WHERE organization = '${logedInUser.organization}'`
-    }else if(logedInUser.designation === "Staff") {
+    } else if (logedInUser.designation === "Staff") {
         myQuery = `SELECT * FROM createtask WHERE email = '${logedInUser.email}'`;
     }
     dbConnection.query(myQuery, (err, results, fields) => {
@@ -472,7 +504,7 @@ app.get("/createdTask", isLoggedIn, (req, res) => {
 
 // assign_task
 
-app.get("/assign_task/:user", isLoggedIn,  (req, res) => {
+app.get("/assign_task/:user", isLoggedIn, (req, res) => {
     const user = req.user;
     let param = req.params.user;
     let parts = param.split("-");
@@ -516,11 +548,13 @@ app.post("/assign_task/:user", upload.single('assignTaskImage'), (req, res) => {
     });
 });
 
-app.get("/action/:status", isLoggedIn, (req, res) => {
+app.get("/organization/:organization/tasks/:task/action/:status", isLoggedIn, (req, res) => {
     const user = req.user;
-    let param = req.params.status;
-    let parts = param.split("-");
+    let paramStatus = req.params.status;
+    let parts = paramStatus.split("-");
     let id = parts[1].trim();
+    const paramOrg = req.params.organization;
+    const paramTask = req.params.task;
 
     let file = "";
     if (req.file && req.file.fieldname) {
@@ -531,31 +565,40 @@ app.get("/action/:status", isLoggedIn, (req, res) => {
     dbConnection.query(query, (err, result) => {
         if (err) throw err
         console.log(result[0]);
-        res.render("action", { title: "Action", result: param, name: user.name, image: user.imagePath });
+        res.render("action", { title: "Action", paramOrg: paramOrg, paramTask: paramTask, result: paramStatus, name: user.name, image: user.imagePath });
     })
 });
 
-app.post("/action/:status", upload.single('actionTaskFile'), (req, res) => {
+app.post("/organization/:organization/tasks/:task/action/:status", upload.single('actionTaskFile'), (req, res) => {
     let param = req.params.status;
     let parts = param.split("-");
     let id = parts[1].trim();
     console.log("parameter from post request :" + param);
 
+    const paramOrg = req.params.organization;
+    const paramTask = req.params.task;
+    let myQuery = ``;
     let filePath = "";
+    let actionTask = {};
     if (req.file && req.file.filename) {
         filePath = req.file.filename;
-    }
-    const actionTask = {
-        status: req.body.status,
-        remarks: req.body.remarks,
-        file: filePath
+        actionTask = {
+            status: req.body.status,
+            remarks: req.body.remarks,
+            file: filePath
+        }
+        myQuery = `UPDATE createtask SET  currentStatus = ?, remarks = ?, imagePath = '${actionTask.file}' WHERE taskId = ?`;
+    } else {
+        actionTask = {
+            status: req.body.status,
+            remarks: req.body.remarks,
+        }
+        myQuery = `UPDATE createtask SET  currentStatus = ?, remarks = ? WHERE taskId = ?`;
     }
 
-    const myQuery = `UPDATE createtask SET  currentStatus = ?, remarks = ?, imagePath = ? WHERE taskId = ?`;
-
-    dbConnection.query(myQuery, [actionTask.status, actionTask.remarks, actionTask.file, id], (err, result) => {
+    dbConnection.query(myQuery, [actionTask.status, actionTask.remarks, id], (err, result) => {
         if (err) throw err
-        res.redirect("/createdTask");
+        res.redirect(`/organization/${paramOrg}/tasks/${paramTask}`);
     });
 });
 
@@ -563,7 +606,7 @@ app.post("/action/:status", upload.single('actionTaskFile'), (req, res) => {
 app.get("/history", isLoggedIn, (req, res) => {
     const myQuery = `SELECT * FROM createtask`;
     const user = req.user;
-    dbConnection.query(myQuery, (err, result)=>{
+    dbConnection.query(myQuery, (err, result) => {
 
         res.render("history", { title: "History", result: result, name: user.name, image: user.imagePath });
     });

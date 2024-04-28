@@ -75,27 +75,18 @@
                                         <% results.forEach((element)=>{ %>
 
                                             <tr>
-                                                <td>
-                                                    <%= element.taskId %>
-                                                </td>
-                                                <td>
-                                                    <%= element.title%>
-                                                </td>
-                                                <td>
-                                                    <%= element.description %>
-                                                </td>
-                                                <td>
-                                                    <%= element.date %>
-                                                </td>
-                                                <td>
-                                                    <%= element.assignTo %>
-                                                </td>
-                                                <td><%= element.currentStatus %> </td>
+                                                <td><%= element.taskId %></td>
+                                                <td><%= element.title%></td>
+                                                <td><%= element.description %>
+                                                <td><%= new Date(element.date).toLocaleDateString() %></td>
+                                                <td><%= element.assignTo %></td>
+                                                <td><%= element.currentStatus %></td>
                                                 <td><%= element.remarks %></td>
-                                                <td><a href="/uploads/<%= element.imagePath %>" download><i class="bi bi-file-earmark-arrow-down-fill"></i></a></td>
+                                                <td><a href="/uploads/<%= element.imagePath %>" download><i
+                                                            class="bi bi-file-earmark-arrow-down-fill"></i></a></td>
                                                 <td>
-                                                    <a href="/action/<%=element.title%>-<%=element.taskId%>" style="display: block; padding: 5px;"
-                                                        title="action">
+                                                    <a href="/organization/<%=paramOrg%>/tasks/<%=title%>/action/<%=element.title%>-<%=element.taskId%>"
+                                                        style="display: block; padding: 5px;" title="action">
                                                         <img src="/icons/action.png" style="width: 30%; " alt="...">
                                                     </a>
                                                     <a href="/assign_task/<%=element.title%>-<%=element.taskId%>"
@@ -137,7 +128,6 @@
 
 
     </main>
-
 
 
     <%- include('footer.ejs') %>

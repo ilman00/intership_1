@@ -101,6 +101,7 @@
         departmentID.addEventListener("change", ()=>{
             socket.emit("department Data", departmentID.value);
             user.innerHTML = "";
+            email.innerHTML = "";
         });
 
         socket.on("user data", (data)=>{

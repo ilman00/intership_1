@@ -21,10 +21,13 @@
 
 
         <div class="container d-flex flex-wrap">
+            <% organizations.forEach((element, index)=>{ %>
+
+            
             <div class="bg-light col-lg-3 m-2" style="box-sizing: border-box;">
 
 
-                <a href="" style="text-decoration: none; color: black;">
+                <a href="/specificOrg/<%=element.orgTitle%>" style="text-decoration: none; color: black;">
                     <div class="p-3 h-100">
                         <div class="row">
                             <div class="w-25 m-2">
@@ -32,7 +35,7 @@
                                         style="float: left; margin-top: 1px;"></span>
                             </div>
                             <div class="w-50 ms-auto">
-                                <span class="d-block text-end" style="font-size: 30px;"> <b>0</b> </span>
+                                <span class="d-block text-end" style="font-size: 30px;"> <b><%= index + 1 %></b> </span>
                                 <span class="d-block text-end">
                                     Total Task E&amp;P
                                 </span>
@@ -40,7 +43,7 @@
                         </div>
                         <div class="tiles-progress">
                             <div class="m-t-20">
-                                <h5 class="text-uppercase">Energy And Power Department<span class="pull-right"></span>
+                                <h5 class="text-uppercase"><%= element.orgTitle%><span class="pull-right"></span>
                                 </h5>
                                 <div class="progress progress-sm m-0">
                                     <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="100"
@@ -54,8 +57,8 @@
                     </div>
                 </a>
             </div>
-
-            <div class="bg-light col-lg-3 m-2" style="box-sizing: border-box;">
+            <%})%>
+            <!-- <div class="bg-light col-lg-3 m-2" style="box-sizing: border-box;">
 
 
                 <a href="" style="text-decoration: none; color: black;">
@@ -156,7 +159,7 @@
 
                     </div>
                 </a>
-            </div>
+            </div> -->
 
 
 
