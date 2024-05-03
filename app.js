@@ -151,8 +151,6 @@ function isLoggedIn(req, res, next) {
 app.post('/login',
     passport.authenticate('local', { failureRedirect: '/login', failureFlash: true, keepSessionInfo: true }),
     function (req, res) {
-        console.log("User authenticated successfully");
-        console.log("In Login : ", req.session.redirectTo);
         res.redirect(req.session.redirectTo || "/");
 
     });
@@ -198,8 +196,11 @@ app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
         } else if (paramStatus === "completed-tasks") {
             query = `SELECT * FROM createtask WHERE currentStatus = 'Complete' AND organization = '${paramOrg}'`;
         }else if(paramStatus === "delayed-tasks"){
-            query = `SELECT * FROM createtask WHERE date > CURDATE() AND organization = '${paramOrg} `
-        }else {
+            query = `SELECT * FROM createtask WHERE date > CURDATE() AND organization = '${paramOrg}'`;
+        }else if(paramStatus === "tasks-created-by-ceo"){
+            query = `SELECT * FROM createtask WHERE initiated_by ='CEO' `
+        }
+        else {
             query = `SELECT * FROM createtask WHERE organization = '${paramOrg}'`;
         }
 
@@ -262,6 +263,7 @@ app.get("/add_role", isLoggedIn, (req, res) => {
 app.post("/add_role", (req, res) => {
     const addRole = req.body.role;
     console.log(addRole);
+    console.log(req.user);
     const data = `INSERT INTO role (roleTitle) VALUES (?)`;
     dbConnection.query(data, addRole, (error, results, fields) => {
         if (error) {
@@ -456,15 +458,16 @@ app.get("/create_task", isLoggedIn, (req, res) => {
     })
 });
 
-app.post("/create_task", upload.single('imagePath'), (req, res) => {
+app.post("/create_task", upload.single('filePath'), (req, res) => {
     let image = 'no file chosen';
     if (req.file && req.file.filename) {
         image = req.file.filename;
     }
+    const user = req.user;
     const createTask = {
         title: req.body.title,
         description: req.body.description,
-        date: res.body.date,
+        date: req.body.date,
         organization: req.body.organization,
         department: req.body.department,
         assignTo: req.body.assignTo,
@@ -472,10 +475,11 @@ app.post("/create_task", upload.single('imagePath'), (req, res) => {
         taskType: req.body.taskType,
         imagePath: image
     }
-    const taskQuery = `INSERT INTO createTask(title, description, date, organization, department, assignTo, email, taskType, imagePath) VALUES (?,?,?,?,?,?,?,?,?)`
-    const taskArry = [createTask.title, createTask.description, createTask.date, createTask.organization, createTask.department, createTask.assignTo, createTask.email, createTask.taskType, createTask.imagePath];
+    const taskQuery = `INSERT INTO createTask(title, description, date, organization, department, assignTo, email, taskType, imagePath, initiated_by) VALUES (?,?,?,?,?,?,?,?,?, ?)`
+    const taskArry = [createTask.title, createTask.description, createTask.date, createTask.organization, createTask.department, createTask.assignTo, createTask.email, createTask.taskType, createTask.imagePath, user.designation];
     dbConnection.query(taskQuery, taskArry, (err, results, fields) => {
-        res.redirect("/createdTask");
+        if(err) throw err;
+        res.redirect(`/organization/${createTask.organization}/tasks/create-tasks`);
     });
 });
 
@@ -504,47 +508,65 @@ app.get("/createdTask", isLoggedIn, (req, res) => {
 
 // assign_task
 
-app.get("/assign_task/:user", isLoggedIn, (req, res) => {
+app.get("/organization/:organization/tasks/:task/assign_task/:user", isLoggedIn, (req, res) => {
     const user = req.user;
     let param = req.params.user;
+    console.log("param: ", param);
     let parts = param.split("-");
-    let id = parts[1].trim();
-    console.log("id: ", id);
+    console.log("Request.URL: ",req.url);
+    let id = parts[1];
+    const paramOrg = req.params.organization;
+    const paramTask = req.params.task;
+    console.log( "My  ID for checking : ", id);
     const myQuery = `SELECT * FROM createtask WHERE taskId = ${id}`;
     const depQuery = `SELECT * FROM department`;
     dbConnection.query(myQuery, (err, result) => {
         dbConnection.query(depQuery, (err, depResult) => {
-            res.render("assign_task", { title: "Assign_task", result: result[0], depResult: depResult, name: user.name, image: user.imagePath });
+            res.render("assign_task", { title: "Assign_task", paramOrg: paramOrg, paramTask:paramTask ,result: result[0], depResult: depResult, name: user.name, image: user.imagePath });
         });
     });
 });
 
-app.post("/assign_task/:user", upload.single('assignTaskImage'), (req, res) => {
+app.post("/organization/:organization/tasks/:task/assign_task/:user", upload.single('assignTaskFile'), (req, res) => {
     let param = req.params.user;
     let parts = param.split("-");
-    let id = parts[1].trim();
-
-    let filePath = "no file chosen";
+    let id = parts[1];
+    const paramOrg = req.params.organization;
+    const paramTask = req.params.task;
+    let myQuery = ``;
+    let filePath = "/uploads/person.png";
+    let assignTask = {}
     if (req.file && req.file.filename) {
         filePath = req.file.filename;
+        assignTask = {
+            department: req.body.department,
+            user: req.body.user,
+            remarks: req.body.remarks,
+            filePath: filePath
+        };
+
+        myQuery = `UPDATE createtask SET assignTo = ?, imagePath = ${assignTask.filePath}, remarks = ? WHERE taskId = ?`;
+    }else{
+        assignTask = {
+            department: req.body.department,
+            user: req.body.user,
+            remarks: req.body.remarks
+        };
+
+        myQuery = `UPDATE createtask SET assignTo = ?, remarks = ? WHERE taskId = ?`;
     }
 
-    const assignTask = {
-        department: req.body.department,
-        user: req.body.user,
-        remarks: req.body.remarks,
-        imagePath: filePath
-    };
+    
 
-    const myQuery = `UPDATE createtask SET assignTo = ?, imagePath = ?, remarks = ? WHERE taskId = ?`;
-    dbConnection.query(myQuery, [assignTask.user, assignTask.imagePath, assignTask.remarks, id], (err, result) => {
+    
+    dbConnection.query(myQuery, [assignTask.user, assignTask.remarks, id], (err, result) => {
         if (err) {
             // Handle error
             console.error("Error updating task:", err);
             res.status(500).send("Error updating task.");
             return;
         }
-        res.redirect("/createdTask");
+        res.redirect(`/organization/${paramOrg}/tasks/${paramTask}/`);
     });
 });
 
