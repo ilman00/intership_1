@@ -5,12 +5,50 @@
                 <center><b> ENERGY AND POWER DEPARTMENT</b></center>
             </div>
 
-            <div style=" font-size: 10px; color:#094769;" align="center">DESIGN &amp; DEVELOPED BY | ILMAN
+            <div style=" font-size: 10px; color:#094769;" align="center">DESIGN &amp; DEVELOPED BY |
+                PEDO IT
+                TEAM
             </div>
 
         </div>
     </div>
 </footer>
+
+
+</div>
+</div>
+
+</main>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        function handleResize() {
+            if ($(window).width() < 1000) {
+                $("#leftNav").hide();
+                $("#btnNav").show();
+                $("#navCancelBtn").show();
+            } else {
+                $("#leftNav").show();
+                $("#btnNav").hide();
+                $("#navCancelBtn").hide();
+            }
+        }
+
+        handleResize();
+
+        $(window).resize(handleResize);
+
+        $("#btnNav").click(function () {
+            $("#leftNav").toggle();
+        });
+        $("#navCancelBtn").click(function () {
+            $("#leftNav").hide();
+        })
+    });
+</script>
 
 </body>
 
