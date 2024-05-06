@@ -71,6 +71,7 @@
         </div>
 
     </main>
+    <script src="/socket.io/socket.io.js"></script>
 
     <script>
         const socket = io('http://localhost:3000');
@@ -80,7 +81,7 @@
         const email = document.getElementById("email");
 
         organizationID.addEventListener("change", () => {
-
+            console.log("socket Data", organizationID.value);
             socket.emit("selectData", organizationID.value);
             departmentID.innerHTML = "";
 

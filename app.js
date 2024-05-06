@@ -101,6 +101,7 @@ io.on("connection", (socket) => {
         myquery = `SELECT * FROM department WHERE depOrg = '${data}'`;
         dbConnection.query(myquery, (err, results, fields) => {
             if (err) throw err;
+            console.log("socket Data", results);
             socket.emit("selectData from server", results);
             console.log(results);
         });
@@ -189,25 +190,25 @@ app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
     const paramStatus = req.params.status;
     const paramOrg = req.params.organization
     const user = req.user;
-    var query = ``;  
-        
-        if (paramStatus === "task-created-by-secretory") {
-            query = `SELECT * FROM createtask WHERE email = '${user.email}' AND organization = '${paramOrg}'`;
-        } else if (paramStatus === "completed-tasks") {
-            query = `SELECT * FROM createtask WHERE currentStatus = 'Complete' AND organization = '${paramOrg}'`;
-        }else if(paramStatus === "delayed-tasks"){
-            query = `SELECT * FROM createtask WHERE date > CURDATE() AND organization = '${paramOrg}'`;
-        }else if(paramStatus === "tasks-created-by-ceo"){
-            query = `SELECT * FROM createtask WHERE initiated_by ='CEO' `
-        }
-        else {
-            query = `SELECT * FROM createtask WHERE organization = '${paramOrg}'`;
-        }
+    var query = ``;
 
-        dbConnection.query(query, (err, results) => {
+    if (paramStatus === "task-created-by-secretory") {
+        query = `SELECT * FROM createtask WHERE email = '${user.email}' AND organization = '${paramOrg}'`;
+    } else if (paramStatus === "completed-tasks") {
+        query = `SELECT * FROM createtask WHERE currentStatus = 'Complete' AND organization = '${paramOrg}'`;
+    } else if (paramStatus === "delayed-tasks") {
+        query = `SELECT * FROM createtask WHERE date > CURDATE() AND organization = '${paramOrg}'`;
+    } else if (paramStatus === "tasks-created-by-ceo") {
+        query = `SELECT * FROM createtask WHERE initiated_by ='CEO' `
+    }
+    else {
+        query = `SELECT * FROM createtask WHERE organization = '${paramOrg}'`;
+    }
 
-            res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath });
-        });
+    dbConnection.query(query, (err, results) => {
+
+        res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath });
+    });
 });
 
 
@@ -475,33 +476,38 @@ app.post("/create_task", upload.single('filePath'), (req, res) => {
         taskType: req.body.taskType,
         imagePath: image
     }
-    const taskQuery = `INSERT INTO createTask(title, description, date, organization, department, assignTo, email, taskType, imagePath, initiated_by) VALUES (?,?,?,?,?,?,?,?,?, ?)`
-    const taskArry = [createTask.title, createTask.description, createTask.date, createTask.organization, createTask.department, createTask.assignTo, createTask.email, createTask.taskType, createTask.imagePath, user.designation];
-    dbConnection.query(taskQuery, taskArry, (err, results, fields) => {
-        if(err) throw err;
-        res.redirect(`/organization/${createTask.organization}/tasks/create-tasks`);
+    const fileQuery = `INSERT INTO files (file1) VALUES (?) `;
+    const taskQuery = `INSERT INTO createTask(title, description, date, organization, department, assignTo, email, taskType, fileId, initiated_by) VALUES (?,?,?,?,?,?,?,?,?, ?)`;
+
+    dbConnection.query(fileQuery, [createTask.imagePath], (err, FileResult) => {
+        console.log("File Result: ",FileResult.insertId);
+        const taskArry = [createTask.title, createTask.description, createTask.date, createTask.organization, createTask.department, createTask.assignTo, createTask.email, createTask.taskType, FileResult.insertId, user.designation];
+
+        dbConnection.query(taskQuery, taskArry, (err, results) => {
+            res.redirect(`/organization/${createTask.organization}/tasks/create-tasks`);
+        });
     });
 });
 
 // created Tasks
-app.get("/createdTask", isLoggedIn, (req, res) => {
+// app.get("/createdTask", isLoggedIn, (req, res) => {
 
-    const logedInUser = req.user;
+//     const logedInUser = req.user;
 
 
-    let myQuery = ``;
-    if (logedInUser.designation === "CEO") {
-        myQuery = `SELECT * FROM createtask`;
-    } else if (logedInUser.designation === "Director") {
-        myQuery = `SELECT * FROM createtask WHERE organization = '${logedInUser.organization}'`
-    } else if (logedInUser.designation === "Staff") {
-        myQuery = `SELECT * FROM createtask WHERE email = '${logedInUser.email}'`;
-    }
-    dbConnection.query(myQuery, (err, results, fields) => {
-        res.render("createdTask", { title: "Created Tasks", results: results, name: logedInUser.name, image: logedInUser.imagePath });
-    });
+//     let myQuery = ``;
+//     if (logedInUser.designation === "CEO") {
+//         myQuery = `SELECT * FROM createtask`;
+//     } else if (logedInUser.designation === "Director") {
+//         myQuery = `SELECT * FROM createtask WHERE organization = '${logedInUser.organization}'`
+//     } else if (logedInUser.designation === "Staff") {
+//         myQuery = `SELECT * FROM createtask WHERE email = '${logedInUser.email}'`;
+//     }
+//     dbConnection.query(myQuery, (err, results, fields) => {
+//         res.render("createdTask", { title: "Created Tasks", results: results, name: logedInUser.name, image: logedInUser.imagePath });
+//     });
 
-});
+// });
 
 
 
@@ -513,16 +519,16 @@ app.get("/organization/:organization/tasks/:task/assign_task/:user", isLoggedIn,
     let param = req.params.user;
     console.log("param: ", param);
     let parts = param.split("-");
-    console.log("Request.URL: ",req.url);
+    console.log("Request.URL: ", req.url);
     let id = parts[1];
     const paramOrg = req.params.organization;
     const paramTask = req.params.task;
-    console.log( "My  ID for checking : ", id);
+    console.log("My  ID for checking : ", id);
     const myQuery = `SELECT * FROM createtask WHERE taskId = ${id}`;
     const depQuery = `SELECT * FROM department`;
     dbConnection.query(myQuery, (err, result) => {
         dbConnection.query(depQuery, (err, depResult) => {
-            res.render("assign_task", { title: "Assign_task", paramOrg: paramOrg, paramTask:paramTask ,result: result[0], depResult: depResult, name: user.name, image: user.imagePath });
+            res.render("assign_task", { title: "Assign_task", paramOrg: paramOrg, paramTask: paramTask, result: result[0], depResult: depResult, name: user.name, image: user.imagePath });
         });
     });
 });
@@ -533,41 +539,48 @@ app.post("/organization/:organization/tasks/:task/assign_task/:user", upload.sin
     let id = parts[1];
     const paramOrg = req.params.organization;
     const paramTask = req.params.task;
-    let myQuery = ``;
+    let myQuery = `UPDATE createtask SET assignTo = ?, remarks = ? WHERE taskId = ?`;
     let filePath = "/uploads/person.png";
-    let assignTask = {}
-    if (req.file && req.file.filename) {
-        filePath = req.file.filename;
-        assignTask = {
-            department: req.body.department,
-            user: req.body.user,
-            remarks: req.body.remarks,
-            filePath: filePath
-        };
-
-        myQuery = `UPDATE createtask SET assignTo = ?, imagePath = ${assignTask.filePath}, remarks = ? WHERE taskId = ?`;
-    }else{
-        assignTask = {
-            department: req.body.department,
-            user: req.body.user,
-            remarks: req.body.remarks
-        };
-
-        myQuery = `UPDATE createtask SET assignTo = ?, remarks = ? WHERE taskId = ?`;
+    let assignTask = {
+        department: req.body.department,
+        user: req.body.user,
+        remarks: req.body.remarks,
     }
 
-    
+    if (req.file && req.file.filename) {
+        filePath = req.file.filename;
 
-    
-    dbConnection.query(myQuery, [assignTask.user, assignTask.remarks, id], (err, result) => {
-        if (err) {
-            // Handle error
-            console.error("Error updating task:", err);
-            res.status(500).send("Error updating task.");
-            return;
-        }
-        res.redirect(`/organization/${paramOrg}/tasks/${paramTask}/`);
-    });
+        const selectQueryForCreate = `SELECT fileId FROM createtask WHERE taskId = ?`;
+        const fileQuery = `UPDATE files SET file2 = ? WHERE fileId = ?`;
+
+        dbConnection.query(selectQueryForCreate, [id], (err, result1) => {
+            console.log("file ID: ", result1);
+            dbConnection.query(fileQuery, [filePath, result1[0].fileId], (err, fileResult) => {
+                if (err) throw err;
+                console.log("file added to file2");
+                dbConnection.query(myQuery, [assignTask.user, assignTask.remarks, id], (err, result2) => {
+                    if (err) {
+                        // Handle error
+                        console.error("Error updating task:", err);
+                        res.status(500).send("Error updating task.");
+                        return;
+                    }
+                    res.redirect(`/organization/${paramOrg}/tasks/${paramTask}`);
+                });
+            })
+        });
+
+    }else{
+        dbConnection.query(myQuery, [assignTask.user, assignTask.remarks, id], (err, result2) => {
+            if (err) {
+                // Handle error
+                console.error("Error updating task:", err);
+                res.status(500).send("Error updating task.");
+                return;
+            }
+            res.redirect(`/organization/${paramOrg}/tasks/${paramTask}`);
+        });
+    }
 });
 
 app.get("/organization/:organization/tasks/:task/action/:status", isLoggedIn, (req, res) => {
@@ -599,29 +612,49 @@ app.post("/organization/:organization/tasks/:task/action/:status", upload.single
 
     const paramOrg = req.params.organization;
     const paramTask = req.params.task;
-    let myQuery = ``;
-    let filePath = "";
-    let actionTask = {};
+    
+    
+    let myQuery = `UPDATE createtask SET  currentStatus = ?, remarks = ? WHERE taskId = ?`;
+    let actionTask = {
+        status: req.body.status,
+        remarks: req.body.remarks
+    }
     if (req.file && req.file.filename) {
-        filePath = req.file.filename;
-        actionTask = {
-            status: req.body.status,
-            remarks: req.body.remarks,
-            file: filePath
-        }
-        myQuery = `UPDATE createtask SET  currentStatus = ?, remarks = ?, imagePath = '${actionTask.file}' WHERE taskId = ?`;
+        let filePath = req.file.filename;
+        const selectQueryForCreate = `SELECT fileId FROM createtask WHERE taskId = ?`;
+        const fileQuery = `UPDATE files SET file3 = ? WHERE fileId = ?`;
+
+        dbConnection.query(selectQueryForCreate, [id], (err, result1) => {
+            console.log("file ID: ", result1);
+            dbConnection.query(fileQuery, [filePath, result1[0].fileId], (err, fileResult) => {
+                if (err) throw err;
+                console.log("file added to file2");
+                dbConnection.query(myQuery, [actionTask.status, actionTask.remarks, id], (err, result2) => {
+                    if (err) {
+                        // Handle error
+                        console.error("Error updating task:", err);
+                        res.status(500).send("Error updating task.");
+                        return;
+                    }
+                    res.redirect(`/organization/${paramOrg}/tasks/${paramTask}`);
+                });
+            })
+        });
+
+       
     } else {
-        actionTask = {
-            status: req.body.status,
-            remarks: req.body.remarks,
-        }
-        myQuery = `UPDATE createtask SET  currentStatus = ?, remarks = ? WHERE taskId = ?`;
+        dbConnection.query(myQuery, [actionTask.status, actionTask.remarks, id], (err, result2) => {
+            if (err) {
+                // Handle error
+                console.error("Error updating task:", err);
+                res.status(500).send("Error updating task.");
+                return;
+            }
+            res.redirect(`/organization/${paramOrg}/tasks/${paramTask}`);
+        });
     }
 
-    dbConnection.query(myQuery, [actionTask.status, actionTask.remarks, id], (err, result) => {
-        if (err) throw err
-        res.redirect(`/organization/${paramOrg}/tasks/${paramTask}`);
-    });
+    
 });
 
 

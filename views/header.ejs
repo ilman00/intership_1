@@ -11,10 +11,15 @@
         crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/css/cardCss.css">
-
+    
     <title><%=title%></title>
     <style>
+        body{
+            min-height: 100vh;
+        }
+        .minH70{
+            min-height: 70vh !important;
+        }
         .bg-blue {
             background-color: white !important;
         }
@@ -87,7 +92,7 @@
     </header>
 
 
-    <main class="">
+    <main class="minH70 h-75" >
         <div class="container-fluid d-flex row p-0 w-100">
 
             <div class="w-25 p-0 absolute" id="leftNav" style="box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);">
@@ -101,12 +106,12 @@
                         <div class="" id="navbarNav">
                             <ul class="navbar-nav">
                                 <li class="nav-item m-2">
-                                    Dashboard
+                                    <a href="/" class="nav-link">Dashboard</a>
                                 </li>
 
                                 <li class="nav-item  m-2">Create Task
                                     <ul class="">
-                                        <li class="nav-item"><a class="nav-link" href="#">Create Task</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="/create_task">Create Task</a></li>
                                     </ul>
                                 </li>
 
@@ -121,11 +126,11 @@
                                 <li class="nav-item m-2">
                                     Settings
                                     <ul class="">
-                                        <li class="nav-item"><a class="nav-link" href="add_designation">Add Designation</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="add_role">Add rule</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="add_user">Add User</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="add_organization">Add Organization</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="add_subdepartment">Add Departments</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="/add_designation">Add Designation</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="/add_role">Add Role</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="/add_user">Add User</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="/add_organization">Add Organization</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="/add_subdepartment">Add Departments</a></li>
                                     </ul>
                                 </li>
 
