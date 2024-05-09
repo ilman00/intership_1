@@ -49,11 +49,12 @@
                     </select>
                 </div>
 
-                <div class="col-md-4 m-auto">
+                <div class="col-md-4 m-auto" id="assignTaskDiv">
                     <label for="inputState" class="form-label">User</label>
                     <select class="form-select" id="assign_taskUser" name="user">
                         <option value="User Name">User Name</option>
                     </select>
+                    <input type="hidden" name="hiddenInput" id="hiddenInput">
                 </div>
                 <div class="col-md-4 m-auto">
                     <label for="inputState" class="form-label">Remarks</label>
@@ -77,25 +78,44 @@
     <script src="/socket.io/socket.io.js"></script>
 
     <script>
-        
+
         const socket = io('http://localhost:3000');
         const assign_taskDep = document.getElementById("assign_taskDep");
         const assign_taskUser = document.getElementById("assign_taskUser");
+        const userEmail = document.getElementById("userEmail");
+        const hiddenInput = document.getElementById("hiddentInput");
+
         assign_taskDep.addEventListener("change", () => {
             socket.emit("data from assign task", assign_taskDep.value);
             assign_taskUser.innerHTML = "";
         });
 
         socket.on("data to assign task", (data) => {
+            var emptyOption = document.createElement("option");
+            emptyOption.innerHTML = "CHOSE";
+            assign_taskUser.appendChild(emptyOption);
             data.forEach((element) => {
-                var option = document.createElement("option");
-                option.value = element.name;
-                option.innerHTML = element.name;
-                assign_taskUser.appendChild(option)
+                var option = $("<option>").attr("value", element.name ).html(element.name + ": ");
+                var para = $("<p>").html(element.email);
+               
+
+                
+                console.log(option.val());
+                // option.value = element.name;
+                // option.innerHTML = element.name + ": ";
+
+
+                // assign_taskUser.appendChild(option);
+                $("#assign_taskUser").append(option);
+                $(option).append(para);
+               
             });
         });
-
-
+        assign_taskUser.addEventListener("change", ()=>{
+            let inputTypeHidden = $("#hiddenInput").attr("value", element.email);
+            console.log(inputTypeHidden.val());
+        })
+        
 
     </script>
     <%- include('footer.ejs') %>

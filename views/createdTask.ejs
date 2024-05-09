@@ -75,15 +75,40 @@
                                         <% results.forEach((element)=>{ %>
 
                                             <tr>
-                                                <td><%= element.taskId %></td>
-                                                <td><%= element.title%></td>
-                                                <td><%= element.description %>
-                                                <td><%= new Date(element.date).toLocaleDateString() %></td>
-                                                <td><%= element.assignTo %></td>
-                                                <td><%= element.currentStatus %></td>
-                                                <td><%= element.remarks %></td>
-                                                <td><a href="/uploads/<%= element.imagePath %>" download><i
-                                                            class="bi bi-file-earmark-arrow-down-fill"></i></a></td>
+                                                <td>
+                                                    <%= element.taskId %>
+                                                </td>
+                                                <td>
+                                                    <%= element.title%>
+                                                </td>
+                                                <td>
+                                                    <%= element.description %>
+                                                <td>
+                                                    <%= new Date(element.date).toLocaleDateString() %>
+                                                </td>
+                                                <td>
+                                                    <%= element.assignTo %>
+                                                </td>
+                                                <td>
+                                                    <%= element.currentStatus %>
+                                                </td>
+                                                <td>
+                                                    <%= element.remarks %>
+                                                </td>
+                                                <td>
+                                                        <% if(element.file1 !== null){ %>
+                                                    <a href="/uploads/<%= element.file1 %>" download><i
+                                                            class="bi bi-file-earmark-arrow-down-fill"></i></a>
+                                                        <% } %>
+                                                        <% if(element.file2 !== null){ %>
+                                                    <a href="/uploads/<%= element.file2 %>" download><i
+                                                            class="bi bi-file-earmark-arrow-down-fill"></i></a>
+                                                        <% } %>
+                                                        <% if(element.file3 !== null){ %>
+                                                    <a href="/uploads/<%= element.file3 %>" download><i
+                                                            class="bi bi-file-earmark-arrow-down-fill"></i></a>
+                                                        <% } %>
+                                                </td>
                                                 <td>
                                                     <a href="/organization/<%=paramOrg%>/tasks/<%=title%>/action/<%=element.title%>-<%=element.taskId%>"
                                                         style="display: block; padding: 5px;" title="action">
