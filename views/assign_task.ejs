@@ -95,7 +95,7 @@
             emptyOption.innerHTML = "CHOSE";
             assign_taskUser.appendChild(emptyOption);
             data.forEach((element) => {
-                var option = $("<option>").attr("value", element.name ).html(element.name + ": ");
+                var option = $("<option>").attr("value", element.name + ":" + element.email ).html(element.name + ": ");
                 var para = $("<p>").html(element.email);
                
 
@@ -111,10 +111,7 @@
                
             });
         });
-        assign_taskUser.addEventListener("change", ()=>{
-            let inputTypeHidden = $("#hiddenInput").attr("value", element.email);
-            console.log(inputTypeHidden.val());
-        })
+       
         
 
     </script>
