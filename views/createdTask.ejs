@@ -99,7 +99,9 @@
                                                     <% if (file && file.length > 0) { %>
                                                         <% file.forEach((fileElement) => { %>
                                                             <% if (fileElement.taskId === element.taskId) { %>
+                                                                <%if(fileElement.file !== null){ %>
                                                                 <a href="/uploads/<%= fileElement.file %>" download><i class="bi bi-file-earmark-arrow-down-fill"></i></a>
+                                                                <% } %>
                                                             <% } %>
                                                         <% }) %>
                                                     <% } else { %>
