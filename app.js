@@ -213,10 +213,16 @@ app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
     } else {
         query = `SELECT * FROM createtask WHERE organization = '${paramOrg}'`;
     }
-
     dbConnection.query(query, (err, results) => {
-        console.log("checking Files", results);
-        res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath });
+        console.log("Result From create Task: ", results);
+        const taskId = results.map(result => result.taskId) 
+        console.log("taskIds : ", taskId);
+        const historyQuery = `SELECT taskId,file from history WHERE taskId IN  (${taskId})`;
+        dbConnection.query(historyQuery, (err, filesFromHistory)=>{
+            if(err) throw err
+            console.log("From History Table", filesFromHistory);
+            res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath, file: filesFromHistory });
+        })
     });
 });
 
@@ -644,11 +650,11 @@ app.post("/organization/:organization/tasks/:task/action/:status", upload.single
     if (req.file && req.file.filename) {
         let filePath = req.file.filename;
         const selectQueryForCreate = `SELECT description, initiated_by, timeStamp, date ,  currentStatus FROM createtask WHERE taskId = ?`;
-        const historyQuery = `INSERT INTO history (taskId, description, initiated_by, on_date_time, assigned_to, deadline, remarks , current_status, file) VALUES (?,?,?,?,?,?,?,?)`;
+        const historyQuery = `INSERT INTO history (taskId, description, initiated_by, on_date_time, assigned_to, deadline, remarks , current_status, file) VALUES (?,?,?,?,?,?,?,?,?)`;
         
         dbConnection.query(selectQueryForCreate, [id], (err, result1) => {
             console.log("file ID: ", result1);
-            dbConnection.query(historyQuery, [result1[0].taskId, result1[0].description, result1[0].initiated_by, result1[0].timeStamp, result1[0].assignTo, result1[0].date, actionTask.remarks, actionTask.status, filePath  ], (err, fileResult) => {
+            dbConnection.query(historyQuery, [id, result1[0].description, result1[0].initiated_by, result1[0].timeStamp, result1[0].assignTo, result1[0].date, actionTask.remarks, actionTask.status, filePath  ], (err, fileResult) => {
                 if (err) throw err;
                 console.log("file added to file2");
                 dbConnection.query(myQuery, [actionTask.status, actionTask.remarks], (err, result2) => {

@@ -96,18 +96,18 @@
                                                     <%= element.remarks %>
                                                 </td>
                                                 <td>
-                                                        <% if(element.file1 !== null){ %>
-                                                    <a href="/uploads/<%= element.file1 %>" download><i
-                                                            class="bi bi-file-earmark-arrow-down-fill"></i></a>
-                                                        <% } %>
-                                                        <% if(element.file2 !== null){ %>
-                                                    <a href="/uploads/<%= element.file2 %>" download><i
-                                                            class="bi bi-file-earmark-arrow-down-fill"></i></a>
-                                                        <% } %>
-                                                        <% if(element.file3 !== null){ %>
-                                                    <a href="/uploads/<%= element.file3 %>" download><i
-                                                            class="bi bi-file-earmark-arrow-down-fill"></i></a>
-                                                        <% } %>
+                                                    <% if (file && file.length > 0) { %>
+                                                        <% file.forEach((fileElement) => { %>
+                                                            <% if (fileElement.taskId === element.taskId) { %>
+                                                                <a href="/uploads/<%= fileElement.file %>" download><i class="bi bi-file-earmark-arrow-down-fill"></i></a>
+                                                            <% } %>
+                                                        <% }) %>
+                                                    <% } else { %>
+                                                        <!-- Handle case when filesFromHistory is empty or undefined -->
+                                                        <!-- For example: -->
+                                                        <p>No files available.</p>
+                                                    <% } %>
+                                                    
                                                 </td>
                                                 <td>
                                                     <a href="/organization/<%=paramOrg%>/tasks/<%=title%>/action/<%=element.title%>-<%=element.taskId%>"
