@@ -604,7 +604,7 @@ app.post("/organization/:organization/tasks/:task/assign_task/:user", upload.sin
         const historyQuery = `INSERT INTO history (taskId, description, initiated_by, on_date_time, assigned_to, deadline, remarks , current_status) VALUES (?,?,?,?,?,?,?,?)`;
 
         dbConnection.query(selectQueryForCreate, [id], (err, result1) => {
-            const historyQueryArray = [id, result1[0].description, result1[0].initiated_by, result1[0].timeStamp, assignTask.userName, result1[0].date, assignTask.remarks, result1[0].currentStatus];
+            const historyQueryArray = [id, result1[0].description, result1[0].initiated_by, currentDate, assignTask.userName, result1[0].date, assignTask.remarks, result1[0].currentStatus];
             console.log("file ID: ", result1);
             dbConnection.query(historyQuery, historyQueryArray, (err, fileResult) => {
                 if (err) throw err;
@@ -653,7 +653,7 @@ app.post("/organization/:organization/tasks/:task/action/:status", upload.single
     const paramOrg = req.params.organization;
     const paramTask = req.params.task;
 
-
+    const currentDate = new Date();
     var myQuery = `UPDATE createtask SET  currentStatus = ?, remarks = ? WHERE taskId = '${id}'`;
     var actionTask = {
         status: req.body.status,
@@ -666,7 +666,7 @@ app.post("/organization/:organization/tasks/:task/action/:status", upload.single
 
         dbConnection.query(selectQueryForCreate, [id], (err, result1) => {
             console.log("file ID: ", result1);
-            dbConnection.query(historyQuery, [id, result1[0].description, result1[0].initiated_by, result1[0].timeStamp, result1[0].assignTo, result1[0].date, actionTask.remarks, actionTask.status, filePath], (err, fileResult) => {
+            dbConnection.query(historyQuery, [id, result1[0].description, result1[0].initiated_by, currentDate, result1[0].assignTo, result1[0].date, actionTask.remarks, actionTask.status, filePath], (err, fileResult) => {
                 if (err) throw err;
                 console.log("file added to file2");
                 dbConnection.query(myQuery, [actionTask.status, actionTask.remarks], (err, result2) => {
@@ -687,7 +687,7 @@ app.post("/organization/:organization/tasks/:task/action/:status", upload.single
 
         dbConnection.query(selectQueryForCreate, [id], (err, result1) => {
             console.log("file ID: ", result1);
-            dbConnection.query(historyQuery, [id, result1[0].description, result1[0].initiated_by, result1[0].timeStamp, result1[0].assignTo, result1[0].date, actionTask.remarks, actionTask.status], (err, fileResult) => {
+            dbConnection.query(historyQuery, [id, result1[0].description, result1[0].initiated_by, currentDate, result1[0].assignTo, result1[0].date, actionTask.remarks, actionTask.status], (err, fileResult) => {
                 if (err) throw err;
                 console.log("file added to file2");
                 dbConnection.query(myQuery, [actionTask.status, actionTask.remarks], (err, result2) => {
