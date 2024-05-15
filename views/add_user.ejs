@@ -16,8 +16,8 @@
                     <select name="role" class="form-select">
                         <option selected>Choose...</option>
                         <% role.forEach((element)=>{ %>
-                            <option value="<%=element.roleTitle%>">
-                                <%=element.roleTitle%>
+                            <option value="<%=element.title%>">
+                                <%=element.title%>
                             </option>
                             <% }) %>
                     </select>
@@ -28,8 +28,8 @@
                         <option selected>Choose...</option>
                         <% designation.forEach((element)=>{ %>
 
-                            <option value="<%=element.title%>">
-                                <%=element.title%>
+                            <option value="<%=element.desigTitle%>">
+                                <%=element.desigTitle%>
                             </option>
                             <%})%>
                     </select>

@@ -77,7 +77,7 @@
                                     style="height: 50px; border-radius: 50%; border: 2px solid white;" alt="">
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Logout</a></li>
+                                <li><a class="dropdown-item" href="/logout">Logout</a></li>
                                 <li><a class="dropdown-item" href="#">Change password</a></li>
                             </ul>
                         </li>
@@ -109,25 +109,25 @@
                                     <a href="/" class="nav-link">Dashboard</a>
                                 </li>
 
-                                <li class="nav-item  m-2">Create Task
-                                    <ul class="">
+                                <li class="nav-item  m-2" id="createTaskClick" style="cursor: pointer;">Create Task
+                                    <ul class="" id="createTask" style="display: none;">
                                         <li class="nav-item"><a class="nav-link" href="/create_task">Create Task</a></li>
                                     </ul>
                                 </li>
 
-                                <li class="nav-item m-2">
+                                <li class="nav-item m-2" id="reportClick" style="cursor: pointer;">
                                     Report
-                                    <ul class="">
+                                    <ul class="" style="display: none;" id="report">
                                         <li class="nav-item"><a class="nav-link" href="#">Create Report </a></li>
                                         <li class="nav-item"><a class="nav-link" href="#">Create User List</a></li>
 
                                     </ul>
                                 </li>
-                                <li class="nav-item m-2">
+                                <li class="nav-item m-2" style="cursor: pointer;" id="settingClick" >
                                     Settings
-                                    <ul class="">
-                                        <li class="nav-item"><a class="nav-link" href="/add_designation">Add Designation</a></li>
+                                    <ul class="" style="display: none;" id="settings">
                                         <li class="nav-item"><a class="nav-link" href="/add_role">Add Role</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="/add_designation">Add Designation</a></li>
                                         <li class="nav-item"><a class="nav-link" href="/add_user">Add User</a></li>
                                         <li class="nav-item"><a class="nav-link" href="/add_organization">Add Organization</a></li>
                                         <li class="nav-item"><a class="nav-link" href="/add_subdepartment">Add Departments</a></li>
@@ -139,4 +139,18 @@
                     </div>
                 </nav>
             </div>
+            <script>
+                $("#createTaskClick").click(function(){
+                    $("#createTask").toggle()
+                });
+
+                $("#reportClick").click(function(){
+                    $("#report").toggle()
+                });
+
+                $("#settingClick").click(function(){
+                    $("#settings").toggle()
+                });
+
+            </script>
             <div class="w-75 w-100after" style="z-index: 1;">

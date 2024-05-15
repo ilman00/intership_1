@@ -6,23 +6,23 @@
 
 
 
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
 
-                    <h4 class="page-title">Wecome to Admin Dashboard </h4>
-                    <p class="text-muted page-title-alt">Admin Panel!</p>
-                </div>
+                <h4 class="page-title">Wecome to Admin Dashboard </h4>
+                <p class="text-muted page-title-alt">Admin Panel!</p>
             </div>
         </div>
+    </div>
 
 
 
 
-        <div class="container d-flex flex-wrap">
-            <% organizations.forEach((element, index)=>{ %>
+    <div class="container d-flex flex-wrap">
+        <% organizations.forEach((element, index)=>{ %>
 
-            
+
             <div class="bg-light col-lg-3 m-2" style="box-sizing: border-box;">
 
 
@@ -34,15 +34,25 @@
                                         style="float: left; margin-top: 1px;"></span>
                             </div>
                             <div class="w-50 ms-auto">
-                                <span class="d-block text-end" style="font-size: 30px;"> <b><%= index + 1 %></b> </span>
+                                <span class="d-block text-end" style="font-size: 30px;"> <b>
+                                   
+                                        <% let count = 0; %>
+                                        <%result2.forEach(taskElement =>{%>
+                                            <% if(taskElement.organization === element.orgTitle){%>
+                                                <% count++ %>
+                                            <% } %>
+                                        <% })%>
+                                        <%= count %>
+                                    </b> </span>
                                 <span class="d-block text-end">
-                                    Total Task E&amp;P
+                                    Total Task
                                 </span>
                             </div>
                         </div>
                         <div class="tiles-progress">
                             <div class="m-t-20">
-                                <h5 class="text-uppercase"><%= element.orgTitle%><span class="pull-right"></span>
+                                <h5 class="text-uppercase">
+                                    <%= element.orgTitle%><span class="pull-right"></span>
                                 </h5>
                                 <div class="progress progress-sm m-0">
                                     <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="100"
@@ -57,28 +67,28 @@
                 </a>
             </div>
             <%})%>
-            
-           
-
-
-
-        </div>
 
 
 
 
 
+    </div>
+
+
+
+
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-
+        const socket = io('http://localhost:3000');
         let userAccessibility = "<%=userAccessibilty%>";
         const deffinitions = document.getElementById("deffinitions");
         const CreateTaskLi = document.getElementById("CreateTaskLi");
 
-        if (userAccessibility !== "Director" && userAccessibility !== "CEO") {
+        if (userAccessibility !== "Director" && userAccessibility !== "CEO" && deffinitions) {
             deffinitions.style.display = "none"
-            CreateTaskLi.style.display = "none"
+            CreateTaskLi.style.display = "none"           
         }
-
+        socket.emit("number of tasks to dashboard");
     </script>
 
 

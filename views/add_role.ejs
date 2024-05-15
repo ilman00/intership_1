@@ -3,6 +3,8 @@
 
 
 
+
+
 <main>
     <div class="container">
         <h2>Add Role</h2>
@@ -14,10 +16,15 @@
             <div class="form-group">
                 <label class="col-md-4 control-label">Title</label>
                 <div class="col-md-8">
-                    <input type="text" class="form-control" placeholder="" name="role">
+                    <select name="role" class="form-control" id="role">
+                        <option value="Choose...">Choose...</option>
+                        <option value="CEO">CEO</option>
+                        <option value="Director">Director</option>
+                        <option value="Staff">Staff</option>
+                    </select>
                 </div>
             </div>
-            <button class="btn bg-green mt-3" type="text">Save</button>
+            <button class="btn bg-green mt-3" type="text" id="btn">Save</button>
 
         </form>
     </div>
@@ -31,14 +38,14 @@
                 <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
                     <div class="row">
                         <div class="col-sm-6">
-                            <div class="dataTables_length" id="datatable_length"><label>Show entries<select
+                            <div class="dataTables_length" id="datatable_length"><label>Show  entries<select
                                         name="datatable_length" aria-controls="datatable"
                                         class="form-control input-sm">
                                         <option value="10">10</option>
                                         <option value="25">25</option>
                                         <option value="50">50</option>
                                         <option value="100">100</option>
-                                    </select></label></div>
+                                    </select> </label></div>
                         </div>
                         <div class="col-sm-6 d-flex flex-column justify-content-end">
                             <div id="datatable_filter"  class="float-end"><label class="float-end">Search:<input type="search"
@@ -71,20 +78,17 @@
                                 </thead>
 
                                 <tbody>
-                                   <% resultsTo.forEach((element)=>{ %>
+                                <% resultsTo.forEach((element)=>{ %>
 
-                                    
+                                
                                     <tr role="row" class="odd">
-                                        <td class="sorting_1"><%=  element.roleId %> </td>
-                                        <td class=""><%=  element.roleTitle %></td>
+                                        <td class="sorting_1"> <%= element.id %> </td>
+                                        <td class=""> <%= element.title %>  </td>
                                         <td>
-                                            <a href="/edit/role-<%=element.roleId%>" data-toggle="tooltip"
-                                                data-placement="bottom" title="Edit Title"
-                                                data-original-title="Edit Designation"><i
-                                                    class="bi bi-pencil-square"></i></a>
+                                            <a href="/edit/role-<%=element.id%>" data-toggle="tooltip" data-placement="bottom" title="Edit Title" data-original-title="Edit Role"><i class="bi bi-pencil-square"></i></a>
                                         </td>
                                     </tr>
-                                    <%  })  %>
+                                   <% }) %> 
                                 </tbody>
                             </table>
                         </div>
@@ -123,8 +127,25 @@
             </div>
         </div>
     </div>
+    
 
 </main>
+
+
+<script>
+    const role = document.getElementById("role");
+    desgValue =  role.value
+    const btn = document.getElementById("btn");
+    
+    role.addEventListener("change", ()=>{
+
+        if(desgValue === "Choose..."){
+            btn.setAttribute("disabled");
+        }else{
+            btn.removeAttribute("disabled");
+        }
+    })
+</script>
 
 
 

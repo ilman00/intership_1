@@ -114,14 +114,13 @@ io.on("connection", (socket) => {
         dbConnection.query(myQuery, (err, result, fields) => {
             if (err) throw err;
             socket.emit("user data", result);
-            console.log(result);
+            
         });
     });
 
     socket.on("organization Data from user", (data) => {
         const depQuery = `SELECT * FROM department WHERE depOrg = '${data}'`
         dbConnection.query(depQuery, (err, results, fields) => {
-            console.log(results);
             socket.emit("department data to user", results);
         });
     });
@@ -172,11 +171,24 @@ app.get('/logout', function (req, res) {
 
 app.get("/", isLoggedIn, (req, res) => {
     const user = req.user;
-    const userDesig = req.user.designation;
-    const query = `SELECT * FROM organization`;
-    dbConnection.query(query, (err, result) => {
+    let query = ``;
+    let NoOfTaskToDashboard = ``
+    if(user.role === "CEO"){
+        query = `SELECT * FROM organization`;
+        NoOfTaskToDashboard = `SELECT taskId, organization FROM createtask`
+    }else if(user.role === "Director"){
+        query = `SELECT * FROM organization WHERE orgTitle = '${user.organization}'`;
+        NoOfTaskToDashboard = `SELECT taskId, organization FROM createtask WHERE organization = '${user.organization}' `
 
-        res.render("dashboard", { title: "Dashboard", organizations: result, userAccessibilty: userDesig, name: user.name, image: user.imagePath });
+    }else{
+        query = `SELECT * FROM organization WHERE orgTitle = '${user.organization}'`;
+        NoOfTaskToDashboard = `SELECT taskId, organization FROM createtask WHERE organization = '${user.organization}' AND email = '${user.email}'`
+    }
+    dbConnection.query(query, (err, result) => {
+        dbConnection.query(NoOfTaskToDashboard, (err, result2)=>{
+            console.log(result2);
+            res.render("dashboard", { title: "Dashboard", organizations: result, userAccessibilty: user.role, name: user.name, image: user.imagePath, result2:result2 });
+        })
     })
     console.log(user);
 });
@@ -184,7 +196,19 @@ app.get("/", isLoggedIn, (req, res) => {
 app.get("/specificOrg/:organiztion", isLoggedIn, (req, res) => {
     const user = req.user;
     const param = req.params.organiztion;
-    res.render("specific_org", { title: param, name: user.name, image: user.imagePath, user: user });
+    let orgDashboardQuery = ``
+    if(user.role === "CEO"){
+        orgDashboardQuery = `SELECT * FROM createtask WHERE organization = '${param}'`
+
+    }else{
+
+        orgDashboardQuery = `SELECT * FROM createtask WHERE organization = '${param}' AND email = '${user.email}'`
+    }
+
+    dbConnection.query(orgDashboardQuery, (err, results)=>{
+        res.render("specific_org", { title: param, name: user.name, image: user.imagePath, user: user, results });
+
+    });
 });
 
 app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
@@ -194,32 +218,80 @@ app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
     var query = ``;
     console.log("Loged User: ", user);
     if (paramStatus === "tasks-created-by-ceo") {
-        if (user.designation === "CEO") {
+        if (user.role === "CEO") {
             query = `SELECT * FROM createtask  WHERE organization = '${paramOrg}' AND initiated_by = 'CEO'`;
         } else {
             query = `SELECT * FROM createtask WHERE organization = '${paramOrg}' AND email = '${user.email}' AND initiated_by = 'CEO'`;
         }
 
     } else if (paramStatus === "completed-tasks") {
+        if (user.role === "CEO") {
+
             query = `SELECT * FROM createtask  WHERE organization = '${paramOrg}' AND currentStatus = 'Complete'`;
-    } else if (paramStatus === "delayed-tasks") {
-        query = `SELECT * FROM createtask WHERE date > CURDATE() AND organization = '${paramOrg}'`;
-    } else if (paramStatus === "in-process-tasks") {
-        query = `SELECT * FROM createtask`;
-    } else {
-        query = `SELECT * FROM createtask WHERE organization = '${paramOrg}'`;
+        } else {
+            query = `SELECT * FROM createtask  WHERE organization = '${paramOrg}' AND currentStatus = 'Complete' AND email = '${user.email}'`;
+
+        }
+    } else if (paramStatus === "created-tasks") {
+        if (user.role === "CEO") {
+            query = `SELECT * FROM createtask WHERE organization = '${paramOrg}'`;
+
+        } else {
+            query = `SELECT * FROM createtask WHERE organization = '${paramOrg}' AND email = '${user.email}'`;
+
+        }
+    }else if (paramStatus === "in-process-tasks") {
+        if (user.role === "CEO") {
+
+            query = `SELECT * FROM createtask  WHERE organization = '${paramOrg}' AND currentStatus = 'In Process'`;
+        } else {
+            query = `SELECT * FROM createtask  WHERE organization = '${paramOrg}' AND currentStatus = 'In Process' AND email = '${user.email}'`;
+
+        }
+    }else if(paramStatus === "forwarded-tasks"){
+
+    }else if(paramStatus === "task-not-in-process-tasks"){
+        if (user.role === "CEO") {
+
+            query = `SELECT * FROM createtask  WHERE organization = '${paramOrg}' AND currentStatus <> 'In Process'`;
+        } else {
+            query = `SELECT * FROM createtask  WHERE organization = '${paramOrg}' AND currentStatus <> 'In Process' AND email = '${user.email}'`;
+
+        }
+    }else if (paramStatus === "delayed-tasks") {
+        if (user.role === "CEO") {
+            query = `SELECT * FROM createtask WHERE date < CURDATE() AND organization = '${paramOrg}' `;
+
+        } else {
+            query = `SELECT * FROM createtask WHERE date < CURDATE() AND organization = '${paramOrg}' AND email = '${user.email}'`;
+
+        }
+    } else if(paramStatus === "tota-urgent-task"){
+        if (user.role === "CEO") {
+            query = `SELECT * FROM createtask WHERE taskType = 'Urgent' AND organization = '${paramOrg}' `;
+
+        } else {
+            query = `SELECT * FROM createtask WHERE taskType = 'Urgent' AND organization = '${paramOrg}' AND email = '${user.email}'`;
+
+        }
     }
     dbConnection.query(query, (err, results) => {
         console.log("Result From create Task: ", results);
         const taskId = results.map(result => result.taskId);
-        const taskIdString = taskId.join(','); 
-        const historyQuery = `SELECT taskId, file FROM history WHERE taskId IN (${taskIdString})`;
+        const taskIdString = taskId.join(',');
+        // const historyQuery = taskIdString ? `SELECT taskId, file FROM history WHERE taskId IN (${taskIdString})` : '';
 
-        dbConnection.query(historyQuery, (err, filesFromHistory) => {
-            if (err) throw err
-            console.log("From History Table", filesFromHistory);
-            res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath, file: filesFromHistory });
-        })
+        const historyQuery = `SELECT taskId, file FROM history WHERE taskId IN (${taskIdString})`;
+        if(taskIdString){
+
+            dbConnection.query(historyQuery, (err, filesFromHistory) => {
+                if (err) throw err
+                console.log("From History Table", filesFromHistory);
+                res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath, file: filesFromHistory });
+            });
+        }else{
+            res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath});
+        }
     });
 });
 
@@ -256,8 +328,8 @@ app.post("/add_designation", (req, res) => {
 
 app.get("/add_role", isLoggedIn, (req, res) => {
     const user = req.user;
-    const checkDesig = req.user.designation;
-    if (checkDesig === "Director" || checkDesig === "CEO") {
+    const checkRole = req.user.role;
+    if (checkRole === "Director" || checkRole === "CEO") {
         const requestRole = `SELECT * FROM role`;
 
         dbConnection.query(requestRole, (err, results, fields) => {
@@ -288,25 +360,28 @@ app.post("/add_role", (req, res) => {
     });
 });
 
-
+log
 
 // user rout
 
 // This is just a testing code for user route
-app.get("/add_user", (req, res) => {
+app.get("/add_user", isLoggedIn, (req, res) => {
     const user = req.user || "";
-    // const checkDesig = req.user.designation;
-    // if (checkDesig === "Director" || checkDesig === "CEO") {
+     const checkRole = req.user.role;
+     if (checkRole === "Director" || checkRole === "CEO") {
 
     const userQuery = `SELECT * FROM user`;
     const roleQuery = `SELECT * FROM role`;
     const desigQuery = `SELECT * FROM designation`;
     const orgQeury = `SELECT * FROM  organization`;
-
     dbConnection.query(userQuery, (err1, results) => {
+        if(err1) throw err1;
         dbConnection.query(roleQuery, (err2, roleData) => {
+            if(err2) throw err2;
             dbConnection.query(desigQuery, (err3, desigData) => {
+                if(err3) throw err3;
                 dbConnection.query(orgQeury, (err4, orgData) => {
+                    if(err4) throw err4;
 
                     res.render("add_user", { title: "Add User", userData: results, role: roleData, designation: desigData, organization: orgData, name: user.name || "", image: user.imagePath || "" });
                 });
@@ -314,9 +389,9 @@ app.get("/add_user", (req, res) => {
         });
 
     });
-    // } else {
-    //     res.send("<h1> You dont have permision to this Page </h1>")
-    // }
+     } else {
+        res.send("<h1> You dont have permision to this Page </h1>")
+    }
 
 });
 
@@ -334,15 +409,15 @@ app.post("/add_user", upload.single('image'), async (req, res) => {
     var imgsrc = "No File Chosen";
 
     if (req.file && req.file.filename) {
-        imgsrc = "/uploads/" + req.file.filename
+        imgsrc = "/uploads/" +  req.file.filename
     }
 
     try {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 
-        var queryArr = [role, designation, name, email, mobile, hashedPassword, organization, department, imgsrc]
-        var insertData = "INSERT INTO user(role, designation, name, email, mobile, password, organization, department, imagePath)VALUES(?,?,?,?,?,?,?,?,?)";
+        var insertData = "INSERT INTO user(designation, role, name, email, mobile, password, organization, department, imagePath)VALUES(?,?,?,?,?,?,?,?,?)";
+        var queryArr = [designation, role, name, email, mobile, hashedPassword, organization, department, imgsrc]
         dbConnection.query(insertData, queryArr, (err, result) => {
             if (err) throw err;
             console.log("file uploaded");
@@ -359,8 +434,8 @@ app.post("/add_user", upload.single('image'), async (req, res) => {
 // organization rout
 app.get("/add_organization", isLoggedIn, (req, res) => {
     const user = req.user
-    const checkDesig = req.user.designation;
-    if (checkDesig === "Director" || checkDesig === "CEO") {
+    const checkRole = req.user.role;
+    if (checkRole === "Director" || checkRole === "CEO") {
         const requestOrg = `SELECT * FROM organization`;
 
         dbConnection.query(requestOrg, (err, results, fields) => {
@@ -391,8 +466,8 @@ app.post("/add_organization", (req, res) => {
 // sub Department rout
 app.get("/add_subdepartment", isLoggedIn, (req, res) => {
     const user = req.user;
-    const checkDesig = req.user.designation;
-    if (checkDesig === "Director" || checkDesig === "CEO") {
+    const checkRole = req.user.role;
+    if (checkRole === "Director" || checkRole === "CEO") {
         const requestOrg = `SELECT orgTitle FROM organization`;
         const requestDepartment = `SELECT * FROM department`;
 
@@ -444,13 +519,13 @@ app.post("/edit/:file", (req, res) => {
     console.log("table Name: " + tableName, "table Id:" + id);
     const newTitle = req.body.title;
     if (tableName === "designation") {
-        var sql = `UPDATE ${tableName} SET title = '${newTitle}' WHERE id = ${id}`;
+        var sql = `UPDATE ${tableName} SET desigTitle = '${newTitle}' WHERE id = ${id}`;
     } else if (tableName === "department") {
         var sql = `UPDATE ${tableName} SET depTitle = '${newTitle}' WHERE depId = ${id}`;
     } else if (tableName === "organization") {
         var sql = `UPDATE ${tableName} SET orgTitle = '${newTitle}' WHERE orgId = ${id}`;
     } else if (tableName === "role") {
-        var sql = `UPDATE ${tableName} SET roleTitle = '${newTitle}' WHERE roleId = ${id}`;
+        var sql = `UPDATE ${tableName} SET title = '${newTitle}' WHERE id = ${id}`;
     }
 
     dbConnection.query(sql, (err, results) => {
@@ -502,10 +577,10 @@ app.post("/create_task", upload.single('filePath'), (req, res) => {
 
     dbConnection.query(fileQuery, [createTask.imagePath], (err, FileResult) => {
         console.log("File Result: ", FileResult.insertId);
-        const taskArry = [createTask.title, createTask.description, createTask.date, createTask.organization, createTask.department, createTask.assignTo, createTask.email, createTask.taskType, user.designation];
+        const taskArry = [createTask.title, createTask.description, createTask.date, createTask.organization, createTask.department, createTask.assignTo, createTask.email, createTask.taskType, user.role];
 
         dbConnection.query(taskQuery, taskArry, (err, results) => {
-            dbConnection.query(historyQuery, [results.insertId, createTask.description, user.designation, localDate, createTask.assignTo, createTask.deadline, "Just Created", createTask.filePath], (err, historyResult) => {
+            dbConnection.query(historyQuery, [results.insertId, createTask.description, user.role, localDate, createTask.assignTo, createTask.deadline, "Just Created", createTask.filePath], (err, historyResult) => {
 
                 res.redirect(`/organization/${createTask.organization}/tasks/create-tasks`);
             });
@@ -513,27 +588,7 @@ app.post("/create_task", upload.single('filePath'), (req, res) => {
     });
 });
 
-// created Tasks
-// app.get("/createdTask", isLoggedIn, (req, res) => {
 
-//     const logedInUser = req.user;
-
-
-//     let myQuery = ``;
-//     if (logedInUser.designation === "CEO") {
-//         myQuery = `SELECT * FROM createtask`;
-//     } else if (logedInUser.designation === "Director") {
-//         myQuery = `SELECT * FROM createtask WHERE organization = '${logedInUser.organization}'`
-//     } else if (logedInUser.designation === "Staff") {
-//         myQuery = `SELECT * FROM createtask WHERE email = '${logedInUser.email}'`;
-//     }
-//     dbConnection.query(myQuery, (err, results, fields) => {
-//         res.render("createdTask", { title: "Created Tasks", results: results, name: logedInUser.name, image: logedInUser.imagePath });
-//     });
-
-// });
-
-// assign_task
 
 app.get("/organization/:organization/tasks/:task/assign_task/:user", isLoggedIn, (req, res) => {
     const user = req.user;
@@ -559,7 +614,7 @@ app.post("/organization/:organization/tasks/:task/assign_task/:user", upload.sin
     let parts = param.split("-");
     let id = parts[1];
     const paramOrg = req.params.organization;
-    const paramTask = req.params.task;  
+    const paramTask = req.params.task;
     let filePath = "/uploads/person.png";
     let user = req.body.user;
     let partsOfUser = user.split(":");
