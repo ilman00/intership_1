@@ -258,9 +258,7 @@ app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
             query = `SELECT * FROM createtask  WHERE organization = '${paramOrg}' AND currentStatus = 'In Process' AND email = '${user.email}'`;
 
         }
-    } else if (paramStatus === "forwarded-tasks") {
-
-    } else if (paramStatus === "task-not-in-process-tasks") {
+    }  else if (paramStatus === "task-not-in-process-tasks") {
         if (user.role === "CEO") {
 
             query = `SELECT * FROM createtask  WHERE organization = '${paramOrg}' AND currentStatus <> 'In Process'`;
@@ -322,8 +320,8 @@ app.get("/add_designation", isLoggedIn, (req, res) => {
 app.post("/add_designation", (req, res) => {
     const addDesignation = req.body.designation;
     console.log(addDesignation);
-    const data = `INSERT INTO designation (title) VALUES (?)`;
-    dbConnection.query(data, addDesignation, (error, results, fields) => {
+    const data = `INSERT INTO designation (desigTitle) VALUES (?)`;
+    dbConnection.query(data, [addDesignation], (error, results, fields) => {
         if (error) {
             console.log("Error inserting data ", error);
             return;
