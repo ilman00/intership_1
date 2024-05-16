@@ -55,6 +55,8 @@
                         <option value="User Name">User Name</option>
                     </select>
                     <input type="hidden" name="hiddenInput" id="hiddenInput">
+                    <input type="hidden" name="organizationOfuser" id="organizationOfuser">
+                    <input type="hidden" name="departmentOfUser" id="departmentOfUser">
                 </div>
                 <div class="col-md-4 m-auto">
                     <label for="inputState" class="form-label">Remarks</label>
@@ -84,9 +86,12 @@
         const assign_taskUser = document.getElementById("assign_taskUser");
         const userEmail = document.getElementById("userEmail");
         const hiddenInput = document.getElementById("hiddentInput");
+        const organizationOfuser = document.getElementById("organizationOfuser");
+        const departmentOfUser = document.getElementById("departmentOfUser");
 
         assign_taskDep.addEventListener("change", () => {
             socket.emit("data from assign task", assign_taskDep.value);
+            console.log("assign Task Value: ", assign_taskDep.value);
             assign_taskUser.innerHTML = "";
         });
 
@@ -111,7 +116,18 @@
                
             });
         });
-       
+        
+        assign_taskUser.addEventListener("change", function(){
+            socket.emit("assign task user", assign_taskUser.value)
+        });
+
+        socket.on("user data to assign task", (data)=>{
+            console.log("user Organization", data[0].organization);
+            organizationOfuser.value = data[0].organization;
+            if(data[0].department){
+                departmentOfUser.value = data[0].department;
+            }
+        })
         
 
     </script>
