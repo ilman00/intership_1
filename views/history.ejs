@@ -22,13 +22,10 @@
                 <br>
                 <span> <b style="color: #5d9cec;"> Assign To : </b> <%= element.assigned_to  %> </span>
                 <br>
-                <span> <b style="color: #dc3545;"> Dead Line : </b><%= element.deadline   %></span>
+                <span> <b style="color: #dc3545;"> Dead Line : </b>Date: <%=new Date(element.deadline).toLocaleDateString() %><br> Time: <%= element.deadline_time %> </span>
                 <br>
                 <span> <b style="color: #5d9cec;"> Remarks : </b><%= element.remarks  %></span>
                 <br>
-                <br>
-                <br>
-                <span> <b style="color: #5d9cec;"> Note : </b></span>
                 <br>
                 <span> <b style="color: #5d9cec;"> Current Status : </b></span>
                 <span class="label label-primary" style="width:40%;"><%= element.current_status  %></span>

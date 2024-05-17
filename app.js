@@ -197,7 +197,7 @@ app.get("/", isLoggedIn, (req, res) => {
     dbConnection.query(query, (err, result) => {
         dbConnection.query(NoOfTaskToDashboard, (err, result2) => {
             console.log(result2);
-            res.render("dashboard", { title: "Dashboard", organizations: result, userAccessibilty: user.role, name: user.name, image: user.imagePath, result2: result2 });
+            res.render("dashboard", { title: "Dashboard", organizations: result, userAccessibilty: user.role, name: user.name, image: user.imagePath, result2: result2, userRole: user.role });
         })
     })
     console.log(user);
@@ -216,7 +216,7 @@ app.get("/specificOrg/:organiztion", isLoggedIn, (req, res) => {
     }
 
     dbConnection.query(orgDashboardQuery, (err, results) => {
-        res.render("specific_org", { title: param, name: user.name, image: user.imagePath, user: user, results });
+        res.render("specific_org", { title: param, name: user.name, image: user.imagePath, user: user, results, userRole: user.role });
 
     });
 });
@@ -295,10 +295,10 @@ app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
             dbConnection.query(historyQuery, (err, filesFromHistory) => {
                 if (err) throw err
                 console.log("From History Table", filesFromHistory);
-                res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath, file: filesFromHistory });
+                res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath, file: filesFromHistory, userRole: user.role });
             });
         } else {
-            res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath });
+            res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath, userRole: user.role });
         }
     });
 });
@@ -312,7 +312,7 @@ app.get("/add_designation", isLoggedIn, (req, res) => {
     // console.log(req.user);
     dbConnection.query(requestDesignation, (err, results, fields) => {
         if (err) throw err;
-        res.render("add_designation", { title: "Add Designation", resultsTo: results, name: user.name, image: user.imagePath })
+        res.render("add_designation", { title: "Add Designation", resultsTo: results, name: user.name, image: user.imagePath, userRole: user.role })
     })
 
 });
@@ -343,7 +343,7 @@ app.get("/add_role", isLoggedIn, (req, res) => {
         dbConnection.query(requestRole, (err, results, fields) => {
             if (err) throw err;
             // console.log(results);
-            res.render("add_role", { title: "Add Role", resultsTo: results, name: user.name, image: user.imagePath })
+            res.render("add_role", { title: "Add Role", resultsTo: results, name: user.name, image: user.imagePath, userRole: user.role })
         });
     } else {
         res.send("<h1> You dont have permision to this Page </h1>")
@@ -391,7 +391,7 @@ app.get("/add_user", isLoggedIn, (req, res) => {
                     dbConnection.query(orgQeury, (err4, orgData) => {
                         if (err4) throw err4;
 
-                        res.render("add_user", { title: "Add User", userData: results, role: roleData, designation: desigData, organization: orgData, name: user.name || "", image: user.imagePath || "" });
+                        res.render("add_user", { title: "Add User", userData: results, role: roleData, designation: desigData, organization: orgData, name: user.name || "", image: user.imagePath || "", userRole: user.role });
                     });
                 });
             });
@@ -449,7 +449,7 @@ app.get("/add_organization", isLoggedIn, (req, res) => {
         dbConnection.query(requestOrg, (err, results, fields) => {
             if (err) throw err;
             console.log(results);
-            res.render("add_organization", { title: "Add Organization", resultsTo: results, name: user.name, image: user.imagePath })
+            res.render("add_organization", { title: "Add Organization", resultsTo: results, name: user.name, image: user.imagePath, userRole: user.role })
         });
     } else {
         res.send("<h1> You dont have permision to this Page </h1>")
@@ -482,7 +482,7 @@ app.get("/add_subdepartment", isLoggedIn, (req, res) => {
         dbConnection.query(requestOrg, (err1, resultOrg, fields1) => {
             dbConnection.query(requestDepartment, (err2, resultDep, fields2) => {
 
-                res.render("add_subdepartment", { title: "Add Sub Department", resultOrg: resultOrg, resultDep: resultDep, name: user.name, image: user.imagePath });
+                res.render("add_subdepartment", { title: "Add Sub Department", resultOrg: resultOrg, resultDep: resultDep, name: user.name, image: user.imagePath, userRole: user.role });
 
             });
         });
@@ -514,7 +514,7 @@ app.get("/edit/:file", isLoggedIn, (req, res) => {
     console.log(req.params.file);
     const param = req.params.file;
     const user = req.user;
-    res.render("edit", { title: "Edit", name: user.name, image: user.imagePath });
+    res.render("edit", { title: "Edit", name: user.name, image: user.imagePath, userRole: user.role });
 })
 
 
@@ -549,7 +549,7 @@ app.get("/create_task", isLoggedIn, (req, res) => {
     console.log(user);
     dbConnection.query(myQuery, (err, results, fields) => {
 
-        res.render("create_task", { title: "Create Task", results: results, name: user.name, image: user.imagePath });
+        res.render("create_task", { title: "Create Task", results: results, name: user.name, image: user.imagePath, userRole: user.role });
     })
 });
 
@@ -621,7 +621,7 @@ app.get("/organization/:organization/tasks/:task/assign_task/:user", isLoggedIn,
     const depQuery = `SELECT * FROM department`;
     dbConnection.query(myQuery, (err, result) => {
         dbConnection.query(depQuery, (err, depResult) => {
-            res.render("assign_task", { title: "Assign_task", paramOrg: paramOrg, paramTask: paramTask, result: result[0], depResult: depResult, name: user.name, image: user.imagePath });
+            res.render("assign_task", { title: "Assign_task", paramOrg: paramOrg, paramTask: paramTask, result: result[0], depResult: depResult, name: user.name, image: user.imagePath, userRole: user.role });
         });
     });
 });
@@ -715,7 +715,7 @@ app.get("/organization/:organization/tasks/:task/action/:status", isLoggedIn, (r
     dbConnection.query(query, (err, result) => {
         if (err) throw err
         console.log(result[0]);
-        res.render("action", { title: "Action", paramOrg: paramOrg, paramTask: paramTask, result: paramStatus, name: user.name, image: user.imagePath });
+        res.render("action", { title: "Action", paramOrg: paramOrg, paramTask: paramTask, result: paramStatus, name: user.name, image: user.imagePath, userRole: user.role });
     })
 });
 
@@ -790,7 +790,7 @@ app.get("/organization/:organization/tasks/:task/history/:history", isLoggedIn, 
     const user = req.user;
     dbConnection.query(historyQuery, [id], (err, result) => {
 
-        res.render("history", { title: "History", result: result, name: user.name, image: user.imagePath });
+        res.render("history", { title: "History", result: result, name: user.name, image: user.imagePath , userRole: user.role});
     });
 })
 

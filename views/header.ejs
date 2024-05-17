@@ -108,13 +108,13 @@
                                 <li class="nav-item m-2">
                                     <a href="/" class="nav-link">Dashboard</a>
                                 </li>
-
+                                <% if(userRole === "CEO" || userRole === "Director"){ %>
                                 <li class="nav-item  m-2" id="createTaskClick" style="cursor: pointer;">Create Task
                                     <ul class="" id="createTask" style="display: none;">
                                         <li class="nav-item"><a class="nav-link" href="/create_task">Create Task</a></li>
                                     </ul>
                                 </li>
-
+                                <%}%>
                                 <li class="nav-item m-2" id="reportClick" style="cursor: pointer;">
                                     Report
                                     <ul class="" style="display: none;" id="report">
@@ -123,6 +123,7 @@
 
                                     </ul>
                                 </li>
+                                <% if(userRole === "CEO" || userRole === "Director"){ %>
                                 <li class="nav-item m-2" style="cursor: pointer;" id="settingClick" >
                                     Settings
                                     <ul class="" style="display: none;" id="settings">
@@ -133,7 +134,7 @@
                                         <li class="nav-item"><a class="nav-link" href="/add_subdepartment">Add Departments</a></li>
                                     </ul>
                                 </li>
-
+                                <%}%>
                             </ul>
                         </div>
                     </div>
