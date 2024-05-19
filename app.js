@@ -513,7 +513,27 @@ app.post("/add_subdepartment", (req, res) => {
 app.get("/edit/:file", isLoggedIn, (req, res) => {
     console.log(req.params.file);
     const param = req.params.file;
-    const user = req.user;
+    const parts = param.split("-");
+    const id = parts[1];
+    const tableName = parts[0];
+    // const query = ``
+    // if (tableName === "designation") {
+    //     query = `SELECT * FROM designation WHERE id = ${id}`;
+    // } else if (tableName === "department") {
+    //     query = `SELECT * FROM department WHERE depId = ${id}`;
+    // } else if (tableName === "organization") {
+    //     query = `SELECT * FROM organization WHERE orgId = ${id}`;
+    // } else if (tableName === "role") {
+    //     query = `SELECT * FROM role WHERE id = ${id}`;
+    // }
+    // const user = req.user;
+
+    // if(query !== ''){
+    //     dbConnection.query(query, (err, result)=>{
+
+    //         res.render("edit", { title: "Edit", name: user.name, image: user.imagePath, userRole: user.role, result: result });
+    //     })
+    // }
     res.render("edit", { title: "Edit", name: user.name, image: user.imagePath, userRole: user.role });
 })
 
@@ -736,12 +756,12 @@ app.post("/organization/:organization/tasks/:task/action/:status", upload.single
     }
     if (req.file && req.file.filename) {
         let filePath = req.file.filename;
-        const selectQueryForCreate = `SELECT description, initiated_by, timeStamp, date ,  currentStatus FROM createtask WHERE taskId = ?`;
-        const historyQuery = `INSERT INTO history (taskId, description, initiated_by, on_date_time, assigned_to, deadline, remarks , current_status, file) VALUES (?,?,?,?,?,?,?,?,?)`;
+        const selectQueryForCreate = `SELECT description, initiated_by, assignTo ,timeStamp, date ,  currentStatus, deadline_time FROM createtask WHERE taskId = ?`;
+        const historyQuery = `INSERT INTO history (taskId, description, initiated_by, on_date_time, assigned_to, deadline, remarks , current_status ,file, deadline_time) VALUES (?,?,?,?,?,?,?,?,?,?)`;
 
         dbConnection.query(selectQueryForCreate, [id], (err, result1) => {
             console.log("file ID: ", result1);
-            dbConnection.query(historyQuery, [id, result1[0].description, result1[0].initiated_by, currentDate, result1[0].assignTo, result1[0].date, actionTask.remarks, actionTask.status, filePath], (err, fileResult) => {
+            dbConnection.query(historyQuery, [id, result1[0].description, result1[0].initiated_by, currentDate, result1[0].assignTo, result1[0].date, actionTask.remarks, actionTask.status, filePath, result1[0].deadline_time], (err, fileResult) => {
                 if (err) throw err;
                 console.log("file added to file2");
                 dbConnection.query(myQuery, [actionTask.status, actionTask.remarks], (err, result2) => {
