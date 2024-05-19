@@ -18,17 +18,18 @@
                         rows="3"></textarea>
                 </div>
                 <div class="col-md-4 m-auto">
-                    <label for="" class="form-label">DeadLine Date</label>
+                    <label for="" class="form-label">Deadline Date</label>
                     <input type="date" class="form-control" name="date" required>
                 </div>
                 <div class="col-md-4 m-auto">
-                    <label for="" class="form-label">DeadLine Time</label>
+                    <label for="" class="form-label">Deadline Time</label>
                     <input type="time" class="form-control" name="time" required>
                 </div>
                 <div class="col-md-4 m-auto">
-                    <label for="" class="form-label">Select Organization</label>
+                    <label for="" class="form-label">Select Department</label>
                     <select class="form-select" name="organization" id="organizationID">
-                        <option>...</option>
+                        <option value="" selected disabled>Select Department</option>
+                        <!-- <option>...</option> -->
                         <% results.forEach((element)=>{ %>
 
                             <option value="<%=element.orgTitle%>">
@@ -38,9 +39,10 @@
                     </select>
                 </div>
                 <div class="col-md-4 m-auto">
-                    <label for="" class="form-label">Select Department</label>
+                    <label for="" class="form-label">Select Sub-Department</label>
                     <select class="form-select" name="department" id="departmentID">
-                        <option>...</option>
+                        <option value="" selected disabled>Select Sub-Designation</option>
+                        <!-- <option>...</option> -->
                     </select>
                 </div>
                 <div class="col-md-4 m-auto">

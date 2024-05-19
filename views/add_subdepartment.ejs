@@ -14,9 +14,10 @@
     <div class="container mt-5 bg-light ">
         <form class="w-75 m-auto p-5" action="/add_subdepartment" method="post">
             <div class="form-group">
-                <label class="col-md-4 control-label">Select Organization </label>
+                <label class="col-md-4 control-label">Select Main Department </label>
                 <div class="col-md-8">
-                    <select name="organization" class="form-control" tabindex="">
+                    <select name="organization" class="form-control" default= "Select Department" tabindex="">
+                        <option value="" selected disabled>Select Department</option>
                         <% resultOrg.forEach((element) => { %>
                             <option value="<%= element.orgTitle %>"><%= element.orgTitle %></option>
                         <% }); %>
@@ -78,11 +79,11 @@
                                         <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
                                             colspan="1"
                                             aria-label="Organization Name: activate to sort column ascending"
-                                            style="width: 350.333px;">Organization Name</th>
+                                            style="width: 350.333px;">Main Department</th>
                                         <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
                                             colspan="1"
                                             aria-label="Department Name: activate to sort column ascending"
-                                            style="width: 362.333px;">Department Name</th>
+                                            style="width: 362.333px;">Sub Department</th>
                                         <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
                                             colspan="1" aria-label="Actions: activate to sort column ascending"
                                             style="width: 99px;">Actions</th>

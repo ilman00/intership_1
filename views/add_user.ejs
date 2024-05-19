@@ -14,7 +14,8 @@
                 <div class="col-md-4 m-auto">
                     <label for="inputState" class="form-label">Select Role</label>
                     <select name="role" class="form-select">
-                        <option selected>Choose...</option>
+                        <option value="" selected disabled>Select User Role</option>
+                        <!-- <option selected>Select User Role...</option> -->
                         <% role.forEach((element)=>{ %>
                             <option value="<%=element.title%>">
                                 <%=element.title%>
@@ -25,7 +26,8 @@
                 <div class="col-md-4 m-auto">
                     <label for="inputState" class="form-label">Select Designation</label>
                     <select name="designation" class="form-select">
-                        <option selected>Choose...</option>
+                        <option value="" selected disabled>Select Designation</option>
+                        <!-- <option selected>Choose...</option> -->
                         <% designation.forEach((element)=>{ %>
 
                             <option value="<%=element.desigTitle%>">
@@ -53,9 +55,10 @@
 
 
                 <div class="col-md-4 m-auto">
-                    <label for="inputState" class="form-label">Select Organization</label>
+                    <label for="inputState" class="form-label">Select Main Department</label>
                     <select class="form-select" name="organization" id="organization">
-                        <option selected>Choose...</option>
+                        <option value="" selected disabled>Select Department</option>
+                        <!-- <option selected>Choose...</option> -->
                         <% organization.forEach((element)=>{ %>
                             <option value="<%=element.orgTitle%>">
                                 <%=element.orgTitle%>
@@ -64,8 +67,9 @@
                     </select>
                 </div>
                 <div class="col-md-4 m-auto">
-                    <label for="inputState" class="form-label">Select Department</label>
+                    <label for="inputState" class="form-label">Select Sub Department</label>
                     <select class="form-select" name="department" id="userDepartment">
+                        <option value="" selected disabled>Select Sub Department</option>
                         <option selected>Choose...</option>
                     </select>
                 </div>
