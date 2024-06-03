@@ -309,7 +309,6 @@ app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
 app.get("/add_designation", isLoggedIn, (req, res) => {
     const user = req.user;
     const requestDesignation = `SELECT * FROM designation`;
-    // console.log(req.user);
     dbConnection.query(requestDesignation, (err, results, fields) => {
         if (err) throw err;
         res.render("add_designation", { title: "Add Designation", resultsTo: results, name: user.name, image: user.imagePath, userRole: user.role })
@@ -456,11 +455,16 @@ app.get("/add_organization", isLoggedIn, (req, res) => {
     }
 });
 
-app.post("/add_organization", (req, res) => {
+app.post("/add_organization", upload.single('orgPic'), (req, res) => {
     const addOrg = req.body.org;
+    let imagePath = "";
+    if(req.file){
+        
+        imagePath = req.file.filename;;
+    }
     console.log(addOrg);
-    const data = `INSERT INTO organization (orgTitle) VALUES (?)`;
-    dbConnection.query(data, addOrg, (error, results, fields) => {
+    const data = `INSERT INTO organization (orgTitle, image) VALUES (?, ?)`;
+    dbConnection.query(data,[addOrg, imagePath], (error, results, fields) => {
         if (error) {
             console.log("Error inserting data ", error);
             return;
@@ -516,25 +520,36 @@ app.get("/edit/:file", isLoggedIn, (req, res) => {
     const parts = param.split("-");
     const id = parts[1];
     const tableName = parts[0];
-    // const query = ``
-    // if (tableName === "designation") {
-    //     query = `SELECT * FROM designation WHERE id = ${id}`;
-    // } else if (tableName === "department") {
-    //     query = `SELECT * FROM department WHERE depId = ${id}`;
-    // } else if (tableName === "organization") {
-    //     query = `SELECT * FROM organization WHERE orgId = ${id}`;
-    // } else if (tableName === "role") {
-    //     query = `SELECT * FROM role WHERE id = ${id}`;
-    // }
-    // const user = req.user;
+    const user = req.user;
+    let query = ``;
+    let titleOfEdited = "";
+    if (tableName === "designation") {
+        query = `SELECT * FROM designation WHERE id = ${id}`;
+    } else if (tableName === "department") {
+        query = `SELECT * FROM department WHERE depId = ${id}`;
+    } else if (tableName === "organization") {
+        query = `SELECT * FROM organization WHERE orgId = ${id}`;
+    } else if (tableName === "role") {
+        query = `SELECT * FROM role WHERE id = ${id}`;
+    }
 
-    // if(query !== ''){
-    //     dbConnection.query(query, (err, result)=>{
+    if(query !== ''){
+        dbConnection.query(query, (err, result)=>{
+            if (tableName === "designation") {
+                titleOfEdited = result[0].desigTitle;
 
-    //         res.render("edit", { title: "Edit", name: user.name, image: user.imagePath, userRole: user.role, result: result });
-    //     })
-    // }
-    res.render("edit", { title: "Edit", name: user.name, image: user.imagePath, userRole: user.role });
+            } else if (tableName === "department") {
+                titleOfEdited = result[0].depOrg;
+            } else if (tableName === "organization") {
+                titleOfEdited = result[0].orgTitle;
+            } else if (tableName === "role") {
+                titleOfEdited = result[0].title;
+            }
+            
+            res.render("edit", { title: "Edit", name: user.name, image: user.imagePath, userRole: user.role, result: result, titleOfEdited:titleOfEdited });
+        })
+    }
+    // res.render("edit", { title: "Edit", name: user.name, image: user.imagePath, userRole: user.role });
 })
 
 
@@ -562,6 +577,25 @@ app.post("/edit/:file", (req, res) => {
         res.redirect(`/add_${tableName}`);
     });
 });
+
+app.delete("/delete/:deleteId", (req, res) => {
+    const deleteId = req.params.deleteId;
+    console.log(deleteId);
+
+    // Add your logic to handle the deletion here, for example:
+    const deleteQuery = `DELETE FROM designation WHERE id = ?`
+    const itemDeleted = true; // Assume deletion is successful for demonstration purposes
+    dbConnection.query(deleteQuery, [deleteId], (err, result) =>{
+        if (err) throw err;
+
+        if(result.affectedRows === 0){
+            res.status(404).send({ error: `Item with ID ${deleteId} not found` });
+        }else{
+            res.status(200).send({ message: `Item with ID ${deleteId} deleted successfully` });
+        }
+    } )
+});
+
 
 app.get("/create_task", isLoggedIn, (req, res) => {
     const myQuery = `SELECT * FROM organization`;

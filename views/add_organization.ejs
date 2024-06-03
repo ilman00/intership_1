@@ -10,12 +10,17 @@
         </div>
 
         <div class="container mt-5 bg-light ">
-            <form class="w-75 m-auto p-5" action="/add_organization" method="post">
+            <form class="w-75 m-auto p-5" action="/add_organization" method="post" enctype="multipart/form-data">
 
                 <div class="form-group">
                     <label class="col-md-4 control-label">Title</label>
                     <div class="col-md-8">
                         <input type="text" class="form-control" placeholder="" name="org" required>
+                    </div>
+                </div>
+                <div class="form-group mt-4">
+                    <div class="col-md-8">
+                        <input type="file" class="form-control" name="orgPic" >
                     </div>
                 </div>
                 <button class="btn bg-green mt-3" type="text">Save</button>
@@ -73,17 +78,15 @@
 
                                     <tbody>
 
-                                        <% resultsTo.forEach((element)=>{ %>
+                                        <% resultsTo.forEach((element, index)=>{ %>
                                             <tr role="row" class="odd">
                                                 <td class="sorting_1">
-                                                    <%= element.orgId %>
+                                                    <%= index + 1 %>
                                                 </td>
                                                 <td class="">
                                                     <%= element.orgTitle %>
                                                 </td>
-                                                <td><a href="/edit/organization-<%=element.orgId%>" data-toggle="tooltip"
-                                                        data-placement="bottom" title="Edit Title"
-                                                        data-original-title="Edit Designation"><i
+                                                <td><a href="/edit/organization-<%=element.orgId%>"><i
                                                             class="bi bi-pencil-square"></i></a>
                                                 </td>
                                             </tr>

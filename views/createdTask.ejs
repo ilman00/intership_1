@@ -72,11 +72,11 @@
                                     </thead>
 
                                     <tbody>
-                                        <% results.forEach((element)=>{ %>
+                                        <% results.forEach((element, index)=>{ %>
 
                                             <tr>
                                                 <td>
-                                                    <%= element.taskId %>
+                                                    <%= index + 1 %>
                                                 </td>
                                                 <td>
                                                     <%= element.title%>

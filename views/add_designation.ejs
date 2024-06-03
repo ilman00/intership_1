@@ -3,33 +3,33 @@
 
 
 
-<main>
-    <div class="container">
-        <h2>Add Designation</h2>
-    </div>
-
-    <div class="container mt-5 bg-light ">
-        <form class="w-75 m-auto p-5" action="/add_designation" method="POST">
-
-            <div class="form-group">
-                <label class="col-md-4 control-label">Title</label>
-                <div class="col-md-8">
-                    <input type="text" class="form-control" placeholder="" name="designation" required>
-                </div>
-            </div>
-            <button class="btn bg-green mt-3" type="text">Save</button>
-
-        </form>
-    </div>
-
-    <div class="container row bg-light mt-4" style="margin: auto;">
+    <main>
         <div class="container">
-            <div class="">
-                <h4 class="m-t-0 header-title"><b> Designation list </b></h4>
+            <h2>Add Designation</h2>
+        </div>
+
+        <div class="container mt-5 bg-light ">
+            <form class="w-75 m-auto p-5" action="/add_designation" method="POST">
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Title</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" placeholder="" name="designation" required>
+                    </div>
+                </div>
+                <button class="btn bg-green mt-3" type="text">Save</button>
+
+            </form>
+        </div>
+
+        <div class="container row bg-light mt-4" style="margin: auto;">
+            <div class="container">
+                <div class="">
+                    <h4 class="m-t-0 header-title"><b> Designation list </b></h4>
 
 
-                <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-                    <!-- <div class="row">
+                    <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <!-- <div class="row">
                         <div class="col-sm-6">
                             <div class="dataTables_length" id="datatable_length"><label>Show entries<select
                                         name="datatable_length" aria-controls="datatable"
@@ -51,45 +51,50 @@
                         </div>
 
                     </div> -->
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <table id="datatable" class="table table-striped table-bordered dataTable no-footer"
-                                role="grid" aria-describedby="datatable_info">
-                                <thead>
-                                    <tr role="row">
-                                        <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1"
-                                            colspan="1" aria-sort="ascending"
-                                            aria-label="Serial #: activate to sort column descending"
-                                            style="width: 130.333px;">Serial #</th>
-                                        <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
-                                            colspan="1" aria-label="Title: activate to sort column ascending"
-                                            style="width: 689.333px;">Title</th>
-                                        <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
-                                            colspan="1" aria-label="Actions: activate to sort column ascending"
-                                            style="width: 129px;">Actions</th>
-                                    </tr>
-                                </thead>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="datatable" class="table table-striped table-bordered dataTable no-footer"
+                                    role="grid" aria-describedby="datatable_info">
+                                    <thead>
+                                        <tr role="row">
+                                            <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1" aria-sort="ascending"
+                                                aria-label="Serial #: activate to sort column descending"
+                                                style="width: 130.333px;">Serial #</th>
+                                            <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1" aria-label="Title: activate to sort column ascending"
+                                                style="width: 689.333px;">Title</th>
+                                            <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1" aria-label="Actions: activate to sort column ascending"
+                                                style="width: 129px;">Actions</th>
+                                        </tr>
+                                    </thead>
 
-                                <tbody>
-                                   <% resultsTo.forEach((element)=>{ %>
-
-                                    
-                                    <tr role="row" class="odd">
-                                        <td class="sorting_1"><%=  element.id %> </td>
-                                        <td class=""><%=  element.desigTitle %></td>
-                                        <td>
-                                            <a href="/edit/designation-<%=element.id%>" data-toggle="tooltip"
-                                                data-placement="bottom" title="Edit Title"
-                                                data-original-title="Edit Designation"><i
-                                                    class="bi bi-pencil-square"></i></a>
-                                        </td>
-                                    </tr>
-                                    <%  })  %>
-                                </tbody>
-                            </table>
+                                    <tbody>
+                                        <% resultsTo.forEach((element, index)=> { %>
+                                            <tr role="row" class="odd selectForIdinDB"
+                                                data-id-in-database="<%=element.id%>">
+                                                <td class="sorting_1">
+                                                    <%= index + 1 %>
+                                                </td>
+                                                <td class="">
+                                                    <%= element.desigTitle %>
+                                                </td>
+                                                <td>
+                                                    <a href="/edit/designation-<%=element.id%>">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+                                                    <br>
+                                                    <button class="deleteButton btn"
+                                                        data-id-in-database="<%=element.id%>">Delete</button>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <!-- <div class="row">
+                        <!-- <div class="row">
                         <div class="col-sm-6">
                             <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
                                 Showing 1 to 4 of 4 entries</div>
@@ -104,9 +109,9 @@
                             </nav>
                         </div>
                     </div> -->
+                    </div>
                 </div>
-            </div>
-            <!-- <div class="row">
+                <!-- <div class="row">
                 <div class="col-sm-6">
                     <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
                         Showing 1 to 4 of 4 entries</div>
@@ -121,14 +126,51 @@
                     </nav>
                 </div>
             </div> -->
+            </div>
         </div>
-    </div>
 
-</main>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const deleteButtons = document.querySelectorAll(".deleteButton");
+
+            deleteButtons.forEach(button => {
+                button.addEventListener("click", async (e) => {
+                    const listItem = e.target.closest('.selectForIdinDB');
+                    const deleteItem = listItem.getAttribute("data-id-in-database");
+
+                    if (deleteItem) {
+                        try {
+                            const response = await fetch(`/delete/${deleteItem}`, {
+                                method: 'DELETE',
+                            });
+
+                            if (!response.ok) {
+                                const errorMessage = await response.text();
+                                console.error(`Error: ${response.status} - ${response.statusText}`);
+                                console.error(`Error details: ${errorMessage}`);
+                                throw new Error('Network response was not ok');
+                            }
+
+                            const result = await response.json();
+                            console.log(result.message);
+                            // Remove the item from the DOM
+                            listItem.remove();
+                        } catch (error) {
+                            console.error('There was a problem with the fetch operation:', error);
+                        }
+                    } else {
+                        console.error('data-id-in-database attribute not found');
+                    }
+                });
+            });
+        });
+
+
+    </script>
 
 
 
 
-
-
-<%- include('footer.ejs') %>
+    <%- include('footer.ejs') %>

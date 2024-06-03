@@ -91,10 +91,10 @@
                                 </thead>
 
                                 <tbody id="tableBody">
-                                    <% resultDep.forEach( (element)=>{ %>
+                                    <% resultDep.forEach( (element, index)=>{ %>
 
                                         <tr>
-                                            <td class="sorting_1"><%= element.depId %></td>
+                                            <td class="sorting_1"><%= index + 1 %></td>
                                             <td class=""> <%= element.depOrg %></td>
                                             <td class=""> <%= element.depTitle %></td>
                                             <td><a href="">
