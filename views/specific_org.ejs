@@ -94,13 +94,14 @@
 
             <div class="col-md-6 col-sm-6 col-lg-4 pt-3">
 
-                <a class="" href="/organization/<%=title%>/tasks/task-not-in-process-tasks" style="text-decoration: none;">
+                <a class="" href="/organization/<%=title%>/tasks/not-in-process-tasks" style="text-decoration: none;">
                     <div class="" style="background-color: #5d9cec !important; border-radius: 5px;">
                         <div class="text-white">
                             <h4 class="ms-1">Tasks Not In Process</h4>
                             <% let countNotInProcessTask = 0 %>
                             <% results.forEach(taskNumElement => {%>
-                                <%if(taskNumElement.currentStatus !== "In Process"){%>
+                                <%= console.log(taskNumElement.currentStatus) %>
+                                <%if(taskNumElement.currentStatus === "Just Created"){%>
                                     <%countNotInProcessTask++%>
                                 <%}%>
                            <% }) %>
@@ -151,16 +152,6 @@
 
             </div>
         </div>
-
-
     </main>
-    
-
-
- 
-
-
-
-
 
     <%- include('footer.ejs') %>

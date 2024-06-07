@@ -92,20 +92,22 @@
 
                                 <tbody id="tableBody">
                                     <% resultDep.forEach( (element, index)=>{ %>
-
-                                        <tr>
+                                        <%if(element.showStatus !== "inactive"){%>
+                                        <tr class="selectForIdinDB" data-id-in-database="<%=element.depId%>"
+                                            depName="<%=element.depTitle%>">
                                             <td class="sorting_1"><%= index + 1 %></td>
                                             <td class=""> <%= element.depOrg %></td>
                                             <td class=""> <%= element.depTitle %></td>
-                                            <td><a href="">
-                                                </a><a
-                                                    href=""
-                                                    data-toggle="tooltip" data-placement="bottom" title=""
-                                                    data-original-title="Edit Sub Department">
-                                                    <i class="ti-write"
-                                                        style="font-size:30px; color:blue; margin-top:5px; margin-left:0px;"></i>
-                                                </a></td>
+                                            <td>
+                                                <a href="/edit/subdepartment-<%=element.depId%>">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <br>
+                                                <button class="deleteButton btn"
+                                                    data-id-in-database="<%=element.depId%>" >Delete</button>
+                                            </td>
                                         </tr>
+                                        <%} %>
                                     <% }) %>
 
                                 </tbody>
@@ -151,7 +153,44 @@
 
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const deleteButtons = document.querySelectorAll(".deleteButton");
 
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", async (e) => {
+                const listItem = e.target.closest('.selectForIdinDB');
+                const depName = listItem.getAttribute("depName");
+                const deleteItem = listItem.getAttribute("data-id-in-database");
+
+                if (deleteItem) {
+                    try {
+                        const response = await fetch(`/delete-subdepartment/${depName}/${deleteItem}`, {
+                            method: 'DELETE',
+                        });
+
+                        if (!response.ok) {
+                            const errorMessage = await response.text();
+                            console.error(`Error: ${response.status} - ${response.statusText}`);
+                            console.error(`Error details: ${errorMessage}`);
+                            throw new Error('Network response was not ok');
+                        }
+
+                        const result = await response.json();
+                        console.log(result.message);
+                        // Remove the item from the DOM
+                        listItem.remove();
+                    } catch (error) {
+                        console.error('There was a problem with the fetch operation:', error);
+                    }
+                } else {
+                    console.error('data-id-in-database attribute not found');
+                }
+            });
+        });
+    });
+
+</script>
 
 
 

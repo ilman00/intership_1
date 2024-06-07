@@ -21,7 +21,7 @@
 
     <div class="container d-flex flex-wrap">
         <% organizations.forEach((element, index)=>{ %>
-
+            <%if(element.showStatus !== "inactive"){ %>
 
             <div class="bg-light col-lg-3 m-2" style="box-sizing: border-box;">
 
@@ -66,6 +66,7 @@
                     </div>
                 </a>
             </div>
+            <% } %>
             <%})%>
 
 

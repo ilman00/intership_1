@@ -20,7 +20,7 @@
                 </div>
                 <div class="form-group mt-4">
                     <div class="col-md-8">
-                        <input type="file" class="form-control" name="orgPic" >
+                        <input type="file" class="form-control" name="orgPic">
                     </div>
                 </div>
                 <button class="btn bg-green mt-3" type="text">Save</button>
@@ -79,17 +79,26 @@
                                     <tbody>
 
                                         <% resultsTo.forEach((element, index)=>{ %>
-                                            <tr role="row" class="odd">
+                                            <%if(element.showStatus !== "inactive" ){ %>
+                                            <tr role="row" class="odd selectForIdinDB"
+                                                data-id-in-database="<%=element.orgId%>"
+                                                orgName="<%=element.orgTitle%>">
                                                 <td class="sorting_1">
                                                     <%= index + 1 %>
                                                 </td>
                                                 <td class="">
                                                     <%= element.orgTitle %>
                                                 </td>
-                                                <td><a href="/edit/organization-<%=element.orgId%>"><i
-                                                            class="bi bi-pencil-square"></i></a>
+                                                <td>
+                                                    <a href="/edit/organization-<%=element.orgId%>">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+                                                    <br>
+                                                    <button class="deleteButton btn"
+                                                        data-id-in-database="<%=element.orgId%>">Delete</button>
                                                 </td>
                                             </tr>
+                                            <% } %>
                                             <% }) %>
 
                                     </tbody>
@@ -133,7 +142,44 @@
 
     </main>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const deleteButtons = document.querySelectorAll(".deleteButton");
 
+            deleteButtons.forEach(button => {
+                button.addEventListener("click", async (e) => {
+                    const listItem = e.target.closest('.selectForIdinDB');
+                    const orgName = listItem.getAttribute("orgName");
+                    const deleteItem = listItem.getAttribute("data-id-in-database");
+
+                    if (deleteItem) {
+                        try {
+                            const response = await fetch(`/delete-organization/${orgName}/${deleteItem}`, {
+                                method: 'DELETE',
+                            });
+
+                            if (!response.ok) {
+                                const errorMessage = await response.text();
+                                console.error(`Error: ${response.status} - ${response.statusText}`);
+                                console.error(`Error details: ${errorMessage}`);
+                                throw new Error('Network response was not ok');
+                            }
+
+                            const result = await response.json();
+                            console.log(result.message);
+                            // Remove the item from the DOM
+                            listItem.remove();
+                        } catch (error) {
+                            console.error('There was a problem with the fetch operation:', error);
+                        }
+                    } else {
+                        console.error('data-id-in-database attribute not found');
+                    }
+                });
+            });
+        });
+
+    </script>
 
 
 

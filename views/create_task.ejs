@@ -105,13 +105,17 @@
             });
         });
 
-        departmentID.addEventListener("change", ()=>{
-            socket.emit("department Data", departmentID.value);
+        organizationID.addEventListener("change", ()=>{
+            socket.emit("department Data", organizationID.value);
             user.innerHTML = "";
             email.innerHTML = "";
         });
 
         socket.on("user data", (data)=>{
+            var firstOption = document.createElement("option");
+            firstOption.innerHTML = "Choose...";
+            email.appendChild(firstOption); 
+            user.appendChild(firstOption); 
             data.forEach((element)=>{
                 var option = document.createElement("option");
                 var optionForEmail=document.createElement("option");
