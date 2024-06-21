@@ -82,12 +82,12 @@
                                                         <%= element.desigTitle %>
                                                     </td>
                                                     <td>
-                                                        <a href="/edit/designation-<%=element.id%>">
+                                                        <a class="p-2" href="/edit/designation-<%=element.id%>">
                                                             <i class="bi bi-pencil-square"></i>
                                                         </a>
                                                         <br>
-                                                        <button class="deleteButton btn"
-                                                            data-id-in-database="<%=element.id%>" >Delete</button>
+                                                        <button class="deleteButton btn p-2"
+                                                            data-id-in-database="<%=element.id%>" ><i class="bi bi-trash"></i></button>
                                                     </td>
                                                 </tr>
                                             <% } %>

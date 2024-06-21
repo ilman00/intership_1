@@ -116,10 +116,10 @@
                                 </li>
                                 <%}%>
                                 <li class="nav-item m-2" id="reportClick" style="cursor: pointer;">
-                                    Report
+                                   Report
                                     <ul class="" style="display: none;" id="report">
-                                        <li class="nav-item"><a class="nav-link" href="#">Create Report </a></li>
-                                        <li class="nav-item"><a class="nav-link" href="#">Create User List</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="/report">Tasks Report </a></li>
+                                        <li class="nav-item"><a class="nav-link" href="/inactiveTasks">In Active Tasks Report</a></li>
 
                                     </ul>
                                 </li>
@@ -146,6 +146,7 @@
                     $("#createTask").toggle()
                 });
 
+                
                 $("#reportClick").click(function(){
                     $("#report").toggle()
                 });

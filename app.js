@@ -15,6 +15,7 @@ const bcrypt = require('bcryptjs');
 
 
 const app = express();
+let totalRecordsFetched = 0;
 
 const server = http.createServer(app)
 const io = socketIO(server);
@@ -143,7 +144,66 @@ io.on("connection", (socket) => {
         })
     })
 
+    socket.on("Number Of Entries", (data) => {
+        // console.log(data);
+        const numbers = parseInt(data)
+        console.log(numbers);
+        const tasksQuery = `SELECT * FROM createtask LIMIT ?`;
+        dbConnection.query(tasksQuery, [numbers], (err, result) => {
+            if (err) throw err;
+            socket.emit("Number of Record from Database", result);
+            // console.log(result);
+        })
+    });
+
+    socket.on("Page Records", (data) => {
+        // console.log("data :", data);
+        let pageValue = data;
+        
+
+        const offset = (pageValue - 1) * 10;
+
+        const prevReocordQuery = `SELECT * from createtask LIMIT ? OFFSET ?`;
+        dbConnection.query(prevReocordQuery, [10, offset], (err, result) => {
+            if (err) throw err;
+
+            socket.emit("Next Page Record to Frontend", result);
+        });
+    });
+
+    // socket.on("Prev Page Rocords", (data) => {
+    //     let pageValue = data;
+       
+    //     const offset = (pageValue - 1) * 10;
+
+    //     const prevReocordQuery = `SELECT * from createtask LIMIT ? OFFSET ?`;
+    //     dbConnection.query(prevReocordQuery, [10, offset], (err, result) => {
+    //         if (err) throw err;
+    //         console.log(result);
+    //         socket.emit("Prev Page Record to Frontend", result);
+
+    //     });
+    // });
+
+    socket.on("Search Page Records", (data) => {
+        const { searchTerm, pageValue } = data;
+        let offset = (pageValue - 1) * 10;
+        const query = `SELECT * FROM createtask WHERE title LIKE ? LIMIT ? OFFSET ?`;
+        const likePattern = `%${searchTerm}%`;
+        
+        dbConnection.query(query, [likePattern, 10, offset], (err, result) => {
+            if (err) {
+                console.error('Error executing query:', err);
+                socket.emit("search data to frontend", []); // Send an empty result set in case of error
+                return;
+            }
+            socket.emit("search data to frontend", result);
+        });
+    });
+    
 });
+
+
 
 
 app.get("/login", (req, res) => {
@@ -512,6 +572,17 @@ app.post("/add_subdepartment", (req, res) => {
 
 });
 
+
+app.get("/report", isLoggedIn, (req, res) => {
+    const user = req.user;
+    const report = `SELECT * from createtask LIMIT 10`;
+    dbConnection.query(report, (err, result)=>{
+        if(err) throw err;
+        res.render("report", { name: user.name, image: user.imagePath, userRole: user.role, result: result });
+    });
+});
+
+
 app.get("/edit/:file", isLoggedIn, (req, res) => {
     console.log(req.params.file);
     const param = req.params.file;
@@ -559,10 +630,10 @@ app.post("/edit/:file", (req, res) => {
     const id = param.split(/[^0-9]/).pop();
     console.log("table Name: " + tableName, "table Id:" + id);
     const newTitle = req.body.title;
-    
+
     if (tableName === "designation") {
         var sql = `UPDATE designation SET desigTitle = ? WHERE id = ?`;
-        
+
     } else if (tableName === "subdepartment") {
         var sql = `UPDATE department SET depTitle = ? WHERE depId = ?`;
     } else if (tableName === "organization") {
@@ -571,7 +642,7 @@ app.post("/edit/:file", (req, res) => {
         var sql = `UPDATE role SET title = ? WHERE id = ?`;
     }
 
-    dbConnection.query(sql,[newTitle, id], (err, results) => {
+    dbConnection.query(sql, [newTitle, id], (err, results) => {
         if (err) throw err;
         console.log("tableName in query : " + tableName);
         res.redirect(`/add_${tableName}`);
@@ -658,17 +729,17 @@ app.delete('/delete-organization/:orgName/:id', (req, res) => {
     }
 });
 
-app.delete("/delete-subdepartment/:deptName/:id", (req, res)=>{
-    const {deptName, id} = req.params;
+app.delete("/delete-subdepartment/:deptName/:id", (req, res) => {
+    const { deptName, id } = req.params;
 
-    if(deptName &&  id){
+    if (deptName && id) {
         console.log("name :", deptName);
         const inactiveSubDept = `UPDATE department SET showStatus = 'inactive' WHERE depId = ?`;
-        dbConnection.query(inactiveSubDept, [id], (err1, result1)=>{
-            if(err1) throw err1;
+        dbConnection.query(inactiveSubDept, [id], (err1, result1) => {
+            if (err1) throw err1;
             res.status(200).send({ message: 'Success' });
         })
-    }else{
+    } else {
         res.status(400).send({ error: 'Missing parameters' });
     }
 });
