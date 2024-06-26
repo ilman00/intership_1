@@ -15,11 +15,11 @@ const bcrypt = require('bcryptjs');
 
 
 const app = express();
-let totalRecordsFetched = 0;
 
 const server = http.createServer(app)
 const io = socketIO(server);
-var requestRout = ""
+
+app.use(bodyParser.json());
 
 app.use(session({
     secret: 'your-secret-key',
@@ -159,7 +159,7 @@ io.on("connection", (socket) => {
     socket.on("Page Records", (data) => {
         // console.log("data :", data);
         let pageValue = data;
-        
+
 
         const offset = (pageValue - 1) * 10;
 
@@ -173,7 +173,7 @@ io.on("connection", (socket) => {
 
     // socket.on("Prev Page Rocords", (data) => {
     //     let pageValue = data;
-       
+
     //     const offset = (pageValue - 1) * 10;
 
     //     const prevReocordQuery = `SELECT * from createtask LIMIT ? OFFSET ?`;
@@ -190,7 +190,7 @@ io.on("connection", (socket) => {
         let offset = (pageValue - 1) * 10;
         const query = `SELECT * FROM createtask WHERE title LIKE ? LIMIT ? OFFSET ?`;
         const likePattern = `%${searchTerm}%`;
-        
+
         dbConnection.query(query, [likePattern, 10, offset], (err, result) => {
             if (err) {
                 console.error('Error executing query:', err);
@@ -200,7 +200,34 @@ io.on("connection", (socket) => {
             socket.emit("search data to frontend", result);
         });
     });
-    
+
+    const allowedTable = ["organization", "department", "designation", "user", "createtask"]
+    // Here department mean organization
+    socket.on("data from server", (data) => {
+        if (!allowedTable.includes(data)) {
+            console.error("invalid data", data);
+            return
+        }
+        const departmentQuery = `SELECT * FROM ${data} WHERE showStatus = 'inactive'`;
+        dbConnection.query(departmentQuery, [data], (err, result) => {
+            if (err) throw err;
+            if (data === "organization") {
+
+                socket.emit("deparment data to client", result);
+            } else if (data === "department") {
+                socket.emit("subdepartment data to client", result);
+
+            } else if (data === "designation") {
+                socket.emit("designation data to client", result);
+            } else if (data === "user") {
+                socket.emit("user data to client", result);
+            } else if (data === "createtask") {
+                socket.emit("tasks data to client", result);
+            }
+            console.log("Inactive " + data, result);
+        })
+    })
+
 });
 
 
@@ -538,7 +565,7 @@ app.get("/add_subdepartment", isLoggedIn, (req, res) => {
     const user = req.user;
     const checkRole = req.user.role;
     if (checkRole === "Director" || checkRole === "CEO") {
-        const requestOrg = `SELECT orgTitle FROM organization`;
+        const requestOrg = `SELECT orgTitle, showStatus FROM organization`;
         const requestDepartment = `SELECT * FROM department`;
 
         dbConnection.query(requestOrg, (err1, resultOrg) => {
@@ -576,10 +603,16 @@ app.post("/add_subdepartment", (req, res) => {
 app.get("/report", isLoggedIn, (req, res) => {
     const user = req.user;
     const report = `SELECT * from createtask LIMIT 10`;
-    dbConnection.query(report, (err, result)=>{
-        if(err) throw err;
+    dbConnection.query(report, (err, result) => {
+        if (err) throw err;
         res.render("report", { name: user.name, image: user.imagePath, userRole: user.role, result: result });
     });
+});
+
+app.get("/inactivetasks", isLoggedIn, (req, res) => {
+    const user = req.user;
+
+    res.render("inactive-tasks", { name: user.name, image: user.imagePath, userRole: user.role });
 });
 
 
@@ -649,7 +682,7 @@ app.post("/edit/:file", (req, res) => {
     });
 });
 
-app.delete("/delete-designation/:deleteFrom/:deleteId", (req, res) => {
+app.patch("/delete-designation/:deleteFrom/:deleteId", (req, res) => {
     const deleteId = req.params.deleteId;
     const deleteName = req.params.deleteFrom
     console.log(req.params.deleteFrom);
@@ -696,7 +729,7 @@ app.delete("/delete-designation/:deleteFrom/:deleteId", (req, res) => {
     });
 });
 
-app.delete('/delete-organization/:orgName/:id', (req, res) => {
+app.patch('/delete-organization/:orgName/:id', (req, res) => {
     const { orgName, id } = req.params;
 
     if (orgName && id) {
@@ -729,7 +762,7 @@ app.delete('/delete-organization/:orgName/:id', (req, res) => {
     }
 });
 
-app.delete("/delete-subdepartment/:deptName/:id", (req, res) => {
+app.patch("/delete-subdepartment/:deptName/:id", (req, res) => {
     const { deptName, id } = req.params;
 
     if (deptName && id) {
@@ -742,6 +775,88 @@ app.delete("/delete-subdepartment/:deptName/:id", (req, res) => {
     } else {
         res.status(400).send({ error: 'Missing parameters' });
     }
+});
+
+app.patch("/undo-organization/:id", (req, res) => {
+    const id = req.params.id;
+    if (orgName && id) {
+        const undoQuery = `UPDATE createtask SET showStatus = 'active' WHERE id = ?`
+        dbConnection.query(undoQuery, [id], (err, result) => {
+            if (err) throw err;
+            res.status(200).send({ message: "successfully Activeted the Task" })
+        })
+    } else {
+        res.status(400).send({ error: 'Missing parameters' });
+    }
+});
+
+app.delete("/permanent-delete", (req, res) => {
+    const { name, id } = req.body;
+    const allowedTable = ["organization", "department", "designation", "user", "createtask"];
+    console.log("name of the table: ", name);
+    let deleteQuery = ``;
+    if (!allowedTable.includes(name)) {
+        res.json({ success: false }); // Send response for disallowed table
+        return;
+    }
+
+    if(name === "organization"){
+        
+        deleteQuery = `DELETE FROM ${name} WHERE orgId = ?`;
+    }else if(name === "department"){
+        deleteQuery = `DELETE FROM ${name} WHERE depId = ?`;
+    }else if(name === "designation"){
+        deleteQuery = `DELETE FROM ${name} WHERE id = ?`;
+    }else if(name === "user"){
+        deleteQuery = `DELETE FROM ${name} WHERE userId = ?`;
+    }else if(name === "createtask"){
+        deleteQuery = `DELETE FROM ${name} WHERE taskId = ?`;
+    }
+
+    dbConnection.query(deleteQuery, [id], (err, result) => {
+        if (err) {
+            console.error("Error executing query:", err);
+            res.json({ success: false }); 
+        } else {
+            console.log("Query executed successfully:", result);
+            res.json({ success: true }); 
+        }
+    });
+});
+
+app.patch("/restore-record", (req, res)=>{
+    const { name, id } = req.body;
+    const allowedTable = ["organization", "department", "designation", "user", "createtask"];
+    console.log("name of the table: ", name);
+    let restoreQuery = ``;
+    if (!allowedTable.includes(name)) {
+        res.json({ success: false }); 
+        return;
+    }
+
+    if(name === "organization"){
+        
+        restoreQuery = `UPDATE ${name} SET showStatus = 'active' WHERE orgId = ?`;
+    }else if(name === "department"){
+        restoreQuery = `UPDATE ${name} SET showStatus = 'active' WHERE depId = ?`;
+    }else if(name === "designation"){
+        restoreQuery = `UPDATE ${name} SET showStatus = 'active' WHERE id = ?`;
+    }else if(name === "user"){
+        restoreQuery = `UPDATE ${name} SET showStatus = 'active' WHERE userId = ?`;
+    }else if(name === "createtask"){
+        restoreQuery = `UPDATE ${name} SET showStatus = 'active' WHERE taskId = ?`;
+    }
+
+    dbConnection.query(restoreQuery, [id], (err, result) => {
+        if (err) {
+            
+            console.error("Error executing query:", err);
+            res.json({ success: false }); 
+        } else {
+            console.log("Query executed successfully:", result);
+            res.json({ success: true }); 
+        }
+    });
 });
 
 

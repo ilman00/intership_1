@@ -155,7 +155,7 @@
                     if (deleteItem) {
                         try {
                             const response = await fetch(`/delete-organization/${orgName}/${deleteItem}`, {
-                                method: 'DELETE',
+                                method: 'PATCH',
                             });
 
                             if (!response.ok) {

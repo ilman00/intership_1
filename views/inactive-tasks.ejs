@@ -1,0 +1,502 @@
+<%- include('header.ejs') %>
+
+
+    <main>
+        <div class="container">
+            <h4>Tasks Report</h4>
+        </div>
+
+
+
+
+
+
+        <div class="container row bg-light mt-4" style="margin: auto;">
+
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link " id="department" aria-current="page" href="#">Department</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="subdepartment" href="#">Sub-Department</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="designation" href="#">Designation</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="user" href="#">Users</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" id="tasks" href="#">Tasks</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container">
+                <div class="">
+                    <!-- <h6 class="m-t-0 header-title"><b> Report </b></h6> -->
+
+
+                    <div id="datatable_wrapper" style="min-height: 70vh;"
+                        class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <div class="row">
+                            <!-- <div class="col-sm-6">
+                            <div class="dataTables_length" id="datatable_length">
+                                <label>Show entries
+                                    <select name="datatable_length" id="NumberOfRecords"
+                                        class="form-control input-sm">
+                                        <option value="">Chose</option>
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </label>
+                            </div>
+                            </div> -->
+                            <!-- <div class="col-sm-6 d-flex flex-column justify-content-end">
+                            <div id="datatable_filter" class="float-end">
+                                <label class="float-end">Search:
+                                    <input type="search" id="searchRecord" class="form-control input-sm"
+                                        placeholder="">
+                                </label>
+                            </div>
+                            </div> -->
+
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-sm-12" id="tableParantElement">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- <div class="col-sm-6">
+                            <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
+                                Showing 1 to 4 of 4 entries</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <nav class="float-end" aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li class="page-item"><a class="page-link" pageValue="0" id="PrevPage"
+                                            href="#">Previous</a>
+                                    </li>
+                                    <li class="page-item"><a class="page-link" pageValue="1" id="CurrentPage"
+                                            href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" pageValue="2" id="NextPage"
+                                            href="#">Next</a></li>
+                                </ul>
+                            </nav>
+                        </div> -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io('http://localhost:3000');
+        document.addEventListener("DOMContentLoaded", () => {
+            const department = document.getElementById("department");
+            const subdepartment = document.getElementById("subdepartment");
+            const user = document.getElementById("user");
+            const tasks = document.getElementById("tasks");
+            const tableParantElement = document.getElementById("tableParantElement")
+            const designation = document.getElementById("designation")
+
+            function dataToServer(tableName) {
+                socket.emit("data from server", tableName)
+            }
+
+            function deleteRequest(name, id, row) {
+                fetch('/permanent-delete', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: name, id: id })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Delete successful for ID:', id);
+                            // Optionally remove the row from the table or refresh the table data
+                            row.remove()
+                        } else {
+                            console.error('Delete failed:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+
+            function restoreRequest(name, id, row) {
+                fetch('/restore-record', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: name, id: id })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Restore successful for ID:', id);
+                            // Optionally remove the row from the table or refresh the table data
+                            row.remove()
+                        } else {
+                            console.error('Restore failed:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+
+
+
+            // here department mean organization
+            department.addEventListener("click", () => {
+                dataToServer("organization");
+            });
+
+            subdepartment.addEventListener("click", () => {
+                dataToServer("department");
+            });
+
+            designation.addEventListener("click", () => {
+                dataToServer("designation");
+            });
+
+            user.addEventListener("click", () => {
+                dataToServer("user");
+            });
+
+            tasks.addEventListener("click", () => {
+                dataToServer("createtask");
+            });
+
+            window.addEventListener("load", () => {
+                dataToServer("createtask");
+            });
+
+            socket.on("deparment data to client", (data) => {
+                tableParantElement.innerHTML = ""; // Clear the parent element once before starting the loop
+
+                const tableHeader = `
+                <table id="" class="table table-striped table-bordered dataTable no-footer" role="grid" aria-describedby="datatable_info">
+                    <thead>
+                        <tr role="row">
+                            <th class="sorting_asc">Serial #</th>
+                            <th class="sorting">Title</th>
+                            <th class="sorting">Action</th>
+                        </tr>
+                    </thead>
+                <tbody id="tBody">
+                `;
+
+                let tableBody = "";
+
+                data.forEach((element, index) => {
+                    tableBody += `
+                    <tr class="forRemove" >
+                        <td>${index + 1}</td>
+                        <td>${element.orgTitle}</td>
+                        <td>
+                            <span><button class="btn deleteButton" id-from-db=${element.orgId}>Delete</button></span>
+                            <span><button class="btn restoreButton" id-from-db=${element.orgId}>Restore</button></span>
+                        </td>
+                    </tr>
+                    `;
+                });
+
+                const tableFooter = `
+                    </tbody>
+                    </table>
+                    `;
+
+                tableParantElement.innerHTML = tableHeader + tableBody + tableFooter;
+                const deleteButton = document.querySelectorAll(".deleteButton")
+
+                deleteButton.forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const orgId = event.target.getAttribute('id-from-db');
+                        const row = event.target.closest('.forRemove');
+                        // Perform the action for the delete button here
+                        console.log("delete button cliked for id ", orgId);
+                        deleteRequest("organization", orgId, row)
+                    });
+                });
+
+                document.querySelectorAll('.restoreButton').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const row = event.target.closest('.forRemove');
+                        const orgId = event.target.getAttribute('id-from-db');
+                        restoreRequest("organization", orgId, row)
+                    });
+                });
+            });
+
+
+            socket.on("subdepartment data to client", (data) => {
+                tableParantElement.innerHTML = "";
+
+                const tableHeader = `
+                <table id="" class="table table-striped table-bordered dataTable no-footer" role="grid" aria-describedby="datatable_info">
+                    <thead>
+                        <tr role="row">
+                            <th class="sorting_asc">Serial #</th>
+                            <th class="sorting">Title</th>
+                            <th class="sorting">Organization</th>
+                            <th class="sorting">Action</th>
+                        </tr>
+                    </thead>
+                <tbody id="tBody">
+                `;
+
+                let tableBody = "";
+
+                data.forEach((element, index) => {
+                    tableBody += `
+                    <tr class="forRemove">
+                        <td>${index + 1}</td>
+                        <td>${element.depTitle}</td>
+                        <td>${element.depOrg}</td>
+                        <td>
+                            <span><button class="btn deleteButton" id-from-db=${element.depId}>Delete</button></span>
+                            <span><button class="btn restoreButton" id-from-db=${element.depId}>Restore</button></span>
+                        </td>
+                    </tr>
+                    `;
+                });
+
+                const tableFooter = `
+                    </tbody>
+                    </table>
+                    `;
+
+                tableParantElement.innerHTML = tableHeader + tableBody + tableFooter;
+                const deleteButton = document.querySelectorAll(".deleteButton")
+
+                deleteButton.forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const depId = event.target.getAttribute('id-from-db');
+                        const row = event.target.closest(".forRemove")
+                        deleteRequest("department", depId, row)
+                    });
+                });
+
+                document.querySelectorAll('.restoreButton').forEach(button => {
+                    button.addEventListener('click', (event) => {
+
+                        const row = event.target.closest('.forRemove');
+                        const depId = event.target.getAttribute('id-from-db');
+                        restoreRequest("department", depId, row)
+                    });
+                });
+            });
+
+
+            socket.on("user data to client", (data) => {
+                tableParantElement.innerHTML = ""; // Clear the parent element once before starting the loop
+
+                const tableHeader = `
+                <table id="" class="table table-striped table-bordered dataTable no-footer" role="grid" aria-describedby="datatable_info">
+                    <thead>
+                        <tr role="row">
+                            <th class="sorting_asc">Serial #</th>
+                            <th class="sorting">Name</th>
+                            <th class="sorting">Email</th>
+                            <th class="sorting">Action</th>
+                        </tr>
+                    </thead>
+                <tbody id="tBody">
+                `;
+
+                let tableBody = "";
+
+                data.forEach((element, index) => {
+                    tableBody += `
+                    <tr class="forRemove">
+                        <td>${index + 1}</td>
+                        <td>${element.name}</td>
+                        <td>${element.email}</td>
+                        <td>${element.organization}</td>
+                        <td>
+                            <span><button class="btn deleteButton" id-from-db=${element.userId}>Delete</button></span>
+                            <span><button class="btn restoreButton" id-from-db=${element.userId}>Restore</button></span>
+                        </td>
+                    </tr>
+                    `;
+                });
+
+                const tableFooter = `
+            </tbody>
+        </table>
+    `;
+
+                tableParantElement.innerHTML = tableHeader + tableBody + tableFooter;
+                const deleteButton = document.querySelectorAll(".deleteButton");
+
+                deleteButton.forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const userId = event.target.getAttribute('id-from-db');
+                        const row = event.target.closest(".forRemove")
+                        deleteRequest("user", userId, row);
+                    });
+                });
+
+                document.querySelectorAll('.restoreButton').forEach(button => {
+                    button.addEventListener('click', (event) => {
+
+                        const userId = event.target.getAttribute('id-from-db');
+                        const row = event.target.closest('.forRemove');
+                        restoreRequest("user", userId, row);
+                    });
+                });
+            });
+
+
+            socket.on("designation data to client", (data) => {
+                tableParantElement.innerHTML = ""; // Clear the parent element once before starting the loop
+
+                const tableHeader = `
+                <table id="" class="table table-striped table-bordered dataTable no-footer" role="grid" aria-describedby="datatable_info">
+                    <thead>
+                        <tr role="row">
+                            <th class="sorting_asc">Serial #</th>
+                            <th class="sorting">Title</th>
+                            <th class="sorting">Action</th>
+                        </tr>
+                    </thead>
+                <tbody id="tBody">
+                `;
+
+                let tableBody = "";
+
+                data.forEach((element, index) => {
+                    tableBody += `
+                    <tr class="forRemove" >
+                        <td>${index + 1}</td>
+                        <td>${element.desigTitle}</td>
+                        <td>
+                            <span><button class="btn deleteButton" id-from-db=${element.id}>Delete</button></span>
+                            <span><button class="btn restoreButton" id-from-db=${element.id}>Restore</button></span>
+                        </td>
+                    </tr>
+                    `;
+                });
+
+                const tableFooter = `
+                    </tbody>
+                    </table>
+                    `;
+
+                tableParantElement.innerHTML = tableHeader + tableBody + tableFooter;
+                const deleteButton = document.querySelectorAll(".deleteButton")
+
+                deleteButton.forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const desigId = event.target.getAttribute('id-from-db');
+                        const row = event.target.closest('.forRemove');
+                        // Perform the action for the delete button here
+                        console.log("delete button cliked for id ", desigId);
+                        deleteRequest("designation", desigId, row)
+                    });
+                });
+
+                document.querySelectorAll('.restoreButton').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const row = event.target.closest('.forRemove');
+                        const desigId = event.target.getAttribute('id-from-db');
+                        restoreRequest("designation", desigId, row)
+                    });
+                });
+            });
+
+
+
+
+
+            socket.on("tasks data to client", (data) => {
+                tableParantElement.innerHTML = ""; // Clear the parent element once before starting the loop
+
+                const tableHeader = `
+        <table id="" class="table table-striped table-bordered dataTable no-footer" role="grid" aria-describedby="datatable_info">
+            <thead>
+                <tr role="row">
+                    <th class="sorting_asc">Serial #</th>
+                    <th class="sorting">Title</th>
+                    <th class="sorting">Description</th>
+                    <th class="sorting">DeadLine</th>
+                    <th class="sorting">Assign to</th>
+                    <th class="sorting">Current Status</th>
+                    <th class="sorting">Action</th>
+                </tr>
+            </thead>
+            <tbody id="tBody">
+    `;
+
+                let tableBody = "";
+
+                data.forEach((element, index) => {
+                    tableBody += `
+            <tr class="forRemove">
+                <td>${index + 1}</td>
+                <td>${element.title}</td>
+                <td>${element.description}</td>
+                <td>${element.date}</td>
+                <td>${element.assignTo}</td>
+                <td>${element.currentStatus}</td>
+                <td>
+                    <span><button class="btn deleteButton" id-from-db=${element.taskId}>Delete</button></span>
+                    <span><button class="btn restoreButton" id-from-db=${element.taskId}>Restore</button></span>
+                </td>
+            </tr>
+        `;
+                });
+
+                const tableFooter = `
+            </tbody>
+        </table>
+    `;
+
+                tableParantElement.innerHTML = tableHeader + tableBody + tableFooter;
+
+                const deleteButton = document.querySelectorAll(".deleteButton");
+
+                deleteButton.forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const taskId = event.target.getAttribute('id-from-db');
+                        const row = event.target.closest(".forRemove")
+                        deleteRequest("createtask", taskId, row)
+                    });
+                });
+
+                document.querySelectorAll('.restoreButton').forEach(button => {
+                    button.addEventListener('click', (event) => {
+
+                        const taskId = event.target.getAttribute('id-from-db');
+                        const row = event.target.closest('.forRemove');
+                        restoreRequest("createtask", taskId, row);
+                    });
+                });
+            });
+
+        });
+    </script>
+
+
+    <%- include('footer.ejs') %>

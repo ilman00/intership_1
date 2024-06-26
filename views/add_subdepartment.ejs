@@ -6,45 +6,49 @@
 
 
 
-<main>
-    <div class="container">
-        <h2>Add Sub Department</h2>
-    </div>
-
-    <div class="container mt-5 bg-light ">
-        <form class="w-75 m-auto p-5" action="/add_subdepartment" method="post">
-            <div class="form-group">
-                <label class="col-md-4 control-label">Select Main Department </label>
-                <div class="col-md-8">
-                    <select name="organization" class="form-control" default= "Select Department" tabindex="">
-                        <option value="" selected disabled>Select Department</option>
-                        <% resultOrg.forEach((element) => { %>
-                            <option value="<%= element.orgTitle %>"><%= element.orgTitle %></option>
-                        <% }); %>
-                        
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-md-4 control-label">Title</label>
-                <div class="col-md-8">
-                    <input type="text" class="form-control" placeholder="" name="department" required>
-                </div>
-            </div>
-            <button class="btn bg-green mt-3" id="save" type="text">Save</button>
-
-        </form>
-    </div>
-
-    <div class="container row bg-light mt-4" style="margin: auto;">
+    <main>
         <div class="container">
-            <div class="">
-                <h4 class="m-t-0 header-title"><b> Depratment list </b></h4>
+            <h2>Add Sub Department</h2>
+        </div>
+
+        <div class="container mt-5 bg-light ">
+            <form class="w-75 m-auto p-5" action="/add_subdepartment" method="post">
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Select Main Department </label>
+                    <div class="col-md-8">
+                        <select name="organization" class="form-control" default="Select Department" tabindex="">
+                            <option value="" selected disabled>Select Department</option>
+                            <% resultOrg.forEach((element)=> { %>
+                                <%if(element.showStatus !=="inactive" ){%>
+                                    <option value="<%= element.orgTitle %>">
+                                        <%= element.orgTitle %>
+                                    </option>
+                                <% } %>
+                            <% }); %>
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Title</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" placeholder="" name="department" required>
+                    </div>
+                </div>
+                <button class="btn bg-green mt-3" id="save" type="text">Save</button>
+
+            </form>
+        </div>
+
+        <div class="container row bg-light mt-4" style="margin: auto;">
+            <div class="container">
+                <div class="">
+                    <h4 class="m-t-0 header-title"><b> Depratment list </b></h4>
 
 
-                <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-                    <!-- <div class="row">
+                    <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <!-- <div class="row">
                         <div class="col-sm-6">
                             <div class="dataTables_length" id="datatable_length"><label>Show <select
                                         name="datatable_length" aria-controls="datatable"
@@ -66,55 +70,61 @@
                         </div>
 
                     </div> -->
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <table id="datatable" class="table table-striped table-bordered dataTable no-footer"
-                                role="grid" aria-describedby="datatable_info">
-                                <thead>
-                                    <tr role="row">
-                                        <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1"
-                                            colspan="1" aria-sort="ascending"
-                                            aria-label="Serial #: activate to sort column descending"
-                                            style="width: 99.3333px;">Serial #</th>
-                                        <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
-                                            colspan="1"
-                                            aria-label="Organization Name: activate to sort column ascending"
-                                            style="width: 350.333px;">Main Department</th>
-                                        <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
-                                            colspan="1"
-                                            aria-label="Department Name: activate to sort column ascending"
-                                            style="width: 362.333px;">Sub Department</th>
-                                        <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
-                                            colspan="1" aria-label="Actions: activate to sort column ascending"
-                                            style="width: 99px;">Actions</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody id="tableBody">
-                                    <% resultDep.forEach( (element, index)=>{ %>
-                                        <%if(element.showStatus !== "inactive"){%>
-                                        <tr class="selectForIdinDB" data-id-in-database="<%=element.depId%>"
-                                            depName="<%=element.depTitle%>">
-                                            <td class="sorting_1"><%= index + 1 %></td>
-                                            <td class=""> <%= element.depOrg %></td>
-                                            <td class=""> <%= element.depTitle %></td>
-                                            <td>
-                                                <a href="/edit/subdepartment-<%=element.depId%>">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </a>
-                                                <br>
-                                                <button class="deleteButton btn"
-                                                    data-id-in-database="<%=element.depId%>" >Delete</button>
-                                            </td>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="datatable" class="table table-striped table-bordered dataTable no-footer"
+                                    role="grid" aria-describedby="datatable_info">
+                                    <thead>
+                                        <tr role="row">
+                                            <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1" aria-sort="ascending"
+                                                aria-label="Serial #: activate to sort column descending"
+                                                style="width: 99.3333px;">Serial #</th>
+                                            <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1"
+                                                aria-label="Organization Name: activate to sort column ascending"
+                                                style="width: 350.333px;">Main Department</th>
+                                            <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1"
+                                                aria-label="Department Name: activate to sort column ascending"
+                                                style="width: 362.333px;">Sub Department</th>
+                                            <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1"
+                                                colspan="1" aria-label="Actions: activate to sort column ascending"
+                                                style="width: 99px;">Actions</th>
                                         </tr>
-                                        <%} %>
-                                    <% }) %>
+                                    </thead>
 
-                                </tbody>
-                            </table>
+                                    <tbody id="tableBody">
+                                        <% resultDep.forEach( (element, index)=>{ %>
+                                            <%if(element.showStatus !=="inactive" ){%>
+                                                <tr class="selectForIdinDB" data-id-in-database="<%=element.depId%>"
+                                                    depName="<%=element.depTitle%>">
+                                                    <td class="sorting_1">
+                                                        <%= index + 1 %>
+                                                    </td>
+                                                    <td class="">
+                                                        <%= element.depOrg %>
+                                                    </td>
+                                                    <td class="">
+                                                        <%= element.depTitle %>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/edit/subdepartment-<%=element.depId%>">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </a>
+                                                        <br>
+                                                        <button class="deleteButton btn"
+                                                            data-id-in-database="<%=element.depId%>">Delete</button>
+                                                    </td>
+                                                </tr>
+                                                <%} %>
+                                                    <% }) %>
+
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <!-- <div class="row">
+                        <!-- <div class="row">
                         <div class="col-sm-6">
                             <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
                                 Showing 1 to 4 of 4 entries</div>
@@ -129,9 +139,9 @@
                             </nav>
                         </div>
                     </div> -->
+                    </div>
                 </div>
-            </div>
-            <!-- <div class="row">
+                <!-- <div class="row">
                 <div class="col-sm-6">
                     <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
                         Showing 1 to 4 of 4 entries</div>
@@ -146,54 +156,54 @@
                     </nav>
                 </div>
             </div> -->
+            </div>
         </div>
-    </div>
 
-</main>
-
+    </main>
 
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const deleteButtons = document.querySelectorAll(".deleteButton");
 
-        deleteButtons.forEach(button => {
-            button.addEventListener("click", async (e) => {
-                const listItem = e.target.closest('.selectForIdinDB');
-                const depName = listItem.getAttribute("depName");
-                const deleteItem = listItem.getAttribute("data-id-in-database");
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const deleteButtons = document.querySelectorAll(".deleteButton");
 
-                if (deleteItem) {
-                    try {
-                        const response = await fetch(`/delete-subdepartment/${depName}/${deleteItem}`, {
-                            method: 'DELETE',
-                        });
+            deleteButtons.forEach(button => {
+                button.addEventListener("click", async (e) => {
+                    const listItem = e.target.closest('.selectForIdinDB');
+                    const depName = listItem.getAttribute("depName");
+                    const deleteItem = listItem.getAttribute("data-id-in-database");
 
-                        if (!response.ok) {
-                            const errorMessage = await response.text();
-                            console.error(`Error: ${response.status} - ${response.statusText}`);
-                            console.error(`Error details: ${errorMessage}`);
-                            throw new Error('Network response was not ok');
+                    if (deleteItem) {
+                        try {
+                            const response = await fetch(`/delete-subdepartment/${depName}/${deleteItem}`, {
+                                method: 'PATCH',
+                            });
+
+                            if (!response.ok) {
+                                const errorMessage = await response.text();
+                                console.error(`Error: ${response.status} - ${response.statusText}`);
+                                console.error(`Error details: ${errorMessage}`);
+                                throw new Error('Network response was not ok');
+                            }
+
+                            const result = await response.json();
+                            console.log(result.message);
+                            // Remove the item from the DOM
+                            listItem.remove();
+                        } catch (error) {
+                            console.error('There was a problem with the fetch operation:', error);
                         }
-
-                        const result = await response.json();
-                        console.log(result.message);
-                        // Remove the item from the DOM
-                        listItem.remove();
-                    } catch (error) {
-                        console.error('There was a problem with the fetch operation:', error);
+                    } else {
+                        console.error('data-id-in-database attribute not found');
                     }
-                } else {
-                    console.error('data-id-in-database attribute not found');
-                }
+                });
             });
         });
-    });
 
-</script>
-
+    </script>
 
 
 
 
-<%- include('footer.ejs') %>
+
+    <%- include('footer.ejs') %>
