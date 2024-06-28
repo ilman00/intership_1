@@ -99,8 +99,8 @@ io.on("connection", (socket) => {
     socket.on("selectData", (data) => {
         console.log("socket data :", data);
 
-        myquery = `SELECT * FROM department WHERE depOrg = '${data}'`;
-        dbConnection.query(myquery, (err, results, fields) => {
+        myquery = `SELECT * FROM department WHERE depOrg = ? AND showStatus <> 'inactive'`;
+        dbConnection.query(myquery, [data],(err, results, fields) => {
             if (err) throw err;
             console.log("socket Data", results);
             socket.emit("selectData from server", results);
@@ -111,8 +111,8 @@ io.on("connection", (socket) => {
     socket.on("department Data", (data) => {
         console.log("department data :", data);
 
-        const myQuery = `SELECT * FROM user WHERE organization = '${data}'`
-        dbConnection.query(myQuery, (err, result, fields) => {
+        const myQuery = `SELECT * FROM user WHERE organization = ? AND showStatus <> 'inactive'`
+        dbConnection.query(myQuery, [data],(err, result, fields) => {
             if (err) throw err;
             socket.emit("user data", result);
 
@@ -120,8 +120,8 @@ io.on("connection", (socket) => {
     });
 
     socket.on("organization Data from user", (data) => {
-        const depQuery = `SELECT * FROM department WHERE depOrg = '${data}'`
-        dbConnection.query(depQuery, (err, results, fields) => {
+        const depQuery = `SELECT * FROM department WHERE depOrg = ? AND showStatus <> 'inactive'`
+        dbConnection.query(depQuery, [data],(err, results, fields) => {
             socket.emit("department data to user", results);
         });
     });

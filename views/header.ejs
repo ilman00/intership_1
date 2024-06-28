@@ -119,8 +119,9 @@
                                    Report
                                     <ul class="" style="display: none;" id="report">
                                         <li class="nav-item"><a class="nav-link" href="/report">Tasks Report </a></li>
+                                        <% if(userRole === "CEO"){ %>
                                         <li class="nav-item"><a class="nav-link" href="/inactivetasks">Inactive Tasks Report</a></li>
-
+                                        <%}%>
                                     </ul>
                                 </li>
                                 <% if(userRole === "CEO" || userRole === "Director"){ %>

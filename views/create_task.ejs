@@ -31,10 +31,11 @@
                         <option value="" selected disabled>Select Department</option>
                         <!-- <option>...</option> -->
                         <% results.forEach((element)=>{ %>
-
+                            <%if(element.showStatus !=="inactive" ){%>
                             <option value="<%=element.orgTitle%>">
                                 <%= element.orgTitle %>
                             </option>
+                            <% } %>
                             <%})%>
                     </select>
                 </div>
