@@ -97,19 +97,15 @@ var upload = multer({
 io.on("connection", (socket) => {
     console.log("user connected");
     socket.on("selectData", (data) => {
-        console.log("socket data :", data);
 
         myquery = `SELECT * FROM department WHERE depOrg = ? AND showStatus <> 'inactive'`;
         dbConnection.query(myquery, [data],(err, results, fields) => {
             if (err) throw err;
-            console.log("socket Data", results);
             socket.emit("selectData from server", results);
-            console.log(results);
         });
     });
 
     socket.on("department Data", (data) => {
-        console.log("department data :", data);
 
         const myQuery = `SELECT * FROM user WHERE organization = ? AND showStatus <> 'inactive'`
         dbConnection.query(myQuery, [data],(err, result, fields) => {
@@ -133,7 +129,6 @@ io.on("connection", (socket) => {
         });
     });
     socket.on("assign task user", (data) => {
-        console.log("user name and Email", data);
         let splitNameAndEmail = data.split(":");
         let userName = splitNameAndEmail[0];
         let userEmail = splitNameAndEmail[1];
@@ -147,7 +142,6 @@ io.on("connection", (socket) => {
     socket.on("Number Of Entries", (data) => {
         // console.log(data);
         const numbers = parseInt(data)
-        console.log(numbers);
         const tasksQuery = `SELECT * FROM createtask LIMIT ?`;
         dbConnection.query(tasksQuery, [numbers], (err, result) => {
             if (err) throw err;
@@ -224,7 +218,6 @@ io.on("connection", (socket) => {
             } else if (data === "createtask") {
                 socket.emit("tasks data to client", result);
             }
-            console.log("Inactive " + data, result);
         })
     })
 
@@ -265,6 +258,37 @@ app.get('/logout', function (req, res) {
     });
 });
 
+app.get("/change-password", isLoggedIn ,(req, res)=>{
+    const user = req.user;
+    res.render("change_password", {name: user.name, image: user.imagePath, userRole: user.role })
+});
+
+app.post("/change-password", (req, res)=>{
+    const email = req.body.email;
+    const password = req.body.password;
+
+    const findEmail = `SELECT userId , email FROM user WHERE email = ?`;
+    dbConnection.query(findEmail, [email], (err1, result1)=>{
+        if(err1) throw err1;
+        if(result1.length == 0){
+            res.send("email not found")
+        }else{
+            bcrypt.hash(password, 10)
+            .then(hashPassword => {
+                console.log("hashed password", hashPassword);
+    
+                const updatePassword = `UPDATE user SET password = ? WHERE email = ?`;
+                dbConnection.query(updatePassword, [hashPassword, email], (err2, result2)=>{
+                    res.redirect("/change-password");
+                });
+            })
+            .catch(error => {
+                console.error("Error hashing password:", error);
+                res.status(500).send("Internal server error.");
+            });
+        }
+    });   
+});
 
 app.get("/", isLoggedIn, (req, res) => {
     const user = req.user;
@@ -283,11 +307,9 @@ app.get("/", isLoggedIn, (req, res) => {
     }
     dbConnection.query(query, (err, result) => {
         dbConnection.query(NoOfTaskToDashboard, (err, result2) => {
-            console.log(result2);
             res.render("dashboard", { title: "Dashboard", organizations: result, userAccessibilty: user.role, name: user.name, image: user.imagePath, result2: result2, userRole: user.role });
         })
     })
-    console.log(user);
 });
 
 app.get("/specificOrg/:organiztion", isLoggedIn, (req, res) => {
@@ -313,7 +335,6 @@ app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
     const paramOrg = req.params.organization
     const user = req.user;
     var query = ``;
-    console.log("Loged User: ", user);
     if (paramStatus === "tasks-created-by-ceo") {
         if (user.role === "CEO") {
             query = `SELECT * FROM createtask  WHERE organization = '${paramOrg}' AND initiated_by = 'CEO' AND showStatus <> 'inactive'`;
@@ -371,7 +392,6 @@ app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
         }
     }
     dbConnection.query(query, (err, results) => {
-        console.log("Result From create Task: ", results);
         const taskId = results.map(result => result.taskId);
         const taskIdString = taskId.join(',');
         // const historyQuery = taskIdString ? `SELECT taskId, file FROM history WHERE taskId IN (${taskIdString})` : '';
@@ -381,7 +401,6 @@ app.get("/organization/:organization/tasks/:status", isLoggedIn, (req, res) => {
 
             dbConnection.query(historyQuery, (err, filesFromHistory) => {
                 if (err) throw err
-                console.log("From History Table", filesFromHistory);
                 res.render("createdTask", { title: paramStatus, paramOrg: paramOrg, results: results, name: user.name, image: user.imagePath, file: filesFromHistory, userRole: user.role });
             });
         } else {
@@ -405,7 +424,6 @@ app.get("/add_designation", isLoggedIn, (req, res) => {
 
 app.post("/add_designation", (req, res) => {
     const addDesignation = req.body.designation;
-    console.log(addDesignation);
     const data = `INSERT INTO designation (desigTitle) VALUES (?)`;
     dbConnection.query(data, [addDesignation], (error, results, fields) => {
         if (error) {
@@ -441,8 +459,6 @@ app.get("/add_role", isLoggedIn, (req, res) => {
 
 app.post("/add_role", (req, res) => {
     const addRole = req.body.role;
-    console.log(addRole);
-    console.log(req.user);
     const data = `INSERT INTO role (roleTitle) VALUES (?)`;
     dbConnection.query(data, addRole, (error, results, fields) => {
         if (error) {
@@ -532,7 +548,6 @@ app.get("/add_organization", isLoggedIn, (req, res) => {
 
         dbConnection.query(requestOrg, (err, results, fields) => {
             if (err) throw err;
-            console.log(results);
             res.render("add_organization", { title: "Add Organization", resultsTo: results, name: user.name, image: user.imagePath, userRole: user.role })
         });
     } else {
@@ -547,7 +562,6 @@ app.post("/add_organization", upload.single('orgPic'), (req, res) => {
 
         imagePath = req.file.filename;;
     }
-    console.log(addOrg);
     const data = `INSERT INTO organization (orgTitle, image) VALUES (?, ?)`;
     dbConnection.query(data, [addOrg, imagePath], (error, results, fields) => {
         if (error) {
@@ -585,7 +599,6 @@ app.post("/add_subdepartment", (req, res) => {
     const addDep = req.body.department;
     const addOrg = req.body.organization;
     var depArray = [addOrg, addDep]
-    console.log(addOrg);
     const data = `INSERT INTO department (depOrg ,depTitle) VALUES (?,?)`;
     dbConnection.query(data, depArray, (error, results, fields) => {
         if (error) {
@@ -617,7 +630,6 @@ app.get("/inactivetasks", isLoggedIn, (req, res) => {
 
 
 app.get("/edit/:file", isLoggedIn, (req, res) => {
-    console.log(req.params.file);
     const param = req.params.file;
     const parts = param.split("-");
     const id = parts[1];
@@ -657,7 +669,6 @@ app.get("/edit/:file", isLoggedIn, (req, res) => {
 
 app.post("/edit/:file", (req, res) => {
     const param = req.params.file;
-    console.log("post : ", param);
 
     const tableName = param.split(/[^a-zA-Z]/)[0];
     const id = param.split(/[^0-9]/).pop();
@@ -677,7 +688,6 @@ app.post("/edit/:file", (req, res) => {
 
     dbConnection.query(sql, [newTitle, id], (err, results) => {
         if (err) throw err;
-        console.log("tableName in query : " + tableName);
         res.redirect(`/add_${tableName}`);
     });
 });
@@ -685,8 +695,6 @@ app.post("/edit/:file", (req, res) => {
 app.patch("/delete-designation/:deleteFrom/:deleteId", (req, res) => {
     const deleteId = req.params.deleteId;
     const deleteName = req.params.deleteFrom
-    console.log(req.params.deleteFrom);
-    console.log(deleteId);
     let inactiveQuery = ``
     let inactiveUser = ``
     let selectUser = ``
@@ -699,7 +707,6 @@ app.patch("/delete-designation/:deleteFrom/:deleteId", (req, res) => {
     // }
     dbConnection.query(inactiveQuery, [deleteId], (err1, result) => {
         if (err1) throw err1;
-        console.log(result);
         if (result.affectedRows === 0) {
             res.status(404).send({ error: `Item with ID ${deleteId} not found` });
         } else {
@@ -715,7 +722,6 @@ app.patch("/delete-designation/:deleteFrom/:deleteId", (req, res) => {
                         if (err3) throw err3;
                         const userEmails = result3.map(userEmail => userEmail.email);
                         const emailsString = userEmails.join(",");
-                        console.log("emailString", emailsString);
                         const tasksQuery = `UPDATE createtask SET showStatus = "inactive" WHERE email IN (?)`;
                         dbConnection.query(tasksQuery, [emailsString], (err4, result4) => {
                             if (err4) throw err4;
@@ -733,8 +739,6 @@ app.patch('/delete-organization/:orgName/:id', (req, res) => {
     const { orgName, id } = req.params;
 
     if (orgName && id) {
-        console.log("Organization Name: ", orgName);
-        console.log("ID of Organization: ", id);
 
         let inactiveQuery = `UPDATE organization SET showStatus = 'inactive' WHERE orgId = ?`;
         let inactiveSubDept = `UPDATE department SET showStatus = 'inactive' WHERE depOrg = ?`
@@ -766,7 +770,6 @@ app.patch("/delete-subdepartment/:deptName/:id", (req, res) => {
     const { deptName, id } = req.params;
 
     if (deptName && id) {
-        console.log("name :", deptName);
         const inactiveSubDept = `UPDATE department SET showStatus = 'inactive' WHERE depId = ?`;
         dbConnection.query(inactiveSubDept, [id], (err1, result1) => {
             if (err1) throw err1;
@@ -793,7 +796,6 @@ app.patch("/undo-organization/:id", (req, res) => {
 app.delete("/permanent-delete", (req, res) => {
     const { name, id } = req.body;
     const allowedTable = ["organization", "department", "designation", "user", "createtask"];
-    console.log("name of the table: ", name);
     let deleteQuery = ``;
     if (!allowedTable.includes(name)) {
         res.json({ success: false }); // Send response for disallowed table
@@ -818,7 +820,6 @@ app.delete("/permanent-delete", (req, res) => {
             console.error("Error executing query:", err);
             res.json({ success: false }); 
         } else {
-            console.log("Query executed successfully:", result);
             res.json({ success: true }); 
         }
     });
@@ -827,7 +828,6 @@ app.delete("/permanent-delete", (req, res) => {
 app.patch("/restore-record", (req, res)=>{
     const { name, id } = req.body;
     const allowedTable = ["organization", "department", "designation", "user", "createtask"];
-    console.log("name of the table: ", name);
     let restoreQuery = ``;
     if (!allowedTable.includes(name)) {
         res.json({ success: false }); 
@@ -853,7 +853,6 @@ app.patch("/restore-record", (req, res)=>{
             console.error("Error executing query:", err);
             res.json({ success: false }); 
         } else {
-            console.log("Query executed successfully:", result);
             res.json({ success: true }); 
         }
     });
@@ -863,7 +862,6 @@ app.patch("/restore-record", (req, res)=>{
 app.get("/create_task", isLoggedIn, (req, res) => {
     const myQuery = `SELECT * FROM organization`;
     const user = req.user;
-    console.log(user);
     dbConnection.query(myQuery, (err, results, fields) => {
 
         res.render("create_task", { title: "Create Task", results: results, name: user.name, image: user.imagePath, userRole: user.role });
@@ -878,9 +876,7 @@ app.post("/create_task", upload.single('filePath'), (req, res) => {
     const deadLine = new Date(req.body.date);
     const localDateForDeadLine = deadLine.toISOString().split('T')[0]; // Format as YYYY-MM-DD
 
-    console.log("Dead Line: ", localDateForDeadLine);
     const user = req.user;
-    console.log(req.user);
 
     const createTask = {
         title: req.body.title,
@@ -896,7 +892,6 @@ app.post("/create_task", upload.single('filePath'), (req, res) => {
     }
     const currentDate = new Date();
     const localDate = currentDate.toISOString().split('T')[0];
-    console.log("Current Date: ", localDate);
 
     // const fileQuery = `INSERT INTO files (file1) VALUES (?) `;
 
@@ -909,13 +904,10 @@ app.post("/create_task", upload.single('filePath'), (req, res) => {
     dbConnection.query(taskQuery, taskArry, (err1, results) => {
         if (err1) throw err1
         if (results.insertId) {
-            console.log("insertId Exist", results.insertId);
         }
-        console.log("insert into createtask table: ", results);
         const historyArray = [results.insertId, createTask.description, user.role, localDate, createTask.assignTo, createTask.deadline, "Just Created", createTask.filePath, createTask.deadlineTime]
         dbConnection.query(historyQueryUsingId, historyArray, (err2, historyResult) => {
             if (err2) throw err2;
-            console.log("cheking history query");
             res.redirect(`/create_task`);
         });
     });
@@ -927,17 +919,16 @@ app.post("/create_task", upload.single('filePath'), (req, res) => {
 app.get("/organization/:organization/tasks/:task/assign_task/:user", isLoggedIn, (req, res) => {
     const user = req.user;
     let param = req.params.user;
-    console.log("param: ", param);
     let parts = param.split("-");
-    console.log("Request.URL: ", req.url);
     let id = parts[1];
     const paramOrg = req.params.organization;
     const paramTask = req.params.task;
-    console.log("My  ID for checking : ", id);
     const myQuery = `SELECT * FROM createtask WHERE taskId = ${id}`;
     const depQuery = `SELECT * FROM department`;
-    dbConnection.query(myQuery, (err, result) => {
-        dbConnection.query(depQuery, (err, depResult) => {
+    dbConnection.query(myQuery, (err1, result) => {
+        if(err1) throw err1
+        dbConnection.query(depQuery, (err2, depResult) => {
+            if(err2) throw err2
             res.render("assign_task", { title: "Assign_task", paramOrg: paramOrg, paramTask: paramTask, result: result[0], depResult: depResult, name: user.name, image: user.imagePath, userRole: user.role });
         });
     });
@@ -965,7 +956,6 @@ app.post("/organization/:organization/tasks/:task/assign_task/:user", upload.sin
         userDepartment: req.body.departmentOfUser
     }
 
-    console.log("usr Organization", assignTask.userOrganization);
     let myQuery = `UPDATE createtask SET  organization = ?,  department = ?, assignTo = ?, email = ?, remarks = ? WHERE taskId = ?`;
 
     if (req.file && req.file.filename) {
@@ -975,10 +965,8 @@ app.post("/organization/:organization/tasks/:task/assign_task/:user", upload.sin
 
         dbConnection.query(selectQueryForCreate, [id], (err, result1) => {
             const historyQueryArray = [id, result1[0].description, result1[0].initiated_by, currentDate, assignTask.userName, result1[0].date, assignTask.remarks, result1[0].currentStatus, filePath];
-            console.log("file ID: ", result1);
             dbConnection.query(historyQuery, historyQueryArray, (err, fileResult) => {
                 if (err) throw err;
-                console.log("file added to history");
                 dbConnection.query(myQuery, [assignTask.userOrganization, assignTask.userDepartment, assignTask.userName, assignTask.userEmail, assignTask.remarks, id], (err, result2) => {
                     if (err) {
                         // Handle error
@@ -997,10 +985,8 @@ app.post("/organization/:organization/tasks/:task/assign_task/:user", upload.sin
 
         dbConnection.query(selectQueryForCreate, [id], (err, result1) => {
             const historyQueryArray = [id, result1[0].description, result1[0].initiated_by, currentDate, assignTask.userName, result1[0].date, assignTask.remarks, result1[0].currentStatus];
-            console.log("file ID: ", result1);
             dbConnection.query(historyQuery, historyQueryArray, (err, fileResult) => {
                 if (err) throw err;
-                console.log("file added to history");
                 dbConnection.query(myQuery, [assignTask.userOrganization, assignTask.userDepartment, assignTask.userName, assignTask.userEmail, assignTask.remarks, id], (err, result2) => {
                     if (err) {
                         // Handle error
@@ -1031,7 +1017,6 @@ app.get("/organization/:organization/tasks/:task/action/:status", isLoggedIn, (r
 
     dbConnection.query(query, (err, result) => {
         if (err) throw err
-        console.log(result[0]);
         res.render("action", { title: "Action", paramOrg: paramOrg, paramTask: paramTask, result: paramStatus, name: user.name, image: user.imagePath, userRole: user.role });
     })
 });
@@ -1040,7 +1025,6 @@ app.post("/organization/:organization/tasks/:task/action/:status", upload.single
     let param = req.params.status;
     let parts = param.split("-");
     let id = parts[1].trim();
-    console.log("parameter from post request :" + param);
 
     const paramOrg = req.params.organization;
     const paramTask = req.params.task;
@@ -1057,10 +1041,8 @@ app.post("/organization/:organization/tasks/:task/action/:status", upload.single
         const historyQuery = `INSERT INTO history (taskId, description, initiated_by, on_date_time, assigned_to, deadline, remarks , current_status ,file, deadline_time) VALUES (?,?,?,?,?,?,?,?,?,?)`;
 
         dbConnection.query(selectQueryForCreate, [id], (err, result1) => {
-            console.log("file ID: ", result1);
             dbConnection.query(historyQuery, [id, result1[0].description, result1[0].initiated_by, currentDate, result1[0].assignTo, result1[0].date, actionTask.remarks, actionTask.status, filePath, result1[0].deadline_time], (err, fileResult) => {
                 if (err) throw err;
-                console.log("file added to file2");
                 dbConnection.query(myQuery, [actionTask.status, actionTask.remarks], (err, result2) => {
                     if (err) {
                         console.error("Error updating task:", err);
@@ -1078,10 +1060,8 @@ app.post("/organization/:organization/tasks/:task/action/:status", upload.single
         const historyQuery = `INSERT INTO history (taskId, description, initiated_by, on_date_time, assigned_to, deadline, remarks , current_status) VALUES (?,?,?,?,?,?,?,?)`;
 
         dbConnection.query(selectQueryForCreate, [id], (err, result1) => {
-            console.log("file ID: ", result1);
             dbConnection.query(historyQuery, [id, result1[0].description, result1[0].initiated_by, currentDate, result1[0].assignTo, result1[0].date, actionTask.remarks, actionTask.status], (err, fileResult) => {
                 if (err) throw err;
-                console.log("file added to file2");
                 dbConnection.query(myQuery, [actionTask.status, actionTask.remarks], (err, result2) => {
                     if (err) {
                         console.error("Error updating task:", err);
