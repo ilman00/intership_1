@@ -219,7 +219,36 @@ io.on("connection", (socket) => {
                 socket.emit("tasks data to client", result);
             }
         })
+    });
+
+    socket.on("Page user", (data)=>{
+        let pageValue = data;
+        let offset = (pageValue - 1) * 10;
+        console.log("page value: ", pageValue, "offset: ", offset);
+        const tenUser = `SELECT * FROM user LIMIT ? OFFSET ?`;
+
+        dbConnection.query(tenUser, [10, offset], (err, result)=>{
+            if(err) throw err;
+            socket.emit("result of users to frontend", result);
+        });
     })
+
+    socket.on("Search user", (data)=>{
+        const { searchTerm, pageValue } = data;
+        let offset = (pageValue - 1) * 10;
+        const query = `SELECT * FROM user WHERE name LIKE ? LIMIT ? OFFSET ?`;
+        const likePattern = `%${searchTerm}%`;
+
+        dbConnection.query(query, [likePattern, 10, offset], (err, result) => {
+            if (err) {
+                console.error('Error executing query:', err);
+                socket.emit("result of users to frontend", []); // Send an empty result set in case of error
+                return;
+            }
+            socket.emit("result of users to frontend", result);
+        });
+    })
+
 
 });
 
@@ -478,7 +507,7 @@ app.get("/add_user", isLoggedIn, (req, res) => {
     const checkRole = req.user.role;
     if (checkRole === "Director" || checkRole === "CEO") {
 
-        const userQuery = `SELECT * FROM user WHERE showStatus <> "inactive"`;
+        const userQuery = `SELECT * FROM user WHERE showStatus <> "inactive" LIMIT 10`;
         const roleQuery = `SELECT * FROM role`;
         const desigQuery = `SELECT * FROM designation`;
         const orgQeury = `SELECT * FROM  organization`;
@@ -779,6 +808,27 @@ app.patch("/delete-subdepartment/:deptName/:id", (req, res) => {
         res.status(400).send({ error: 'Missing parameters' });
     }
 });
+
+app.patch("/inactive-user", (req, res)=>{
+    const username = req.body.email;
+    const id = req.body.id;
+    const inactiveUser = `UPDATE user SET showStatus = 'inactive' WHERE userId = ?`;
+    const inactiveTask = `UPDATE createtask SET showStatus = 'inactive' WHERE email = ?`;
+    console.log("Id: ", id, "username: ", username);
+    if(username && id){
+
+        dbConnection.query(inactiveUser, [id], (err1, result1)=>{
+            if(err1) throw err1;
+            dbConnection.query(inactiveTask, [username], (err2, result2)=>{
+                if(err2) throw err2;
+                res.status(200).send({ success: true, message: "Success"});
+            });
+        });
+    }else{
+        res.status(400).send({message: "Missing Parameters"})
+    }
+
+})
 
 app.patch("/undo-organization/:id", (req, res) => {
     const id = req.params.id;

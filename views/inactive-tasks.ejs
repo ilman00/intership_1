@@ -8,7 +8,7 @@
 
         <div class="container row bg-light mt-4" style="margin: auto;">
 
-            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <nav class="navbar navbar-expand-lg bg-body-tertiary pt-0">
                 <div class="container-fluid">
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,20 +16,20 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav">
-                            <li class="nav-item">
+                            <li class="nav-item changeColorOnClick">
                                 <a class="nav-link " id="department" aria-current="page" href="#">Department</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="subdepartment" href="#">Sub-Department</a>
+                            <li class="nav-item changeColorOnClick">
+                                <a class="nav-link " id="subdepartment" href="#">Sub-Department</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="designation" href="#">Designation</a>
+                            <li class="nav-item changeColorOnClick">
+                                <a class="nav-link " id="designation" href="#">Designation</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="user" href="#">Users</a>
+                            <li class="nav-item changeColorOnClick">
+                                <a class="nav-link " id="user" href="#">Users</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link active" id="tasks" href="#">Tasks</a>
+                            <li class="nav-item changeBtn changeColorOnClick">
+                                <a class="nav-link" id="tasks" href="#">Tasks</a>
                             </li>
                         </ul>
                     </div>
@@ -72,25 +72,7 @@
                             <div class="col-sm-12" id="tableParantElement">
                             </div>
                         </div>
-                        <div class="row">
-                            <!-- <div class="col-sm-6">
-                            <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
-                                Showing 1 to 4 of 4 entries</div>
-                        </div>
-                        <div class="col-sm-6">
-                            <nav class="float-end" aria-label="Page navigation example">
-                                <ul class="pagination">
-                                    <li class="page-item"><a class="page-link" pageValue="0" id="PrevPage"
-                                            href="#">Previous</a>
-                                    </li>
-                                    <li class="page-item"><a class="page-link" pageValue="1" id="CurrentPage"
-                                            href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" pageValue="2" id="NextPage"
-                                            href="#">Next</a></li>
-                                </ul>
-                            </nav>
-                        </div> -->
-                        </div>
+                        
                     </div>
                 </div>
 
@@ -109,7 +91,8 @@
             const tasks = document.getElementById("tasks");
             const tableParantElement = document.getElementById("tableParantElement")
             const designation = document.getElementById("designation")
-
+            const changeColorOnClick = document.querySelectorAll(".changeColorOnClick")
+            console.log(changeColorOnClick);
             function dataToServer(tableName) {
                 socket.emit("data from server", tableName)
             }
@@ -489,6 +472,12 @@
                 });
             });
 
+            changeColorOnClick.forEach(element => {
+                element.addEventListener("click", function(){
+                    changeColorOnClick.forEach(element2 => element2.classList.remove("changeBtn"));
+                    this.classList.add("changeBtn");
+                })
+            })
         });
     </script>
 

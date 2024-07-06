@@ -15,20 +15,7 @@
                     <div id="datatable_wrapper" style="min-height: 70vh;"
                         class="dataTables_wrapper form-inline dt-bootstrap no-footer">
                         <div class="row">
-                            <!-- <div class="col-sm-6">
-                                <div class="dataTables_length" id="datatable_length">
-                                    <label>Show entries
-                                        <select name="datatable_length" id="NumberOfRecords"
-                                            class="form-control input-sm">
-                                            <option value="">Chose</option>
-                                            <option value="10">10</option>
-                                            <option value="25">25</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                        </select>
-                                    </label>
-                                </div>
-                            </div> -->
+                            
                             <div class="col-sm-6 d-flex flex-column justify-content-end">
                                 <div id="datatable_filter" class="float-end">
                                     <label class="float-end">Search:
@@ -89,8 +76,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-6">
-                                <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
-                                    Showing 1 to 4 of 4 entries</div>
+                                
                             </div>
                             <div class="col-sm-6">
                                 <nav class="float-end" aria-label="Page navigation example">
@@ -147,7 +133,7 @@
 
                 pageValue = parseInt(NextPage.getAttribute("pageValue")) || pageValue;
 
-                // socket.emit("Next Page Records", pageValue);
+                
                 CurrentPage.setAttribute("pageValue", pageValue);
                 CurrentPage.innerHTML = `${pageValue}`;
                 PrevPage.setAttribute("pageValue", pageValue - 1);

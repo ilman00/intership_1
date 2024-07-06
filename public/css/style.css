@@ -144,3 +144,13 @@ body {
       height: 90vh;
     }
   }
+
+
+  .changeBtn{
+    background: rgb(216, 215, 215);
+    border-radius: 5px;
+  }
+
+  .changeColorOnClick:hover{
+    font-size: 20px;
+  }

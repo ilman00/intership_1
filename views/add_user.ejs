@@ -1,8 +1,6 @@
 <%- include('header.ejs') %>
 
 
-
-
     <main>
         <div class="container">
             <h2>Add User</h2>
@@ -90,135 +88,109 @@
             <div class="container row bg-light mt-4" style="margin: auto;">
                 <div class="container">
                     <div class="">
-                        <h4 class="m-t-0 header-title"><b> Designation list </b></h4>
+                        <h4 class="m-t-0 header-title"><b> Employee list </b></h4>
 
 
                         <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-                            <!-- <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_length" id="datatable_length"><label>Show <select
-                                                name="datatable_length" aria-controls="datatable"
-                                                class="form-control input-sm">
-                                                <option value="10">10</option>
-                                                <option value="25">25</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select> entries</label></div>
+                            <div class="row">
+                                <div id="datatable_filter" class="w-100 pb-2 float-end"><label
+                                        class="float-end">Search:<input type="search" id="searchUser" class="form-control input-sm"
+                                            placeholder="Search User By Name" aria-controls="datatable"></label>
                                 </div>
-                                <div class="col-sm-6 d-flex flex-column justify-content-end">
-                                    <div id="datatable_filter" class="float-end"><label class="float-end">Search:<input
-                                                type="search" class="form-control input-sm" placeholder=""
-                                                aria-controls="datatable"></label></div>
-                                    <div id="datatable_filter" class="float-end"><label class="float-end">Search:<input
-                                                type="search" class="form-control input-sm" placeholder=""
-                                                aria-controls="datatable"></label></div>
-
-                                </div>
-
-                            </div> -->
+                            </div>
                             <div class="row">
                                 <div class="col-sm-12">
                                     <table id="datatable" class="table table-striped table-bordered dataTable no-footer"
                                         role="grid" aria-describedby="datatable_info">
                                         <thead>
                                             <tr role="row">
-                                                <th class="sorting_asc" tabindex="0" aria-controls="datatable"
-                                                    rowspan="1" colspan="1" aria-sort="ascending"
-                                                    aria-label="Serial #: activate to sort column descending"
-                                                    style="width: 130.333px;">User</th>
+                                                <th class="sorting_asc">User</th>
 
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
 
                                         <tbody id="tableBody">
                                             <% userData.forEach((element)=>{ %>
-                                                <!-- <% console.log("image path"+ element.imagePath) %> -->
 
-                                                    <tr>
-                                                        <td class="sorting_1">
-                                                            <div class="search-item">
-                                                                <div class="d-flex row">
-                                                                    <div class="" style="width: fit-content;">
-                                                                        <a href=""> <img class="media-object img-circle"
-                                                                                alt="64x64"
-                                                                                src="<%= element.imagePath %>"
-                                                                                style="width: 64px; height: 64px;"> </a>
-                                                                    </div>
-                                                                    <div class="w-75">
-                                                                        <h4 class=""><a class="textDecoration" href=""
-                                                                                style="color: rgb(103, 166, 254);">
-                                                                                <%=element.name %>
-                                                                            </a></h4>
 
-                                                                        <b>Designation:</b>
+                                                <tr class="removeRow">
+                                                    <td class="sorting_1">
+                                                        <div class="search-item">
+                                                            <div class="d-flex row">
+                                                                <div class="" style="width: fit-content;">
+                                                                    <a href=""> <img class="media-object img-circle"
+                                                                            alt="64x64" src="<%= element.imagePath %>"
+                                                                            style="width: 64px; height: 64px;"> </a>
+                                                                </div>
+                                                                <div class="w-75">
+                                                                    <h4 class=""><a class="textDecoration" href=""
+                                                                            style="color: rgb(103, 166, 254);">
+                                                                            <%=element.name %>
+                                                                        </a></h4>
+
+                                                                    <b>Designation:</b>
+
+                                                                    <span><a href="" class="textDecoration"
+                                                                            style="color: rgb(179, 179, 179);">
+                                                                            <%= element.designation %>
+                                                                        </a></span>
+                                                                    <p>
+
+                                                                        <b>Role:</b>
 
                                                                         <span><a href="" class="textDecoration"
                                                                                 style="color: rgb(179, 179, 179);">
-                                                                                <%= element.designation %>
+                                                                                <%= element.role %>
                                                                             </a></span>
-                                                                        <p>
-
-                                                                            <b>Role:</b>
-
-                                                                            <span><a href="" class="textDecoration"
-                                                                                    style="color: rgb(179, 179, 179);">
-                                                                                    <%= element.role %>
-                                                                                </a></span>
-                                                                        </p>
-                                                                        <p>
-                                                                            <b>Bio:</b>
-                                                                            <br>
-                                                                            <span class="text-muted"
-                                                                                style="color: rgb(179, 179, 179);">
-                                                                                <%= element.mobile %>
-                                                                            </span> ,
-                                                                            <span class="text-muted"
-                                                                                style="color: rgb(179, 179, 179);">
-                                                                                <%= element.email %>
-                                                                            </span>
-                                                                        </p>
-                                                                    </div>
+                                                                    </p>
+                                                                    <p>
+                                                                        <b>Bio:</b>
+                                                                        <br>
+                                                                        <span class="text-muted"
+                                                                            style="color: rgb(179, 179, 179);">
+                                                                            <%= element.mobile %>
+                                                                        </span> ,
+                                                                        <span class="text-muted"
+                                                                            style="color: rgb(179, 179, 179);">
+                                                                            <%= element.email %>
+                                                                        </span>
+                                                                    </p>
                                                                 </div>
                                                             </div>
-                                                        </td>
-                                                    </tr>
-                                                    <% }) %>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="delete" style="cursor: pointer;"
+                                                            emailAt="<%=element.email%>"
+                                                            id_in_DB="<%=element.userId%>">delete</span>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                            <!-- <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
-                                        Showing 1 to 4 of 4 entries</div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <nav class="float-end" aria-label="Page navigation example">
-                                        <ul class="pagination">
-                                            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div> -->
+
                         </div>
                     </div>
-                    <!-- <div class="row">
+                    <div class="row">
                         <div class="col-sm-6">
-                            <div class="dataTables_info" id="datatable_info" role="status" aria-live="polite">
-                                Showing 1 to 4 of 4 entries</div>
+
                         </div>
                         <div class="col-sm-6">
                             <nav class="float-end" aria-label="Page navigation example">
                                 <ul class="pagination">
-                                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                                    <li class="page-item" style="cursor: pointer;"><a class="page-link" pageValue="0"
+                                            id="PrevPage">Previous</a></li>
+                                    <li class="page-item" style="cursor: pointer;"><a class="page-link" pageValue="1"
+                                            id="CurrentPage">1</a></li>
+                                    <li class="page-item" style="cursor: pointer;"><a class="page-link" pageValue="2"
+                                            id="NextPage">Next</a></li>
                                 </ul>
                             </nav>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -226,27 +198,200 @@
     </main>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io('http://localhost:3000');
-        const orgValue = document.getElementById("organization");
-        const userDepartment = document.getElementById("userDepartment");
-        orgValue.addEventListener("change", () => {
-            socket.emit("organization Data from user", orgValue.value);
-            userDepartment.innerHTML = ""
-        });
+        document.addEventListener("DOMContentLoaded", () => {
 
-        socket.on("department data to user", (data) => {
-            var firstOption = document.createElement("option");
-            firstOption.innerHTML = "Choose...";
-            userDepartment.appendChild(firstOption);
-            data.forEach((element) => {
-                
-                var option = document.createElement("option");
-                option.value = element.depTitle;
-                option.innerHTML = element.depTitle;
-                userDepartment.appendChild(option)
+
+            const socket = io('http://localhost:3000');
+            const orgValue = document.getElementById("organization");
+            const userDepartment = document.getElementById("userDepartment");
+            const deleteBtn = document.querySelectorAll(".delete");
+            const PrevPage = document.getElementById("PrevPage");
+            const CurrentPage = document.getElementById("CurrentPage");
+            const NextPage = document.getElementById("NextPage");
+            const tableBody = document.getElementById("tableBody");
+            const searchUser = document.getElementById("searchUser");
+            
+
+
+            let pageValue = parseInt(CurrentPage.getAttribute("pageValue")) || 1;
+            let searchTerm = "";
+            if (pageValue <= 1) {
+                PrevPage.style.display = "none";
+            }
+
+            const fetchData = (pageValue) => {
+                // tBody.innerHTML = "";
+                // console.log("page Value in fetch", pageValue);
+                if (searchTerm) {
+                    console.log(searchTerm);
+                    socket.emit("Search user", { searchTerm, pageValue });
+                } else {
+                    socket.emit("Page user", pageValue);
+                }
+            };
+
+            socket.on("department data to user", (data) => {
+                var firstOption = document.createElement("option");
+                firstOption.innerHTML = "Choose...";
+                userDepartment.appendChild(firstOption);
+                data.forEach((element) => {
+
+                    var option = document.createElement("option");
+                    option.value = element.depTitle;
+                    option.innerHTML = element.depTitle;
+                    userDepartment.appendChild(option)
+                });
             });
-        });
 
+            searchUser.addEventListener("input", () => {
+                searchTerm = searchUser.value;
+                pageValue = 1; // Reset to the first page when a new search term is entered
+                CurrentPage.setAttribute("pageValue", pageValue);
+                CurrentPage.innerHTML = `${pageValue}`;
+                PrevPage.setAttribute("pageValue", pageValue - 1);
+                PrevPage.style.display = "none";
+                NextPage.setAttribute("pageValue", pageValue + 1);
+                fetchData(pageValue);
+            });
+
+            deleteBtn.forEach(element => {
+                element.addEventListener("click", (e) => {
+                    const email = e.target.getAttribute("emailAt");
+                    const userId = e.target.getAttribute("id_in_DB");
+                    const row = e.target.closest(".removeRow")
+                    console.log("Email :", email);
+                    fetch(`/inactive-user`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email: email, id: userId })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('Delete successful for ID:', userId);
+                                // Optionally remove the row from the table or refresh the table data
+                                row.remove()
+                            } else {
+                                console.error('Delete failed:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+
+            });
+
+
+
+            NextPage.addEventListener("click", (e) => {
+
+                pageValue = parseInt(NextPage.getAttribute("pageValue")) || pageValue;
+
+                // socket.emit("Next Page Records", pageValue);
+                CurrentPage.setAttribute("pageValue", pageValue);
+                CurrentPage.innerHTML = `${pageValue}`;
+                PrevPage.setAttribute("pageValue", pageValue - 1);
+                if (pageValue >= 2) {
+                    PrevPage.style.display = "inline-block";
+                }
+                NextPage.setAttribute("pageValue", pageValue + 1);
+                console.log("page Value in next", pageValue);
+                fetchData(pageValue);
+            });
+
+            PrevPage.addEventListener("click", (e) => {
+                // tBody.innerHTML = "";
+                // const NumberOfRecordsValue = NumberOfRecords.value;
+                pageValue = parseInt(PrevPage.getAttribute("pageValue"));
+                // const intNoOfRecord = parseInt(NumberOfRecordsValue) || 10;
+                CurrentPage.setAttribute("pageValue", pageValue);
+                CurrentPage.innerHTML = `${pageValue}`;
+                if (PrevPage.getAttribute("pageValue") > 1) {
+                    PrevPage.setAttribute("pageValue", pageValue - 1);
+                } else {
+                    PrevPage.style.display = "none";
+                }
+                console.log("Prev Page Value", PrevPage.getAttribute("pageValue"));
+                NextPage.setAttribute("pageValue", pageValue + 1);
+                fetchData(pageValue);
+
+            });
+
+            socket.on("result of users to frontend", (data) => {
+                console.log("checking the execution of socket");
+                renderData(data);
+            })
+
+            const renderData = (data) => {
+                console.log("checking the execution of renderData function");
+                tableBody.innerHTML = "";
+                if (data.length < 10) {
+                    NextPage.style.display = "none";
+                } else {
+                    NextPage.style.display = "inline-block"
+                }
+                data.forEach((element, index) => {
+                    index = index + 1;
+                    let rowColor = element.showStatus === "inactive" ? "red" : "black";
+                    const row = `<tr>
+                        <td class="sorting_1">
+                            <div class="search-item">
+                                <div class="d-flex row">
+                                    <div class="" style="width: fit-content;">
+                                        <a href=""> <img class="media-object img-circle"
+                                                alt="64x64" src=${element.imagePath}
+                                                style="width: 64px; height: 64px;"> </a>
+                                    </div>
+                                    <div class="w-75">
+                                        <h4 class=""><a class="textDecoration" href=""
+                                        style="color: rgb(103, 166, 254);">
+                                        ${element.name}
+                                    </a></h4>
+                                    <b>Designation:</b>
+                                    <span><a href="" class="textDecoration"
+                                            style="color: rgb(179, 179, 179);">
+                                            ${element.designation}
+                                        </a></span>
+                                    <p>
+                                    <b>Role:</b>
+                                    <span><a href="" class="textDecoration"
+                                            style="color: rgb(179, 179, 179);">
+                                            ${element.role}
+                                        </a></span>
+                                        </p>
+                                        <p>
+                                            <b>Bio:</b>
+                                            <br>
+                                            <span class="text-muted"
+                                                style="color: rgb(179, 179, 179);">
+                                                ${element.mobile}
+                                            </span> ,
+                                            <span class="text-muted"
+                                                style="color: rgb(179, 179, 179);">
+                                                ${element.email}
+                                            </span>
+                                        </p>
+                                    </div>
+                                        </div>
+                                    </div>
+                                </td>
+                <td>
+                    <span class="delete" style="cursor: pointer;"
+                     emailAt=${element.email}
+                     id_in_DB=${element.userId}>delete</span>
+                </td>
+            </tr>`;
+                    tableBody.insertAdjacentHTML("beforeend", row);
+                });
+            };
+
+
+
+
+        });
 
 
     </script>
