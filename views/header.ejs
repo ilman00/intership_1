@@ -12,14 +12,17 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/headerStyle.css">
     <title>NIDA</title>
     <style>
-        body{
+        body {
             min-height: 100vh;
         }
-        .minH70{
+
+        .minH70 {
             min-height: 70vh !important;
         }
+
         .bg-blue {
             background-color: white !important;
         }
@@ -46,117 +49,128 @@
     </style>
 </head>
 
-<body style="background-color: #e2e2e2">
+<body>
+    <!-- Navbar -->
+    <nav class="navbar myNavbarStyling navbar-dark bg-light text-dark ">
+        <div class="container-fluid d-lg-flex justify-content-lg-end">
+            <div class="me-auto d-flex justify-content-center align-items-center">
+                <a class="navbar-brand" href="">
+                    <img src="images/nida.png" width="60" style=" margin-top: 10px; border-radius: 50%;" class="d-inline">
+                </a>
 
-    <header id="topnav" class="navClass bg-light">
-        <div class="navbar navbar-expand-lg topbar-main p-3 mb-2 bg-blue " style="margin-bottom: 0 !important;">
-            <button class="btn btn-light" id="btnNav"><i class="bi bi-list"></i></button>
-            <div class="container">
+                <span> </span>
+                <span style="float: right; margin-top: 25px; font-size: 1em; font-weight:bold;" class="text-title mb-2">
+                    TASK
+                    MANAGEMENT SYSTEM</span>
 
-                <div class="me-auto">
-                    <a class="navbar-brand" href="">
-                        <img src="/images/NIDA_Logo2.jpg" width="60"
-                            style="float: left; margin-top: 10px; border-radius: 50%;">
-                    </a>
-                    &nbsp;&nbsp;&nbsp;
-                    <span> </span>
-                    <span style="float: left; margin-top: 25px; font-size: 22px; font-weight:bold;"> TASK
-                        MANAGEMENT SYSTEM</span>
+            </div>
 
+            <div class="dropdown ">
+
+
+                <img src="<%=image%>" id="dropdownMenuButton" role="button" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false" class="img-fluid  dropdown-toggle no-caret" style="height: 50px; border-radius: 50%;"
+                    alt="Img"><br><span>welcom: <span style="text-transform: capitalize;"><%=name%></span> </span>
+
+
+                <div class="dropdown-menu custom-dropdown-menu"  aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/logout">Logout</a>
+                    <% if(userRole === "CEO"){ %>
+                    <a class="dropdown-item" href="/change-password">Change Password</a>
+                    <%}%>
                 </div>
-                <div class="">
-                    <ul class="nav navbar-nav navbar-right pull-right">
-                        <li class="navbar-c-items">
-                            <div style="margin-top:40px;">Welcome : <%= name %> </div>
-                        </li>
+            </div>
 
+        </div>
+        <button id="toggle-button" class="btn btn-outline-primary d-lg-none d-inline ">
+            ☰
+        </button>
+    </nav>
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link " href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="<%=image%>"
-                                    style="height: 50px; border-radius: 50%; border: 2px solid white;" alt="">
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/logout">Logout</a></li>
-                                <% if(userRole === "CEO"){ %>
-                                <li><a class="dropdown-item" href="/change-password">Change password</a></li>
-                                <% } %>
-                            </ul>
-                        </li>
-                    </ul>
+    <div class="content" style="margin-top: 16vh;">
+        <!-- Left side started here -->
+        <div id="left-sidebar" class="left-side">
+            <h2>Left Side</h2>
+            <div>
+                <ul class="list-group">
+                    <li class="list-group-item nav-item m-2">
+                        <a href="/" class="nav-link">Dashboard</a>
+                    </li>
+                </ul>
+                <br>
+                <% if(userRole === "CEO" || userRole === "Director"){ %>
+                <ul class="list-group">
+                    <li class="list-group-item nav-item  m-2" id="createTaskClick" style="cursor: pointer;">Create Task
+                        <ul class="" id="createTask" style="display: none;">
+                            <li class="nav-item"><a class="nav-link" href="/create_task">Create Task</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <%}%>
+                <br>
+                <ul class="list-group">
+                    <li class="list-group-item nav-item m-2" id="reportClick" style="cursor: pointer;">
+                        Report
+                        <ul class="" style="display: none;" id="report">
+                            <li class="nav-item"><a class="nav-link" href="/report">Tasks Report </a></li>
+                            <% if(userRole === "CEO"){ %>
+                                <hr style="margin: 7px;">
+                            <li class="nav-item"><a class="nav-link" href="/inactivetasks">Inactive Tasks Report</a>
+                            </li>
+                            <%}%>
+                        </ul>
+                    </li>
+                </ul>
+                <br>
+                <% if(userRole === "CEO" || userRole === "Director"){ %>
+                <ul class="list-group">
+                    <li class="list-group-item nav-item m-2" style="cursor: pointer;" id="settingClick">
+                        Settings
+                        <ul class="" style="display: none;" id="settings">
+                            <li class="nav-item"><a class="nav-link" href="/add_organization">Add Department</a></li><hr style="margin: 7px;">
+                            <li class="nav-item"><a class="nav-link" href="/add_subdepartment">Add Sub-Department</a>
+                            </li><hr style="margin: 7px;">
+                            <li class="nav-item"><a class="nav-link" href="/add_designation">Add Designation</a></li><hr style="margin: 7px;">
+                            <li class="nav-item"><a class="nav-link" href="/add_role">Add Role</a></li><hr style="margin: 7px;">
+                            <li class="nav-item"><a class="nav-link" href="/add_user">Add User</a></li>
 
-                </div>
-
+                        </ul>
+                        <%}%>
+                    </li>
+                </ul>
+                <br>
+                <!-- Repeat the above list as needed -->
             </div>
         </div>
+        <!-- jQuery (required for Bootstrap JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Bootstrap JS -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+        <script>
+            $("#createTaskClick").click(function () {
+                $("#createTask").toggle()
+            });
 
 
-    </header>
+            $("#reportClick").click(function () {
+                $("#report").toggle()
+            });
 
+            $("#settingClick").click(function () {
+                $("#settings").toggle()
+            });
 
-    <main class="minH70 h-75" >
-        <div class="container-fluid d-flex row p-0 w-100">
+            document.addEventListener("DOMContentLoaded", function () {
+                const toggleButton = document.getElementById("toggle-button");
+                const leftSidebar = document.getElementById("left-sidebar");
+                const rightSidebar = document.getElementById("right-sidebar");
 
-            <div class="w-25 p-0 absolute" id="leftNav" style="box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);">
-                <nav class="pt-3 h-100" style="background-color: #2c3379; color: white;">
-                    <span style="display: block;"><button class="btn text-white" id="navCancelBtn"
-                            style="background-color: #2c3379; float: right;"><i
-                                class="bi bi-x"></i></button></span>
-                    <div class="container">
-
-
-                        <div class="" id="navbarNav">
-                            <ul class="navbar-nav">
-                                <li class="nav-item m-2">
-                                    <a href="/" class="nav-link">Dashboard</a>
-                                </li>
-                                <% if(userRole === "CEO" || userRole === "Director"){ %>
-                                <li class="nav-item  m-2" id="createTaskClick" style="cursor: pointer;">Create Task
-                                    <ul class="" id="createTask" style="display: none;">
-                                        <li class="nav-item"><a class="nav-link" href="/create_task">Create Task</a></li>
-                                    </ul>
-                                </li>
-                                <%}%>
-                                <li class="nav-item m-2" id="reportClick" style="cursor: pointer;">
-                                   Report
-                                    <ul class="" style="display: none;" id="report">
-                                        <li class="nav-item"><a class="nav-link" href="/report">Tasks Report </a></li>
-                                        <% if(userRole === "CEO"){ %>
-                                        <li class="nav-item"><a class="nav-link" href="/inactivetasks">Inactive Tasks Report</a></li>
-                                        <%}%>
-                                    </ul>
-                                </li>
-                                <% if(userRole === "CEO" || userRole === "Director"){ %>
-                                <li class="nav-item m-2" style="cursor: pointer;" id="settingClick" >
-                                    Settings
-                                    <ul class="" style="display: none;" id="settings">
-                                        <li class="nav-item"><a class="nav-link" href="/add_organization">Add Department</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="/add_subdepartment">Add Sub-Department</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="/add_designation">Add Designation</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="/add_role">Add Role</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="/add_user">Add User</a></li>
-                                        
-                                    </ul>
-                                </li>
-                                <%}%>
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-            <script>
-                $("#createTaskClick").click(function(){
-                    $("#createTask").toggle()
+                toggleButton.addEventListener("click", function () {
+                    leftSidebar.classList.toggle("open");
+                    rightSidebar.classList.toggle('display-none')
                 });
+            });
+        </script>
 
-                
-                $("#reportClick").click(function(){
-                    $("#report").toggle()
-                });
-
-                $("#settingClick").click(function(){
-                    $("#settings").toggle()
-                });
-
-            </script>
-            <div class="w-75 w-100after" style="z-index: 1;">
+        <!-- Right side started here -->
+        <div class="right-side" id="right-sidebar">
