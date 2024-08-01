@@ -41,8 +41,8 @@
                     <label for="inputState" class="form-label">Select Department</label>
                     <select class="form-select" id="assign_taskDep" name="department">
                         <% depResult.forEach(element=>{ %>
-                            <option value="<%= element.depTitle%>">
-                                <%= element.depTitle%>
+                            <option value="<%= element.orgTitle%>">
+                                <%= element.orgTitle%>
                             </option>
 
                             <% }) %>
@@ -96,6 +96,7 @@
         });
 
         socket.on("data to assign task", (data) => {
+            console.log("data ", data);
             var emptyOption = document.createElement("option");
             emptyOption.innerHTML = "CHOSE";
             assign_taskUser.appendChild(emptyOption);

@@ -23,7 +23,7 @@
   
   .content {
     display: flex;
-    height: 100vh;
+    min-height: 100vh;
     margin-top: 60px; /* height of navbar */
   }
   

@@ -85,11 +85,22 @@ var storage = multer.diskStorage({
     }
 });
 
+var fileStorage = multer.diskStorage({
+    destination: (req, file, callBack) => {
+        callBack(null, './uploads/files/')     // './uploads/' directory name where save the file
+    },
+    filename: (req, file, callBack) => {
+        callBack(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+    }
+});
+
 var upload = multer({
     storage: storage
 });
 
-
+var uploadFile = multer({
+    storage: fileStorage
+})
 
 
 // socket.io
@@ -123,7 +134,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("data from assign task", (data) => {
-        const userQuery = `SELECT * FROM user WHERE department = '${data}'`
+        const userQuery = `SELECT * FROM user WHERE organization = '${data}'`
         dbConnection.query(userQuery, (err, result) => {
             socket.emit("data to assign task", result);
         });
@@ -918,7 +929,15 @@ app.get("/create_task", isLoggedIn, (req, res) => {
     });
 });
 
-app.post("/create_task", upload.single('filePath'), (req, res) => {
+
+
+
+
+
+
+
+
+app.post("/create_task", uploadFile.single('filePath'), (req, res) => {
     let image = 'uploads/person.png';
     if (req.file && req.file.filename) {
         image = req.file.filename;
@@ -974,7 +993,7 @@ app.get("/organization/:organization/tasks/:task/assign_task/:user", isLoggedIn,
     const paramOrg = req.params.organization;
     const paramTask = req.params.task;
     const myQuery = `SELECT * FROM createtask WHERE taskId = ${id}`;
-    const depQuery = `SELECT * FROM department`;
+    const depQuery = `SELECT * FROM organization`;
     dbConnection.query(myQuery, (err1, result) => {
         if(err1) throw err1
         dbConnection.query(depQuery, (err2, depResult) => {
@@ -984,7 +1003,7 @@ app.get("/organization/:organization/tasks/:task/assign_task/:user", isLoggedIn,
     });
 });
 
-app.post("/organization/:organization/tasks/:task/assign_task/:user", upload.single('assignTaskFile'), (req, res) => {
+app.post("/organization/:organization/tasks/:task/assign_task/:user", uploadFile.single('assignTaskFile'), (req, res) => {
     let param = req.params.user;
     let parts = param.split("-");
     let id = parts[1];
@@ -1071,7 +1090,7 @@ app.get("/organization/:organization/tasks/:task/action/:status", isLoggedIn, (r
     })
 });
 
-app.post("/organization/:organization/tasks/:task/action/:status", upload.single('actionTaskFile'), (req, res) => {
+app.post("/organization/:organization/tasks/:task/action/:status", uploadFile.single('actionTaskFile'), (req, res) => {
     let param = req.params.status;
     let parts = param.split("-");
     let id = parts[1].trim();
