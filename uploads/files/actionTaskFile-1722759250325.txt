@@ -1,0 +1,11 @@
+
+Hope you enjoy your new logo, here are the people that
+made your beautiful logo happen :)
+font name: QumpellkaNo12
+font link: http://www.glukfonts.pl/font.php?font=QumpellkaNo12
+font author: GLUK
+font author site: http://www.glukfonts.pl/
+
+
+{"bg":"transparent","icon-gradient-0":"#288B58","icon-gradient-1":"#1522F1","font":"#000000","slogan":"#141414"}
+      
